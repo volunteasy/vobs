@@ -7,6 +7,6 @@ import (
 
 type Actions interface {
 	CreateUser(ctx context.Context, u User) error
-	ListUsers(ctx context.Context, f Filter) ([]User, int, error)
+	ListEnrolledUsers(ctx context.Context, f Filter) ([]Enrolled, int, error)
 	GetUser(ctx context.Context, id types.ID) (User, error)
 }

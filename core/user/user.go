@@ -1,6 +1,7 @@
 package user
 
 import (
+	"govobs/core/membership"
 	"govobs/core/types"
 )
 
@@ -19,5 +20,11 @@ type (
 		Identification string
 
 		types.Filter
+	}
+
+	Enrolled struct {
+		User
+		Role   membership.Role
+		Status membership.Status
 	}
 )
