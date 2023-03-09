@@ -3,10 +3,10 @@ package membership
 import "govobs/core/types"
 
 const (
-	RoleNone        = ""
-	RoleVolunteer   = "volunteer"
-	RoleOwner       = "owner"
-	RoleBeneficiary = "beneficiary"
+	RoleNone      = ""
+	RoleVolunteer = "volunteer"
+	RoleOwner     = "owner"
+	RoleAssisted  = "assisted"
 )
 
 const (
