@@ -16,7 +16,6 @@ type (
 
 	Filter struct {
 		Role           string
-		OrganizationID types.ID
 		Identification string
 
 		types.Filter
