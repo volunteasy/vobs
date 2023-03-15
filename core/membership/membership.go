@@ -48,11 +48,11 @@ func (s Status) Validate() error {
 }
 
 func (m Membership) Validate() error {
-	if m.OrgID != types.ZeroID {
+	if m.OrgID == types.ZeroID {
 		return ErrNoOrganizationID
 	}
 
-	if m.UserID != types.ZeroID {
+	if m.UserID == types.ZeroID {
 		return ErrNoUserID
 	}
 

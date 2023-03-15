@@ -113,7 +113,67 @@ func TestJobs_CreateUser(t *testing.T) {
 			wantID:  0,
 		},
 		{
-			name: "should fail for persistence error",
+			name: "should fail for nickname error",
+			args: args{
+				ctx: context.Background(),
+				user: user.User{
+					Name:     "Karim Andersson",
+					Nickname: "",
+					Document: "50215322202",
+					Contact: types.Contact{
+						Phone: types.Phone{
+							CountryCode: "55",
+							AreaCode:    "22",
+							PhoneNumber: "44332222",
+						},
+						Address: types.Address{
+							ZipCode:     "55478770",
+							HouseNumber: "33",
+							StreetName:  "My Avenue",
+							Complement:  "Apartment 12",
+							District:    "Thirteen",
+							City:        "Beijing",
+							State:       "Huangzou",
+							Country:     "Australia",
+						},
+					},
+				},
+			},
+			wantErr: user.ErrInvalidNickname,
+			wantID:  0,
+		},
+		{
+			name: "should fail for invalid name",
+			args: args{
+				ctx: context.Background(),
+				user: user.User{
+					Name:     "",
+					Nickname: "kandss",
+					Document: "50215322202",
+					Contact: types.Contact{
+						Phone: types.Phone{
+							CountryCode: "55",
+							AreaCode:    "22",
+							PhoneNumber: "44332222",
+						},
+						Address: types.Address{
+							ZipCode:     "55478770",
+							HouseNumber: "33",
+							StreetName:  "My Avenue",
+							Complement:  "Apartment 12",
+							District:    "Thirteen",
+							City:        "Beijing",
+							State:       "Huangzou",
+							Country:     "Australia",
+						},
+					},
+				},
+			},
+			wantErr: user.ErrInvalidName,
+			wantID:  0,
+		},
+		{
+			name: "should fail for invalid address",
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
@@ -127,7 +187,7 @@ func TestJobs_CreateUser(t *testing.T) {
 							PhoneNumber: "44332222",
 						},
 						Address: types.Address{
-							ZipCode:     "55478770",
+							ZipCode:     "",
 							HouseNumber: "33",
 							StreetName:  "My Avenue",
 							Complement:  "Apartment 12",
@@ -139,32 +199,22 @@ func TestJobs_CreateUser(t *testing.T) {
 					},
 				},
 			},
-			fields: fields{
-				users: &user.ActionsMock{
-					CreateUserFunc: func(ctx context.Context, u user.User) error {
-						return user.ErrInvalidName
-					},
-				},
-				createID: func() types.ID {
-					return 0
-				},
-			},
-			wantErr: user.ErrInvalidName,
+			wantErr: types.ErrInvalidAddress,
 			wantID:  0,
 		},
 		{
-			name: "should fail for invalid name",
+			name: "should fail for invalid phone",
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
-					Name:     "",
+					Name:     "Karim Andersson",
 					Nickname: "kandss",
 					Document: "50215322202",
 					Contact: types.Contact{
 						Phone: types.Phone{
 							CountryCode: "55",
 							AreaCode:    "22",
-							PhoneNumber: "44332222",
+							PhoneNumber: "",
 						},
 						Address: types.Address{
 							ZipCode:     "55478770",
@@ -179,37 +229,7 @@ func TestJobs_CreateUser(t *testing.T) {
 					},
 				},
 			},
-			wantErr: user.ErrInvalidName,
-			wantID:  0,
-		},
-		{
-			name: "should fail for invalid name",
-			args: args{
-				ctx: context.Background(),
-				user: user.User{
-					Name:     "",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
-					},
-				},
-			},
-			wantErr: user.ErrInvalidName,
+			wantErr: types.ErrInvalidAddress,
 			wantID:  0,
 		},
 	} {

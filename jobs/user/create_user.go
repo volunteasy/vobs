@@ -12,5 +12,10 @@ func (j jobs) CreateUser(ctx context.Context, u user.User) (user.User, error) {
 
 	u.ID = j.createID()
 	
-	return u, j.users.CreateUser(ctx, u)
+	err := j.users.CreateUser(ctx, u)
+	if err != nil {
+		return user.User{}, err
+	}
+	
+	return u, nil
 }
