@@ -5,6 +5,8 @@ import (
 	"govobs/core/types"
 )
 
+//go:generate moq -fmt goimports -out actions_mock.go . Actions:ActionsMock
+
 type Actions interface {
 	CreateOrganization(ctx context.Context, o Organization) error
 	GetOrganization(ctx context.Context, id types.ID) (Organization, error)

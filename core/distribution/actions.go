@@ -4,6 +4,7 @@ import (
 	"context"
     "govobs/core/types"
 )
+//go:generate moq -fmt goimports -out actions_mock.go . Actions:ActionsMock
 
 type Actions interface {
 	CreateDistribution(ctx context.Context, d Distribution) error
