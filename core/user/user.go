@@ -15,7 +15,7 @@ type (
 	}
 
 	Filter struct {
-		Role           string
+		Role           membership.Role
 		Identification string
 
 		types.Filter
@@ -27,3 +27,35 @@ type (
 		Status membership.Status
 	}
 )
+
+func (f Filter) Validate() error {
+	if err := f.Role.Validate(); err != nil {
+		return err
+	}
+
+	if err := f.Filter.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u User) Validate() error {
+	if len(u.Name) == 0 || len(u.Name) > 250 {
+		return ErrInvalidName
+	}
+
+	if len(u.Nickname) == 0 || len(u.Nickname) > 12 {
+		return ErrInvalidNickname
+	}
+
+	if err := u.Document.Validate(); err != nil {
+		return err
+	}
+
+	if err := u.Contact.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
