@@ -18,7 +18,7 @@ type (
 		types.Filter
 	}
 
-	Enrollments struct {
+	Enrollment struct {
 		Organization
 		Status membership.Status
 		Role   membership.Role

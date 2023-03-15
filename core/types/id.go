@@ -10,6 +10,8 @@ const ZeroID ID = 0
 
 type ID int64
 
+type IDCreator = func() ID
+
 func (i ID) String() string {
 	return strconv.FormatInt(int64(i), 10)
 }
