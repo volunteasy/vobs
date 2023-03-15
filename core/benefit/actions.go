@@ -7,8 +7,7 @@ import (
 )
 
 type Actions interface {
-	Create(ctx context.Context, c Benefit) error
-	List(ctx context.Context, f Filter) ([]Benefit, int, error)
-	SetClaimedAt(ctx context.Context, id types.ID, at time.Time) error
-	SetCollectionDate(ctx context.Context, id types.ID, date time.Time) error
+	CreateBenefit(ctx context.Context, c Benefit) error
+	ListBenefits(ctx context.Context, f Filter) ([]Benefit, int, error)
+	SetBenefitClaimDate(ctx context.Context, id types.ID, at time.Time) error
 }
