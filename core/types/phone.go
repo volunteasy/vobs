@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Phone struct {
 	CountryCode string
@@ -8,7 +11,15 @@ type Phone struct {
 	PhoneNumber string
 }
 
+var (
+	ErrInvalidPhone = errors.New("must provide a valid phone")
+)
+
 func (p Phone) Validate() error {
+	if p.PhoneNumber == "" {
+		return ErrInvalidPhone
+	}
+
 	return nil
 }
 

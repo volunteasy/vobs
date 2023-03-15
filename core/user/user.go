@@ -9,7 +9,7 @@ type (
 	User struct {
 		ID       types.ID
 		Name     string
-		Nickname types.Nickname
+		Nickname string
 		Document types.Document
 		Contact  types.Contact
 	}

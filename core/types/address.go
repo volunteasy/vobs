@@ -1,12 +1,32 @@
 package types
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"regexp"
+)
 
 type Address struct {
 	ZipCode, HouseNumber, StreetName, Complement, District, City, State, Country string
 }
 
+var (
+	ErrInvalidAddress = errors.New("must provide a valid address")
+)
+
+var zipCodeRegexp     = regexp.MustCompile(`^\d{5}-?\d{3}$`)
 func (a Address) Validate() error {
+	if a.ZipCode == "" ||
+		!zipCodeRegexp.MatchString(a.ZipCode) ||
+		a.HouseNumber == "" ||
+		a.StreetName == "" ||
+		a.District == "" ||
+		a.City == "" ||
+		a.State == "" ||
+		a.Country == "" {
+		return ErrInvalidAddress
+	}
+
 	return nil
 }
 
