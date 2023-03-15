@@ -24,3 +24,19 @@ type (
 		Role   membership.Role
 	}
 )
+
+func (o Organization) Validate() error {
+	if len(o.Name) == 0 || len(o.Name) > 50 {
+		return ErrInvalidName
+	}
+
+	if err := o.Document.Validate(); err != nil {
+		return err
+	}
+
+	if err := o.Contact.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
