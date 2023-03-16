@@ -8,7 +8,7 @@ import (
 func main() {
 
 	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
-		println("ni hao!")
+		writer.Write([]byte("Ni hao!"))
     })
 
 	fmt.Println("Listening to endpoints")
