@@ -36,7 +36,6 @@ jobs:
                   aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   application_name: volunteasy
                   environment_name: volunteasy-dev
-                  version_label: 12345
                   region: sa-east-1
                   version_description: ${{github.SHA}}
                   deployment_package: deploy.zip
