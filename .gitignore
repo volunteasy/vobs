@@ -18,3 +18,8 @@
 
 # Mock files
 *_mock.go
+
+
+
+# IDEs
+/.idea

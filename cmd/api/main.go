@@ -1,19 +1,25 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
+	"github.com/getsentry/sentry-go"
+	"github.com/kelseyhightower/envconfig"
+	"govobs/config"
+	"log"
 )
 
 func main() {
 
-	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
-		writer.Write([]byte("Ni hao!"))
-    })
+	var c config.Config
+	err := envconfig.Process("", &c)
+	if err != nil {
+		log.Fatalf("could not get config variables from environment: %s", err)
+	}
 
-	fmt.Println("Listening to endpoints")
-    err := http.ListenAndServe(":8080", nil)
-    if err != nil {
-        panic(err)
-    }
+	err = sentry.Init(sentry.ClientOptions{
+		Dsn: c.Logger.DSN,
+	})
+
+	if err != nil {
+		log.Fatalf("failed initializing observability service: %s", err)
+	}
 }
