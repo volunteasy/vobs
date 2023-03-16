@@ -23,4 +23,5 @@ gen: deps clean
 
 test: gen
 	@echo "Testing application"
-	@go test ./... -v 
+	@go test ./... -v
+	
