@@ -16,7 +16,6 @@ type (
 	Filter struct {
 		ClaimDateRange types.DateRange
 		DistributionID types.ID
-		Claimed        bool
 		AssistedID     types.ID
 		OrgID          types.ID
 
