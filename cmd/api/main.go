@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+    "fmt"
+    "net/http"
+)
 
 func main() {
 
@@ -8,6 +11,7 @@ func main() {
 		println("ni hao!")
     })
 
+	fmt.Println("Listening to endpoints")
     err := http.ListenAndServe(":8080", nil)
     if err != nil {
         panic(err)

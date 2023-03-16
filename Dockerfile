@@ -6,9 +6,7 @@ WORKDIR /go/src/app
 
 COPY . .
 
-RUN make
-RUN make build
-
+RUN go mod tidy
 RUN go build -o /go/bin/govobs -v ./cmd/api/main.go
 
 
