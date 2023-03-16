@@ -25,12 +25,6 @@ jobs:
 
             - name: Test
               run: make test
-    deploy:
-        runs-on: ubuntu-latest
-        steps:
-
-            - name: Checkout source code
-              uses: actions/checkout@v2
 
             - name: Generate deployment package
               run: zip -r deploy.zip . -x '*.git*'
@@ -46,3 +40,4 @@ jobs:
                   region: sa-east-1
                   version_description: ${{github.SHA}}
                   deployment_package: deploy.zip
+
