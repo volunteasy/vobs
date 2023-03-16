@@ -21,6 +21,6 @@ gen: deps clean
 	@echo "Generating new swagger documentation files"
 	@swag init -q -g ./cmd/api/main.go -o ./docs/swagger
 
-test: deps
+test: gen
 	@echo "Testing application"
 	@go test ./... -v 
