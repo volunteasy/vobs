@@ -229,7 +229,7 @@ func TestJobs_CreateUser(t *testing.T) {
 					},
 				},
 			},
-			wantErr: types.ErrInvalidAddress,
+			wantErr: types.ErrInvalidPhone,
 			wantID:  0,
 		},
 	} {
