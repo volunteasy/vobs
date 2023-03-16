@@ -1,3 +1,7 @@
+build: deps
+	@echo "Building application"
+	@go build ./...
+
 deps:
 	@echo "Installing dependencies"
 	@go mod tidy
