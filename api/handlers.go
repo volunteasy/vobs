@@ -12,15 +12,20 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/sirupsen/logrus"
 )
 
-func Handler() http.Handler {
+type Deps struct {
+	Logger *logrus.Entry
+}
+
+func Handler(deps Deps) http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(
 		middleware.RealIP,
 		middleware.RequestID,
-		mid.Logging(),
+		mid.Logging(deps.Logger),
 		middleware.Recoverer,
 	)
 

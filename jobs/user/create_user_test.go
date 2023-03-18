@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
-	"gotest.tools/v3/assert"
 	"govobs/core/types"
 	"govobs/core/user"
 	"testing"
+
+	"gotest.tools/v3/assert"
 )
 
 func TestJobs_CreateUser(t *testing.T) {
@@ -237,6 +238,8 @@ func TestJobs_CreateUser(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
+			t.Fail()
 
 			u, err := jobs{
 				users:    tc.fields.users,

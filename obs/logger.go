@@ -8,19 +8,10 @@ import (
 
 var log *logrus.Entry
 
-func Logger() *logrus.Entry {
-	return log
-}
-
-type LoggerContextKey struct {
-}
+type LoggerContextKey struct{}
 
 func NewLogger(l *logrus.Entry) {
 	log = l
-}
-
-func LoggerToContext(ctx context.Context, entry *logrus.Entry) context.Context {
-	return context.WithValue(ctx, LoggerContextKey{}, entry)
 }
 
 func Log(ctx context.Context) *logrus.Entry {
@@ -31,4 +22,8 @@ func Log(ctx context.Context) *logrus.Entry {
 	}
 
 	return lg
+}
+
+func LoggerToContext(ctx context.Context, entry *logrus.Entry) context.Context {
+	return context.WithValue(ctx, LoggerContextKey{}, entry)
 }

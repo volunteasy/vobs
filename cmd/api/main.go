@@ -23,10 +23,12 @@ func main() {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	obs.NewLogger(logrus.WithFields(logrus.Fields{
+	logrusEntry := logrus.WithFields(logrus.Fields{
 		"app": "govobs",
 		"env": "development",
-	}))
+	})
+
+	obs.NewLogger(logrusEntry)
 
 	nr, err := newrelic.NewApplication(
 		newrelic.ConfigAppName("govobs"),
@@ -45,5 +47,9 @@ func main() {
 		log.Fatalf("could not listen to port %s: %s", ":8080", err)
 	}
 
-	api.Serve(lis, api.Handler(), time.Second*30, time.Second*30)
+	hdl := api.Handler(api.Deps{Logger: logrusEntry})
+
+	srv := api.NewServer(time.Second*30, time.Second*30, logrusEntry)
+
+	srv(lis, hdl)
 }

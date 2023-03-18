@@ -1,10 +1,10 @@
-build: deps
+build:
 	@echo "Building application"
+	@go mod tidy
 	@go build ./...
 
 deps:
 	@echo "Installing dependencies"
-	@go mod tidy
 	@go install github.com/matryer/moq@v0.3.1
 	@go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
