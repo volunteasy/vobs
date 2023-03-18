@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/newrelic/go-agent/v3/newrelic"
-	"github.com/sirupsen/logrus"
 	"govobs/api"
-	"govobs/telemetry"
+	"govobs/obs"
 	"log"
 	"net"
 	"time"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	telemetry.NewLogger(logrus.WithFields(logrus.Fields{
+	obs.NewLogger(logrus.WithFields(logrus.Fields{
 		"app": "govobs",
 		"env": "development",
 	}))
@@ -37,7 +38,7 @@ func main() {
 		log.Fatalf("failed initializing observability service: %s", err)
 	}
 
-	telemetry.NewTracer(nr)
+	obs.NewTracer(nr)
 
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {

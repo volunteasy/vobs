@@ -1,13 +1,14 @@
-package telemetry
+package obs
 
 import (
 	"context"
+
 	"github.com/sirupsen/logrus"
 )
 
 var log *logrus.Entry
 
-func Log() *logrus.Entry {
+func Logger() *logrus.Entry {
 	return log
 }
 
@@ -22,6 +23,12 @@ func LoggerToContext(ctx context.Context, entry *logrus.Entry) context.Context {
 	return context.WithValue(ctx, LoggerContextKey{}, entry)
 }
 
-func LoggerFromContext(ctx context.Context) *logrus.Entry {
-	return ctx.Value(LoggerContextKey{}).(*logrus.Entry)
+func Log(ctx context.Context) *logrus.Entry {
+	lg, ok := ctx.Value(LoggerContextKey{}).(*logrus.Entry)
+	if !ok {
+		log.Error("asked for log not set in context")
+		return log
+	}
+
+	return lg
 }

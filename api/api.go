@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
-	"govobs/telemetry"
+	"govobs/obs"
 	"net"
 	"net/http"
 	"os"
@@ -13,7 +13,7 @@ import (
 )
 
 func Serve(lis net.Listener, handler http.Handler, writeTimeout, readTimeout time.Duration) {
-	log := telemetry.Log()
+	log := obs.Logger()
 
 	//nolint:gosec
 	srv := &http.Server{

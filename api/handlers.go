@@ -2,15 +2,16 @@ package api
 
 import (
 	"context"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/newrelic/go-agent/v3/newrelic"
 	mid "govobs/api/middleware"
 	"govobs/api/request"
 	"govobs/api/send"
-	"govobs/telemetry"
+	"govobs/obs"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 func Handler() http.Handler {
@@ -24,7 +25,7 @@ func Handler() http.Handler {
 	)
 
 	router.HandleFunc(
-		newrelic.WrapHandleFunc(telemetry.Tracer(), "/",
+		newrelic.WrapHandleFunc(obs.Tracer(), "/",
 			request.Route(func(ctx context.Context, r request.Request) send.Response {
 				p := r.URL.Query().Get("phrase")
 
@@ -41,7 +42,7 @@ func Handler() http.Handler {
 					panic("value must NOT be zero")
 				}
 
-				telemetry.LoggerFromContext(ctx).
+				obs.Log(ctx).
 					Infof("got message %s & num %d", p, i)
 
 				return send.Data(200, map[string]string{

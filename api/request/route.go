@@ -2,12 +2,13 @@ package request
 
 import (
 	"context"
-	"github.com/newrelic/go-agent/v3/newrelic"
-	"github.com/sirupsen/logrus"
 	"govobs/api/send"
-	"govobs/telemetry"
+	"govobs/obs"
 	"net/http"
 	"time"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/sirupsen/logrus"
 )
 
 type (
@@ -18,7 +19,7 @@ func Route(fn Fn) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		now := time.Now().UTC()
-		log := telemetry.LoggerFromContext(ctx)
+		log := obs.Log(ctx)
 		txn := newrelic.FromContext(ctx)
 
 		res := fn(ctx, Request{
