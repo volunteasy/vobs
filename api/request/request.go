@@ -2,15 +2,14 @@ package request
 
 import (
 	"encoding/json"
-	"github.com/go-chi/chi/v5"
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"govobs/core/types"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type Request struct {
 	*http.Request
-	Txn *newrelic.Transaction
 }
 
 func (r Request) Param(name string) string {
