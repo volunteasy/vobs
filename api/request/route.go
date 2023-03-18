@@ -2,29 +2,51 @@ package request
 
 import (
 	"context"
-	"github.com/getsentry/sentry-go"
+	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/sirupsen/logrus"
 	"govobs/api/send"
+	"govobs/telemetry"
 	"net/http"
+	"time"
 )
 
-type Fn = func(ctx context.Context, r Request) send.Response
+type (
+	Fn = func(ctx context.Context, r Request) send.Response
+)
 
 func Route(fn Fn) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		now := time.Now().UTC()
+		log := telemetry.LoggerFromContext(ctx)
+		txn := newrelic.FromContext(ctx)
 
-		res := fn(ctx, Request{Request: r})
-
-		sentry.ConfigureScope(func(scope *sentry.Scope) {
-			scope.SetUser(sentry.User{
-				Email: "jane.doe@example.com",
-			})
+		res := fn(ctx, Request{
+			Txn:     txn,
+			Request: r,
 		})
 
 		if err := send.Write(w, res); err != nil {
+			log.WithError(err).Error("failed writing response")
+			txn.NoticeError(err)
 		}
 
 		if err := res.Error; err != nil {
+			log = log.WithError(err)
+
+			if res.Code >= http.StatusInternalServerError {
+				txn.NoticeError(err)
+			} else {
+				txn.NoticeExpectedError(err)
+			}
 		}
+
+		log.
+			WithFields(logrus.Fields{
+				"method": r.Method,
+				"path":   r.URL.Path,
+				"took":   time.Since(now),
+				"status": res.Code,
+			}).Log(logrus.InfoLevel)
 	}
 }

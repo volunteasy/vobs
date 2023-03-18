@@ -24,4 +24,7 @@ gen: deps clean
 test: gen
 	@echo "Testing application"
 	@go test ./... -v
-	
+
+run:
+	@echo "Running API application"
+	@go run ./cmd/api/main.go
