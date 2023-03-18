@@ -7,7 +7,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,18 +28,6 @@ func main() {
 	})
 
 	obs.NewLogger(logrusEntry)
-
-	nr, err := newrelic.NewApplication(
-		newrelic.ConfigAppName("govobs"),
-		newrelic.ConfigLicense("28737fda66a2e862ce3cb63165b744913c45NRAL"),
-		newrelic.ConfigAppLogForwardingEnabled(true),
-	)
-
-	if err != nil {
-		log.Fatalf("failed initializing observability service: %s", err)
-	}
-
-	obs.NewTracer(nr)
 
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
