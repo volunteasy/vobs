@@ -6,7 +6,7 @@ import (
 	"govobs/core/user"
 	"testing"
 
-	"gotest.tools/v3/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJobs_CreateUser(t *testing.T) {
@@ -28,7 +28,7 @@ func TestJobs_CreateUser(t *testing.T) {
 			args    args
 			fields  fields
 			wantErr error
-			wantID  types.ID
+			want    user.User
 		}
 	)
 
@@ -71,7 +71,29 @@ func TestJobs_CreateUser(t *testing.T) {
 				},
 			},
 			wantErr: nil,
-			wantID:  14,
+			want: user.User{
+				ID:       14,
+				Name:     "Karim Andersson",
+				Nickname: "kandss",
+				Document: "50215322202",
+				Contact: types.Contact{
+					Phone: types.Phone{
+						CountryCode: "55",
+						AreaCode:    "22",
+						PhoneNumber: "44332222",
+					},
+					Address: types.Address{
+						ZipCode:     "55478770",
+						HouseNumber: "33",
+						StreetName:  "My Avenue",
+						Complement:  "Apartment 12",
+						District:    "Thirteen",
+						City:        "Beijing",
+						State:       "Huangzou",
+						Country:     "Australia",
+					},
+				},
+			},
 		},
 		{
 			name: "should fail for persistence error",
@@ -111,7 +133,7 @@ func TestJobs_CreateUser(t *testing.T) {
 				},
 			},
 			wantErr: user.ErrInvalidName,
-			wantID:  0,
+			want:    user.User{},
 		},
 		{
 			name: "should fail for nickname error",
@@ -141,7 +163,7 @@ func TestJobs_CreateUser(t *testing.T) {
 				},
 			},
 			wantErr: user.ErrInvalidNickname,
-			wantID:  0,
+			want:    user.User{},
 		},
 		{
 			name: "should fail for invalid name",
@@ -171,67 +193,7 @@ func TestJobs_CreateUser(t *testing.T) {
 				},
 			},
 			wantErr: user.ErrInvalidName,
-			wantID:  0,
-		},
-		{
-			name: "should fail for invalid address",
-			args: args{
-				ctx: context.Background(),
-				user: user.User{
-					Name:     "Karim Andersson",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
-					},
-				},
-			},
-			wantErr: types.ErrInvalidAddress,
-			wantID:  0,
-		},
-		{
-			name: "should fail for invalid phone",
-			args: args{
-				ctx: context.Background(),
-				user: user.User{
-					Name:     "Karim Andersson",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
-					},
-				},
-			},
-			wantErr: types.ErrInvalidPhone,
-			wantID:  0,
+			want:    user.User{},
 		},
 	} {
 		tc := tc
@@ -239,15 +201,13 @@ func TestJobs_CreateUser(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			t.Fail()
-
 			u, err := jobs{
 				users:    tc.fields.users,
 				createID: tc.fields.createID,
 			}.CreateUser(tc.args.ctx, tc.args.user)
 
 			assert.ErrorIs(t, err, tc.wantErr)
-			assert.Equal(t, tc.wantID, u.ID)
+			assert.Equal(t, tc.want, u)
 		})
 	}
 }

@@ -2,9 +2,10 @@ package user
 
 import (
 	"context"
-	"gotest.tools/v3/assert"
 	"govobs/core/membership"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJobs_EnrollOrganization(t *testing.T) {

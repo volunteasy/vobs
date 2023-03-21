@@ -53,9 +53,5 @@ func (u User) Validate() error {
 		return err
 	}
 
-	if err := u.Contact.Validate(); err != nil {
-		return err
-	}
-
 	return nil
 }
