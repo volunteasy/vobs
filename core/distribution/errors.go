@@ -10,4 +10,6 @@ var (
 	ErrNoDate = errors.New("cannot create a distribution with a past or empty date")
 
 	ErrTooMuchAssisted = errors.New("the number of items has to be bigger or equal the number of benefits")
+
+	ErrNoOrganizationID = errors.New("the organization id must be informed")
 )

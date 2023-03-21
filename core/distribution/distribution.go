@@ -8,17 +8,19 @@ import (
 
 type (
 	Distribution struct {
-		ID                types.ID
-		Name              string
-		Description       string
-		ContactInfo       types.Contact
-		Date             time.Time
+		ID              types.ID
+		OrgID           types.ID
+		Name            string
+		Description     string
+		ContactInfo     types.Contact
+		Date            time.Time
 		Items           int
 		BenefitsAllowed int
 	}
 
 	Filter struct {
 		Search    string
+		OrgID     types.ID
 		DateRange types.DateRange
 
 		types.Filter
@@ -28,6 +30,10 @@ type (
 func (d Distribution) Validate() error {
 	if len(d.Name) == 0 || len(d.Name) > 50 {
 		return ErrInvalidName
+	}
+
+	if d.OrgID <= 0 {
+		return ErrNoOrganizationID
 	}
 
 	if reflect.DeepEqual(d.ContactInfo.Address, types.Address{}) {
@@ -46,6 +52,10 @@ func (d Distribution) Validate() error {
 }
 
 func (f Filter) Validate() error {
+	if f.OrgID <= 0 {
+		return ErrNoOrganizationID
+	}
+
 	if err := f.DateRange.Validate(); err != nil {
 		return err
 	}
