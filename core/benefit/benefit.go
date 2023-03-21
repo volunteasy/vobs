@@ -10,6 +10,7 @@ type (
 		ID             types.ID
 		AssistedID     types.ID
 		DistributionID types.ID
+		QueuePosID     types.ID
 		ClaimedAt      time.Time
 	}
 
@@ -38,7 +39,6 @@ func (b Benefit) Validate() error {
 func (b Benefit) Claimed() bool {
 	return !b.ClaimedAt.IsZero()
 }
-
 
 func (f Filter) Validate() error {
 	if err := f.ClaimDateRange.Validate(); err != nil {
