@@ -4,6 +4,8 @@
 *.dll
 *.so
 *.dylib
+
+## Environment files
 .env
 
 # Test binary, built with `go test -c`
