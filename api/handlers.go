@@ -27,6 +27,10 @@ func Handler(app app.App) http.Handler {
 		middleware.Recoverer,
 	)
 
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("API is running"))
+	})
+
 	router.Route("/docs", func(r chi.Router) {
 		r.Mount("/swagger", docs.Swagger())
 		r.Mount("/redoc", docs.Redoc())
