@@ -1,8 +1,8 @@
 package user
 
 import (
-    "context"
-    "govobs/core/user"
+	"context"
+	"govobs/core/user"
 )
 
 func (j jobs) CreateUser(ctx context.Context, u user.User) (user.User, error) {
@@ -11,11 +11,11 @@ func (j jobs) CreateUser(ctx context.Context, u user.User) (user.User, error) {
 	}
 
 	u.ID = j.createID()
-	
+
 	err := j.users.CreateUser(ctx, u)
 	if err != nil {
 		return user.User{}, err
 	}
-	
+
 	return u, nil
 }

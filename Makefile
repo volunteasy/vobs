@@ -28,3 +28,7 @@ test: gen
 run:
 	@echo "Running API application"
 	@go run ./cmd/api/main.go
+
+local:
+	@echo "Setting up service dependencies locally"
+	@docker-compose --file ./deploy/local/docker-compose.yaml up -d

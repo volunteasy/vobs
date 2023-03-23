@@ -38,25 +38,14 @@ func TestJobs_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
-					Name:     "Karim Andersson",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
+					Name:       "Karim Andersson",
+					Nickname:   "kandss",
+					Document:   "50215322202",
+					ExternalID: "FakeID",
+					Phone: types.Phone{
+						CountryCode: "55",
+						AreaCode:    "22",
+						PhoneNumber: "44332222",
 					},
 				},
 			},
@@ -72,26 +61,15 @@ func TestJobs_CreateUser(t *testing.T) {
 			},
 			wantErr: nil,
 			want: user.User{
-				ID:       14,
-				Name:     "Karim Andersson",
-				Nickname: "kandss",
-				Document: "50215322202",
-				Contact: types.Contact{
-					Phone: types.Phone{
-						CountryCode: "55",
-						AreaCode:    "22",
-						PhoneNumber: "44332222",
-					},
-					Address: types.Address{
-						ZipCode:     "55478770",
-						HouseNumber: "33",
-						StreetName:  "My Avenue",
-						Complement:  "Apartment 12",
-						District:    "Thirteen",
-						City:        "Beijing",
-						State:       "Huangzou",
-						Country:     "Australia",
-					},
+				ID:         14,
+				Name:       "Karim Andersson",
+				Nickname:   "kandss",
+				Document:   "50215322202",
+				ExternalID: "FakeID",
+				Phone: types.Phone{
+					CountryCode: "55",
+					AreaCode:    "22",
+					PhoneNumber: "44332222",
 				},
 			},
 		},
@@ -100,25 +78,14 @@ func TestJobs_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
-					Name:     "Karim Andersson",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
+					Name:       "Karim Andersson",
+					Nickname:   "kandss",
+					Document:   "50215322202",
+					ExternalID: "FakeID",
+					Phone: types.Phone{
+						CountryCode: "55",
+						AreaCode:    "22",
+						PhoneNumber: "44332222",
 					},
 				},
 			},
@@ -140,25 +107,14 @@ func TestJobs_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
-					Name:     "Karim Andersson",
-					Nickname: "",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
+					Name:       "Karim Andersson",
+					Nickname:   "",
+					Document:   "50215322202",
+					ExternalID: "FakeID",
+					Phone: types.Phone{
+						CountryCode: "55",
+						AreaCode:    "22",
+						PhoneNumber: "44332222",
 					},
 				},
 			},
@@ -170,25 +126,14 @@ func TestJobs_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: user.User{
-					Name:     "",
-					Nickname: "kandss",
-					Document: "50215322202",
-					Contact: types.Contact{
-						Phone: types.Phone{
-							CountryCode: "55",
-							AreaCode:    "22",
-							PhoneNumber: "44332222",
-						},
-						Address: types.Address{
-							ZipCode:     "55478770",
-							HouseNumber: "33",
-							StreetName:  "My Avenue",
-							Complement:  "Apartment 12",
-							District:    "Thirteen",
-							City:        "Beijing",
-							State:       "Huangzou",
-							Country:     "Australia",
-						},
+					Name:       "",
+					Nickname:   "kandss",
+					Document:   "50215322202",
+					ExternalID: "FakeID",
+					Phone: types.Phone{
+						CountryCode: "55",
+						AreaCode:    "22",
+						PhoneNumber: "44332222",
 					},
 				},
 			},

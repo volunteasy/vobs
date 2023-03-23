@@ -2,21 +2,36 @@ package main
 
 import (
 	"govobs/api"
+	"govobs/config"
 	"govobs/obs"
+	"govobs/providers/sql"
 	"log"
 	"net"
 	"time"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
 
-	//var c config.Config
-	//err := envconfig.Process("", &c)
-	//if err != nil {
-	//	log.Fatalf("could not get config variables from environment: %s", err)
-	//}
+	var cfg config.Config
+	err := envconfig.Process("", &cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, migrate, err := sql.NewConnection(cfg.MySQL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = migrate()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if "" == "production" {
 		logrus.SetFormatter(&logrus.JSONFormatter{})

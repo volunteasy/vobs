@@ -5,15 +5,18 @@ type (
 		Name        string `envconfig:"APP_NAME" default:"govobs"`
 		Environment string `envconfig:"ENVIRONMENT" default:"development"`
 
-		API    API
-		Logger Logger
+		API   API
+		MySQL MySQL
 	}
 
 	API struct {
 		Port string `envconfig:"PORT" required:"true"`
 	}
 
-	Logger struct {
-		DSN string `envconfig:"DSN" required:"true"`
+	MySQL struct {
+		Host     string `envconfig:"HOST" required:"true"`
+		User     string `envconfig:"USER" required:"true"`
+		Password string `envconfig:"PASSWORD" required:"true"`
+		Name     string `envconfig:"NAME" required:"true"`
 	}
 )
