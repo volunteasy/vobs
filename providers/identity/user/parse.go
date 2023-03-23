@@ -34,6 +34,7 @@ var userAttributesSetters = map[string]func(u *user.User, val string) error{
 	},
 
 	phoneUserAttr: func(u *user.User, val string) error {
+		u.Phone = types.Phone(val)
 		return nil
 	},
 }

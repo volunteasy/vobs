@@ -9,6 +9,10 @@ import (
 	"net"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
 
@@ -42,8 +46,25 @@ func main() {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
+	creds := credentials.NewCredentials(&credentials.StaticProvider{
+		Value: credentials.Value{
+			AccessKeyID:     cfg.AWS.AccessKeyID,
+			SecretAccessKey: cfg.AWS.AccessKeySecret,
+		},
+	})
+
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: creds,
+		Region:      aws.String(cfg.AWS.Region)},
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	app, err := app.NewApp(app.Deps{
-		DB: db,
+		DB:      db,
+		Cognito: cognitoidentityprovider.New(sess),
 		Logger: logrus.WithFields(logrus.Fields{
 			"app": "govobs",
 			"env": cfg.Environment,

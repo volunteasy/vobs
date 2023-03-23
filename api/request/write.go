@@ -12,6 +12,10 @@ func Write(wr http.ResponseWriter, r Response) (err error) {
 		header.Set(k, v)
 	}
 
+	if code == 0 {
+		code = 200
+	}
+
 	wr.WriteHeader(code)
 
 	return encodeJSON(wr, r)

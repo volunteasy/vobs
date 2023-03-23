@@ -7,6 +7,7 @@ type (
 
 		API   API
 		MySQL MySQL
+		AWS   AWS
 	}
 
 	API struct {
@@ -20,5 +21,12 @@ type (
 		Name     string `envconfig:"NAME"`
 		DSN      string `envconfig:"DSN"`
 		TLS      bool   `envconfig:"TLS"`
+	}
+
+	AWS struct {
+		Region          string `envconfig:"REGION"`
+		UserPoolID      string `envconfig:"USER_POOL_ID"`
+		AccessKeyID     string `envconfig:"ACCESS_KEY_ID"`
+		AccessKeySecret string `envconfig:"ACCESS_KEY_SECRET"`
 	}
 )
