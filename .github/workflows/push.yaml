@@ -18,7 +18,7 @@ jobs:
             - name: Set up Go
               uses: actions/setup-go@v3
               with:
-                  go-version: 1.19
+                  go-version: 1.20
 
             - name: Build
               run: make
@@ -27,7 +27,7 @@ jobs:
               run: make test
 
             - name: Prepare environment
-              run: cp deploy/dev/* -t .
+              run: cp deploy/dev/docker-compose.yaml -t .
 
             - name: Generate deployment package
               run: zip -r deploy.zip . -x '*.git*'

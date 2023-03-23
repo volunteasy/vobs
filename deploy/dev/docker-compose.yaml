@@ -4,15 +4,12 @@ services:
     container_name: "govobs"
     build:
       context: '.'
+      dockerfile: ./deploy/dev/Dockerfile
     restart: unless-stopped
     environment:
       APP_NAME: govobs
       ENVIRONMENT: production
       API_PORT: 8080
-      MYSQL_NAME: volunteasy
-      MYSQL_HOST: 127.0.0.1:3306
-      MYSQL_USER: volunteasy
-      MYSQL_PASSWORD: volunteasy
+      MYSQL_DSN: voifftbvfkvxmg2mzna4:pscale_pw_SHSU3bLhT9luwUGH4KlqIuG8aSkMTmfdfO7IpNFKdTX@tcp(aws-sa-east-1.connect.psdb.cloud)/volunteasy?tls=true
     ports:
-      - "3000:3000"
-volumes:
+      - "8080:8080"

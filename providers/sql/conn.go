@@ -15,11 +15,21 @@ import (
 )
 
 func NewConnection(c config.MySQL) (*sql.DB, func() error, error) {
-	cfg := mysql.NewConfig()
-	cfg.Addr = c.Host
-	cfg.User = c.User
-	cfg.Passwd = c.Password
-	cfg.DBName = c.Name
+	var cfg *mysql.Config
+	var err error
+
+	if c.DSN == "" {
+		cfg := mysql.NewConfig()
+		cfg.Addr = c.Host
+		cfg.User = c.User
+		cfg.Passwd = c.Password
+		cfg.DBName = c.Name
+	} else {
+		cfg, err = mysql.ParseDSN(c.DSN)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed parsing DSN: %w", err)
+		}
+	}
 
 	driver, err := mysql.NewConnector(cfg)
 	if err != nil {

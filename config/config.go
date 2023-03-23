@@ -14,9 +14,11 @@ type (
 	}
 
 	MySQL struct {
-		Host     string `envconfig:"HOST" required:"true"`
-		User     string `envconfig:"USER" required:"true"`
-		Password string `envconfig:"PASSWORD" required:"true"`
-		Name     string `envconfig:"NAME" required:"true"`
+		Host     string `envconfig:"HOST"`
+		User     string `envconfig:"USER"`
+		Password string `envconfig:"PASSWORD"`
+		Name     string `envconfig:"NAME"`
+		DSN      string `envconfig:"DSN"`
+		TLS      bool   `envconfig:"TLS"`
 	}
 )

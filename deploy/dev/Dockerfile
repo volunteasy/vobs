@@ -1,24 +1,17 @@
-FROM golang:alpine AS builder
+FROM golang:1.20
 
-RUN apk add --no-cache git
+WORKDIR /usr/src/govobs
 
-WORKDIR /go/src/app
-
+# Copy the whole project into the container govobs folder
 COPY . .
-
-RUN go mod tidy
-RUN go build -o /go/bin/govobs -v ./cmd/api/main.go
+RUN go mod download && go mod verify
 
 
 
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-COPY --from=builder /go/bin/govobs /app
-
-ENTRYPOINT /app
-
-LABEL Name=govobs Version=0.0.1
+RUN go build -v -o /usr/local/bin/govobs ./cmd/api/main.go
+RUN go build -v -o /usr/local/bin/govobs-cli ./cmd/cli/main.go
 
 EXPOSE 8080
+
+CMD ["govobs"]
+
