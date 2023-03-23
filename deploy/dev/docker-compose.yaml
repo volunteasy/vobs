@@ -10,6 +10,5 @@ services:
       APP_NAME: govobs
       ENVIRONMENT: production
       API_PORT: 8080
-      MYSQL_DSN: voifftbvfkvxmg2mzna4:pscale_pw_SHSU3bLhT9luwUGH4KlqIuG8aSkMTmfdfO7IpNFKdTX@tcp(aws-sa-east-1.connect.psdb.cloud)/volunteasy?tls=true
     ports:
       - "8080:8080"
