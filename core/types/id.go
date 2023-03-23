@@ -1,14 +1,18 @@
 package types
 
 import (
-    "fmt"
-    "strconv"
-    "strings"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 const ZeroID ID = 0
 
+const ZeroUserID = ""
+
 type ID int64
+
+type UserID string
 
 type IDCreator = func() ID
 

@@ -3,26 +3,22 @@ package v1
 import (
 	"context"
 	"govobs/api/request"
-	"govobs/api/send"
+	"govobs/core/types"
 	userjobs "govobs/jobs/user"
 	"net/http"
 )
 
 func GetUser(users userjobs.Jobs) http.HandlerFunc {
 	return request.Route(
-		func(ctx context.Context, r request.Request) send.Response {
+		func(ctx context.Context, r request.Request) request.Response {
+			id := r.Param(UserIDParam)
 
-			id, err := r.ID(UserIDParam)
+			u, err := users.GetUser(ctx, types.UserID(id))
 			if err != nil {
-				return send.IDError(err)
+				return request.SendFromError(err)
 			}
 
-			u, err := users.GetUser(ctx, id)
-			if err != nil {
-				return send.FromError(err)
-			}
-
-			return send.Data(http.StatusOK, u)
+			return request.SendData(u)
 		},
 	)
 }

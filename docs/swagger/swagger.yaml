@@ -1,0 +1,84 @@
+definitions:
+  request.Error:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      target: {}
+    type: object
+  request.Response:
+    properties:
+      data: {}
+      error: {}
+    type: object
+  user.User:
+    properties:
+      document:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: GOVOBS - Golang Volunteasy Backend Service
+  version: "1.0"
+paths:
+  /api/v1/users:
+    post:
+      consumes:
+      - application/json
+      description: Checks if all the inputs creates a valid user. Also validates if
+        there is already an account with the given document
+      parameters:
+      - description: User data to be validated
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "412":
+          description: Precondition Failed
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/request.Error'
+              type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/request.Error'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/request.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/request.Error'
+              type: object
+      summary: Validate user input
+      tags:
+      - User
+securityDefinitions:
+  AuthKey:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

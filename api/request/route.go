@@ -2,7 +2,6 @@ package request
 
 import (
 	"context"
-	"govobs/api/send"
 	"govobs/obs"
 	"net/http"
 	"time"
@@ -11,7 +10,7 @@ import (
 )
 
 type (
-	Fn = func(ctx context.Context, r Request) send.Response
+	Fn = func(ctx context.Context, r Request) Response
 )
 
 func Route(fn Fn) http.HandlerFunc {
@@ -24,11 +23,11 @@ func Route(fn Fn) http.HandlerFunc {
 			Request: r,
 		})
 
-		if err := send.Write(w, res); err != nil {
+		if err := Write(w, res); err != nil {
 			log.WithError(err).Error("failed writing response")
 		}
 
-		if err := res.Error; err != nil {
+		if err := res.err; err != nil {
 			log = log.WithError(err)
 		}
 
@@ -37,7 +36,7 @@ func Route(fn Fn) http.HandlerFunc {
 				"method": r.Method,
 				"path":   r.URL.Path,
 				"took":   time.Since(now),
-				"status": res.Code,
+				"status": res.code,
 			}).Log(logrus.InfoLevel)
 	}
 }

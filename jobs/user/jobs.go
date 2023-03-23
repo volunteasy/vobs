@@ -9,31 +9,26 @@ import (
 	"govobs/core/user"
 )
 
+//go:generate moq -fmt goimports -out jobs_mock.go . Jobs:JobsMock
+
 type (
 	Jobs interface {
-		// CreateUser is the first interaction a new client has with our service. It persists the user data in our DB
-		CreateUser(ctx context.Context, u user.User) (user.User, error)
+		// ValidateUser receives an user object and validates it according to business rules.
+		// It also checks if the document already exists
+		ValidateUser(ctx context.Context, u user.User) error
 
 		// GetUser returns the user details sucn as address, phone, document, name and nickname
-		GetUser(ctx context.Context, id types.ID) (user.User, error)
+		GetUser(ctx context.Context, id types.UserID) (user.User, error)
 
 		// ListUserBenefits shows the benefits this user has claimed or showed interest
-		ListUserBenefits(ctx context.Context, userID types.ID, f benefit.Filter) ([]benefit.Benefit, int, error)
+		ListUserBenefits(ctx context.Context, userID types.UserID, f benefit.Filter) ([]benefit.Benefit, int, error)
 
 		// EnrollOrganization adds a membership relation between an organization and an user. This membership must
 		// be approved to take effect.
 		EnrollOrganization(ctx context.Context, m membership.Membership) (membership.Membership, error)
 
 		// ListUserEnrollments returns all the organizations a user has enrolled him or herself to, along with the enrollment status and role assigned
-		ListUserEnrollments(ctx context.Context, userID types.ID, f organization.Filter) ([]organization.Enrollment, int, error)
-	}
-
-	PhoneVerifier interface {
-		// VerifyPhone sends a confirmation number to the given phone number
-		VerifyPhone(ctx context.Context, phone types.Phone) error
-
-		// CheckVerificationCode checks if the confirmation code informed is the one previously sent to the user's phone number
-		CheckVerificationCode(ctx context.Context, code string) error
+		ListUserEnrollments(ctx context.Context, userID types.UserID, f organization.Filter) ([]organization.Enrollment, int, error)
 	}
 
 	jobs struct {
@@ -41,7 +36,6 @@ type (
 		benefits      benefit.Actions
 		membership    membership.Actions
 		organizations organization.Actions
-		phoneauth     PhoneVerifier
 		createID      types.IDCreator
 	}
 )
@@ -51,7 +45,6 @@ func NewJobs(
 	benefits benefit.Actions,
 	membership membership.Actions,
 	organizations organization.Actions,
-	phoneauth PhoneVerifier,
 	createID types.IDCreator,
 ) Jobs {
 	return jobs{
@@ -59,7 +52,6 @@ func NewJobs(
 		benefits,
 		membership,
 		organizations,
-		phoneauth,
 		createID,
 	}
 }

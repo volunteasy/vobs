@@ -18,8 +18,9 @@ clean:
 gen: deps clean
 	@echo "Generating new mock files"
 	@go generate ./...
-# 	@echo "Generating new swagger documentation files"
-# 	@swag init -q -g ./cmd/api/main.go -o ./docs/swagger
+	@echo "Generating new swagger documentation files"
+	@swag init -q -g ./cmd/api/main.go -o ./docs/swagger
+	@swag fmt ./cmd/api/main.go
 
 test: gen
 	@echo "Testing application"

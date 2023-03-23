@@ -8,8 +8,6 @@ import (
 
 type Document string
 
-const NoDocument Document = ""
-
 var (
 	rgRegexp   = regexp.MustCompile(`^\d{2}\.\d{3}\.\d{3}-\d$`)
 	cpfRegexp  = regexp.MustCompile(`^\d{3}\.\d{3}\.\d{3}-\d{2}$`)
@@ -21,7 +19,7 @@ var (
 func (d Document) Validate() error {
 	doc := string(d)
 
-	if cpfRegexp.MatchString(doc) || rgRegexp.MatchString(doc) || cnpjRegexp.MatchString(doc){
+	if cpfRegexp.MatchString(doc) || rgRegexp.MatchString(doc) || cnpjRegexp.MatchString(doc) {
 		return ErrInvalidDocument
 	}
 

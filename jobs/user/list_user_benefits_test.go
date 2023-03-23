@@ -16,7 +16,7 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 	type (
 		args struct {
 			ctx    context.Context
-			userID types.ID
+			userID types.UserID
 			filter benefit.Filter
 		}
 
@@ -39,10 +39,9 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 			name: "should list benefits",
 			args: args{
 				ctx:    context.Background(),
-				userID: 23,
+				userID: "23",
 				filter: benefit.Filter{
 					ClaimDateRange: types.DateRange{},
-					AssistedID:     0,
 				},
 			},
 			fields: fields{
@@ -51,13 +50,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 						return []benefit.Benefit{
 							{
 								ID:             500,
-								AssistedID:     200,
+								AssistedID:     "200",
 								DistributionID: 22,
 								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
 							},
 							{
 								ID:             501,
-								AssistedID:     200,
+								AssistedID:     "200",
 								DistributionID: 678,
 								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
 							},
@@ -70,13 +69,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 			want: []benefit.Benefit{
 				{
 					ID:             500,
-					AssistedID:     200,
+					AssistedID:     "200",
 					DistributionID: 22,
 					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
 				},
 				{
 					ID:             501,
-					AssistedID:     200,
+					AssistedID:     "200",
 					DistributionID: 678,
 					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
 				},

@@ -2,8 +2,8 @@ package main
 
 import (
 	"govobs/api"
+	"govobs/app"
 	"govobs/config"
-	"govobs/obs"
 	"govobs/providers/sql"
 	"log"
 	"net"
@@ -15,6 +15,11 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
+//	@title						GOVOBS - Golang Volunteasy Backend Service
+//	@version					1.0
+//	@securityDefinitions.apikey	AuthKey
+//	@in							header
+//	@name						Authorization
 func main() {
 
 	var cfg config.Config
@@ -23,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, migrate, err := sql.NewConnection(cfg.MySQL)
+	db, migrate, err := sql.NewConnection(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,25 +38,32 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if "" == "production" {
+	if cfg.Environment == "production" {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	logrusEntry := logrus.WithFields(logrus.Fields{
-		"app": "govobs",
-		"env": "development",
-	})
+	app, err := app.NewApp(app.Deps{
+		DB: db,
+		Logger: logrus.WithFields(logrus.Fields{
+			"app": "govobs",
+			"env": "development",
+		}),
+	}, cfg)
 
-	obs.NewLogger(logrusEntry)
+	if err != nil {
+		log.Fatalf("could not initialize application: %s", err)
+	}
 
 	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("could not listen to port %s: %s", ":8080", err)
 	}
 
-	hdl := api.Handler(api.Deps{Logger: logrusEntry})
-
-	srv := api.NewServer(time.Second*30, time.Second*30, logrusEntry)
-
-	srv(lis, hdl)
+	api.NewServer(
+		time.Second*30,
+		time.Second*30,
+		app.Logger,
+	)(lis,
+		api.Handler(app),
+	)
 }

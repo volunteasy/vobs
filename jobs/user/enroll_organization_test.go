@@ -36,7 +36,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				membership: membership.Membership{
-					UserID: 1,
+					UserID: "1",
 					OrgID:  2,
 					Role:   membership.RoleAssisted,
 				},
@@ -50,7 +50,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			},
 			wantErr: nil,
 			want: membership.Membership{
-				UserID: 1,
+				UserID: "1",
 				OrgID:  2,
 				Role:   membership.RoleAssisted,
 				Status: membership.StatusAccepted,
@@ -61,7 +61,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				membership: membership.Membership{
-					UserID: 1,
+					UserID: "1",
 					OrgID:  2,
 					Role:   membership.RoleVolunteer,
 				},
@@ -75,7 +75,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			},
 			wantErr: nil,
 			want: membership.Membership{
-				UserID: 1,
+				UserID: "1",
 				OrgID:  2,
 				Role:   membership.RoleVolunteer,
 				Status: membership.StatusPending,
@@ -86,7 +86,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				membership: membership.Membership{
-					UserID: 1,
+					UserID: "1",
 					OrgID:  2,
 					Role:   membership.RoleVolunteer,
 				},
@@ -106,7 +106,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				membership: membership.Membership{
-					UserID: 1,
+					UserID: "1",
 					OrgID:  2,
 					Role:   "chilling",
 				},
@@ -131,7 +131,7 @@ func TestJobs_EnrollOrganization(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				membership: membership.Membership{
-					UserID: 1,
+					UserID: "1",
 					Role:   membership.RoleAssisted,
 				},
 			},

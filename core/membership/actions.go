@@ -9,7 +9,7 @@ import (
 
 type Actions interface {
 	CreateMembership(ctx context.Context, m Membership) error
-	RemoveMembership(ctx context.Context, userID, organizationID types.ID) error
+	RemoveMembership(ctx context.Context, userID types.UserID, organizationID types.ID) error
 	SetMembershipStatus(ctx context.Context, m Membership) error
 	SetMembershipRole(ctx context.Context, m Membership) error
 }

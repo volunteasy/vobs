@@ -7,12 +7,10 @@ import (
 
 type (
 	User struct {
-		ID         types.ID
-		ExternalID string
-		Name       string
-		Nickname   string
-		Document   types.Document
-		Phone      types.Phone
+		ID       types.UserID
+		Name     string
+		Document types.Document
+		Phone    types.Phone
 	}
 
 	Filter struct {
@@ -46,11 +44,7 @@ func (u User) Validate() error {
 		return ErrInvalidName
 	}
 
-	if len(u.Nickname) == 0 || len(u.Nickname) > 12 {
-		return ErrInvalidNickname
-	}
-
-	if u.ExternalID == "" {
+	if u.ID == types.ZeroUserID {
 		return ErrNoExternalID
 	}
 
