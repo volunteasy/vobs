@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  govobs:
+    container_name: "govobs"
+    build:
+      context: '.'
+    restart: unless-stopped
+    environment:
+      APP_NAME: govobs
+      ENVIRONMENT: production
+      API_PORT: 8080
+      MYSQL_NAME: volunteasy
+      MYSQL_HOST: 127.0.0.1:3306
+      MYSQL_USER: volunteasy
+      MYSQL_PASSWORD: volunteasy
+    ports:
+      - "3000:3000"
+volumes:

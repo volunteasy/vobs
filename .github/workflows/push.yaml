@@ -26,6 +26,9 @@ jobs:
             - name: Test
               run: make test
 
+            - name: Prepare environment
+              run: cp deploy/dev/docker-compose.yaml -t .
+
             - name: Generate deployment package
               run: zip -r deploy.zip . -x '*.git*'
 
