@@ -27,8 +27,6 @@ func Handler(app app.App) http.Handler {
 		middleware.Recoverer,
 	)
 
-	router.Get("/", docs.Swagger())
-
 	router.Route("/docs", func(r chi.Router) {
 		r.Mount("/swagger", docs.Swagger())
 		r.Mount("/redoc", docs.Redoc())
