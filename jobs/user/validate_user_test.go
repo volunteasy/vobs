@@ -59,6 +59,7 @@ func TestJobs_ValidateUser(t *testing.T) {
 					Name:     "Karim Andersson",
 					Document: "50215322202",
 					ID:       "44332222",
+					Phone:    "44332222",
 				},
 			},
 			fields: fields{
