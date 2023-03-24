@@ -48,13 +48,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/request.Response"
+                                    "$ref": "#/definitions/rest.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/definitions/request.Error"
+                                            "$ref": "#/definitions/types.Error"
                                         }
                                     }
                                 }
@@ -66,13 +66,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/request.Response"
+                                    "$ref": "#/definitions/rest.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/definitions/request.Error"
+                                            "$ref": "#/definitions/types.Error"
                                         }
                                     }
                                 }
@@ -84,13 +84,90 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/request.Response"
+                                    "$ref": "#/definitions/rest.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/definitions/request.Error"
+                                            "$ref": "#/definitions/types.Error"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{userID}": {
+            "get": {
+                "description": "Gets an user by their unique ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The user ID. Same provided by cognito API",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/user.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/types.Error"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/types.Error"
                                         }
                                     }
                                 }
@@ -102,7 +179,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "request.Error": {
+        "rest.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {}
+            }
+        },
+        "types.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -110,15 +194,7 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
-                },
-                "target": {}
-            }
-        },
-        "request.Response": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {}
+                }
             }
         },
         "user.User": {

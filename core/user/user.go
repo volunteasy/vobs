@@ -7,10 +7,10 @@ import (
 
 type (
 	User struct {
-		ID       types.UserID
-		Name     string
-		Document types.Document
-		Phone    types.Phone
+		ID       types.UserID   `json:"id"`
+		Document types.Document `json:"document"`
+		Phone    types.Phone    `json:"phone"`
+		Name     string         `json:"name"`
 	}
 
 	Filter struct {

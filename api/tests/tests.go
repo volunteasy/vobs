@@ -22,6 +22,10 @@ func Route(method, pattern string, auth bool, h http.HandlerFunc) func(r *http.R
 	}
 }
 
+func Router() chi.Router {
+	return chi.NewRouter()
+}
+
 func EncodeURLParameters(params map[string]string) string {
 	q := url.Values{}
 	for k, v := range params {
@@ -31,12 +35,12 @@ func EncodeURLParameters(params map[string]string) string {
 }
 
 func CreateRequestWithBody(method, target string, body interface{}) *http.Request {
-	var b *bytes.Reader
-	if body != nil {
-		parsed, _ := json.Marshal(body)
-		b = bytes.NewReader(parsed)
+	if body == nil {
+		httptest.NewRequest(method, target, nil)
 	}
-	return httptest.NewRequest(method, target, b)
+
+	parsed, _ := json.Marshal(body)
+	return httptest.NewRequest(method, target, bytes.NewReader(parsed))
 }
 
 func CreateRequestWithParams(method, target string, params map[string]string) *http.Request {

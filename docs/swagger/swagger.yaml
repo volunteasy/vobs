@@ -1,16 +1,15 @@
 definitions:
-  request.Error:
+  rest.Response:
+    properties:
+      data: {}
+      error: {}
+    type: object
+  types.Error:
     properties:
       code:
         type: string
       message:
         type: string
-      target: {}
-    type: object
-  request.Response:
-    properties:
-      data: {}
-      error: {}
     type: object
   user.User:
     properties:
@@ -50,30 +49,72 @@ paths:
           description: Precondition Failed
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/rest.Response'
             - properties:
                 error:
-                  $ref: '#/definitions/request.Error'
+                  $ref: '#/definitions/types.Error'
               type: object
         "422":
           description: Unprocessable Entity
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/rest.Response'
             - properties:
                 error:
-                  $ref: '#/definitions/request.Error'
+                  $ref: '#/definitions/types.Error'
               type: object
         "500":
           description: Internal Server Error
           schema:
             allOf:
-            - $ref: '#/definitions/request.Response'
+            - $ref: '#/definitions/rest.Response'
             - properties:
                 error:
-                  $ref: '#/definitions/request.Error'
+                  $ref: '#/definitions/types.Error'
               type: object
       summary: Validate user input
+      tags:
+      - User
+  /api/v1/users/{userID}:
+    get:
+      description: Gets an user by their unique ID
+      parameters:
+      - description: The user ID. Same provided by cognito API
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.User'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/types.Error'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/types.Error'
+              type: object
+      summary: Get user
       tags:
       - User
 securityDefinitions:

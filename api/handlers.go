@@ -1,9 +1,8 @@
 package api
 
 import (
-	"fmt"
 	"govobs/api/handlers/docs"
-	v1 "govobs/api/handlers/v1"
+	"govobs/api/handlers/v1/users"
 	mid "govobs/api/middleware"
 	"govobs/app"
 	"net/http"
@@ -39,8 +38,7 @@ func Handler(app app.App) http.Handler {
 	router.Route("/api/v1", func(r chi.Router) {
 
 		r.Route("/users", func(r chi.Router) {
-			r.Post("/", v1.ValidateUser(app.Users))
-			r.Get(fmt.Sprintf("/{%s}", v1.UserIDParam), v1.GetUser(app.Users))
+			users.Handler(r, app.Users)
 		})
 	})
 

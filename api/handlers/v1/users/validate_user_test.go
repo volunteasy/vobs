@@ -1,14 +1,15 @@
-package v1
+package users
 
 import (
 	"context"
 	"encoding/json"
-	"govobs/api/request"
+	"govobs/api/rest"
 	"govobs/api/tests"
 	userdomain "govobs/core/user"
 	"govobs/jobs/user"
 	"govobs/obs"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,7 +34,7 @@ func TestValidateUser(t *testing.T) {
 			args     args
 			fields   fields
 			wantCode int
-			wantBody request.Response
+			wantBody rest.Response
 		}
 	)
 
@@ -68,11 +69,10 @@ func TestValidateUser(t *testing.T) {
 				},
 			},
 			wantCode: http.StatusBadRequest,
-			wantBody: request.Response{
+			wantBody: rest.Response{
 				Error: map[string]interface{}{
-					"code":    "INVALID_REQUEST_BODY",
-					"message": "The request body could not be parsed. Please verify if it is not offending the endpoint contract",
-					"target":  "User.Document: should not be of type number",
+					"code":    "invalid_request_body",
+					"message": "User.document: should not be of type number",
 				},
 			},
 		},
@@ -94,10 +94,10 @@ func TestValidateUser(t *testing.T) {
 				},
 			},
 			wantCode: http.StatusPreconditionFailed,
-			wantBody: request.Response{
+			wantBody: rest.Response{
 				Error: map[string]interface{}{
-					"code":    "ERR_USER_ALREADY_EXISTS",
-					"message": "Ops! O documento informado já está cadastrado em outra conta",
+					"code":    "err_already_exists",
+					"message": "Ops, esse documento já está sendo usado por outra conta",
 				},
 			},
 		},
@@ -107,19 +107,19 @@ func TestValidateUser(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			rec := tests.Route(
-				http.MethodPost, "/api/v1/users", false, ValidateUser(tc.fields.users))(
-				tests.CreateRequestWithBody(http.MethodPost, "/api/v1/users", tc.args.user),
+			router := tests.Router()
+			rec := httptest.NewRecorder()
+
+			Handler(router, tc.fields.users)
+
+			router.ServeHTTP(rec,
+				tests.CreateRequestWithBody(http.MethodPost, "/", tc.args.user),
 			)
 
 			assert.Equal(t, tc.wantCode, rec.Code)
 
-			var res request.Response
-			err := json.Unmarshal(rec.Body.Bytes(), &res)
-			if err != nil {
-
-				t.Fatalf("error parsing response: %s \n %s", err, rec.Body.String())
-			}
+			var res rest.Response
+			json.Unmarshal(rec.Body.Bytes(), &res)
 
 			assert.Equal(t, tc.wantBody, res)
 

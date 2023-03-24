@@ -35,10 +35,12 @@ func (i *ID) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+var ErrInvalidID = ErrInvalidField("O ID envidado não pôde ser lido pois é inválido")
+
 func FromString(in string) (ID, error) {
 	i, err := strconv.Atoi(in)
 	if err != nil {
-		return 0, err
+		return 0, ErrInvalidID
 	}
 
 	return ID(i), nil

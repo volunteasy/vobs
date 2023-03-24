@@ -1,7 +1,8 @@
-package request
+package rest
 
 import (
 	"context"
+	"encoding/json"
 	"govobs/obs"
 	"net/http"
 	"time"
@@ -23,12 +24,19 @@ func Route(fn Fn) http.HandlerFunc {
 			Request: r,
 		})
 
-		if err := Write(w, res); err != nil {
-			log.WithError(err).Error("failed writing response")
+		code, header := res.code, w.Header()
+
+		header.Set("Content-Type", "application/json")
+		for _, h := range res.headers {
+			header.Set(h.Key, h.Value)
 		}
 
-		if err := res.err; err != nil {
-			log = log.WithError(err)
+		w.WriteHeader(code)
+		if res.Data != nil || res.Error != nil {
+			err := json.NewEncoder(w).Encode(res)
+			if err != nil {
+				log.WithError(err).Error("failed writing response")
+			}
 		}
 
 		log.
