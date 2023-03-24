@@ -18,6 +18,10 @@ func Write(wr http.ResponseWriter, r Response) (err error) {
 
 	wr.WriteHeader(code)
 
+	if code == 204 {
+		return nil
+	}
+
 	return encodeJSON(wr, r)
 }
 

@@ -13,7 +13,7 @@ import (
 func (a actions) GetUserWithDocument(ctx context.Context, document types.Document) (user.User, error) {
 	list, err := a.identity.ListUsersWithContext(ctx, (&cognitoidentityprovider.ListUsersInput{}).
 		SetUserPoolId(a.poolID).
-		SetFilter(fmt.Sprintf(`nickname == "%s"`, document)),
+		SetFilter(fmt.Sprintf(`username="%s"`, document)),
 	)
 
 	if err != nil {
