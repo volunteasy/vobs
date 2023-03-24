@@ -3,12 +3,11 @@ package api
 import (
 	"govobs/api/handlers/docs"
 	"govobs/api/handlers/v1/users"
-	mid "govobs/api/middleware"
+	"govobs/api/middleware"
 	"govobs/app"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/sirupsen/logrus"
 
 	_ "govobs/docs/swagger"
@@ -21,9 +20,8 @@ type Deps struct {
 
 func Handler(app app.App) http.Handler {
 	router := chi.NewRouter().With(
-		middleware.RequestID,
-		mid.Logging(app.Logger),
-		middleware.Recoverer,
+		middleware.RequestID(app.IDs),
+		middleware.Logging(app.Logger),
 	)
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {

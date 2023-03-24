@@ -13,17 +13,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/bwmarrin/snowflake"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
-//	@title						GOVOBS - Golang Volunteasy Backend Service
-//	@version					1.0
-//	@securityDefinitions.apikey	AuthKey
-//	@in							header
-//	@name						Authorization
+// @title						GOVOBS - Golang Volunteasy Backend Service
+// @version					1.0
+// @securityDefinitions.apikey	AuthKey
+// @in							header
+// @name						Authorization
 func main() {
 
 	var cfg config.Config
@@ -62,8 +63,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	snnode, err := snowflake.NewNode(107)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	app, err := app.NewApp(app.Deps{
 		DB:      db,
+		IDNode:  snnode,
 		Cognito: cognitoidentityprovider.New(sess),
 		Logger: logrus.WithFields(logrus.Fields{
 			"app": "govobs",

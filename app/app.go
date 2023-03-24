@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"govobs/config"
+	"govobs/core/types"
 
 	"govobs/obs"
 
@@ -28,6 +29,7 @@ type App struct {
 	Users userjobs.Jobs
 
 	Logger *logrus.Entry
+	IDs    types.IDCreator
 }
 
 func NewApp(deps Deps, config config.Config) (App, error) {
@@ -43,6 +45,7 @@ func NewApp(deps Deps, config config.Config) (App, error) {
 	app := App{
 		Users:  userJobs,
 		Logger: deps.Logger,
+		IDs:    ids,
 	}
 
 	return app, nil

@@ -3,8 +3,10 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"govobs/obs"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -20,9 +22,27 @@ func Route(fn Fn) http.HandlerFunc {
 		now := time.Now().UTC()
 		log := obs.Log(ctx)
 
-		res := fn(ctx, Request{
-			Request: r,
-		})
+		var res Response
+		func() {
+			res = fn(ctx, Request{
+				Request: r,
+			})
+
+			defer func() {
+				if rvr := recover(); rvr != nil {
+					if rvr == http.ErrAbortHandler {
+						panic(rvr)
+					}
+
+					log.
+						WithError(fmt.Errorf("%s", debug.Stack())).
+						WithField("path", r.URL.Path).
+						Error("panic serving route")
+
+					res = Error(fmt.Errorf("panic serving function"))
+				}
+			}()
+		}()
 
 		code, header := res.code, w.Header()
 

@@ -4,7 +4,6 @@ import (
 	"govobs/obs"
 	"net/http"
 
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,7 +16,7 @@ func Logging(entry *logrus.Entry) func(http.Handler) http.Handler {
 				obs.LoggerToContext(
 					request.Context(),
 					entry.WithFields(logrus.Fields{
-						"request_id": request.Context().Value(middleware.RequestIDKey),
+						"request_id": writer.Header().Get(requestIDHeader),
 					}),
 				),
 			))
