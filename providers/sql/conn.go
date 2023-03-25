@@ -16,8 +16,8 @@ import (
 
 func NewConnection(c config.MySQL) (*sql.DB, func() error, error) {
 	cfg, err := mysql.ParseDSN(c.DSN)
-	if err != nil {
-		cfg := mysql.NewConfig()
+	if err != nil || c.DSN == "" {
+		cfg = mysql.NewConfig()
 		cfg.Addr = c.Host
 		cfg.User = c.User
 		cfg.Passwd = c.Password

@@ -32,4 +32,4 @@ run:
 
 local:
 	@echo "Setting up service dependencies locally"
-	@docker-compose --file ./deploy/local/docker-compose.yaml up -d
+	@docker-compose --file ./deploy/local/docker-compose.yaml up

@@ -20,17 +20,21 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-//	@title						GOVOBS - Golang Volunteasy Backend Service
-//	@version					1.0
-//	@securityDefinitions.apikey	AuthKey
-//	@in							header
-//	@name						Authorization
+// @title						GOVOBS - Golang Volunteasy Backend Service
+// @version					1.0
+// @securityDefinitions.apikey	AuthKey
+// @in							header
+// @name						Authorization
 func main() {
 
 	var cfg config.Config
 	err := envconfig.Process("", &cfg)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if cfg.Environment == "production" {
+		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
 	db, migrate, err := sql.NewConnection(cfg.MySQL)
@@ -41,10 +45,6 @@ func main() {
 	err = migrate()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	if cfg.Environment == "production" {
-		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
 	creds := credentials.NewCredentials(&credentials.StaticProvider{
