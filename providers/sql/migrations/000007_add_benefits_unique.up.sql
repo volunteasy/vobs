@@ -1,0 +1,1 @@
+alter table benefits add unique(assisted_id, distribution_id);
