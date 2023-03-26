@@ -1,10 +1,10 @@
 package main
 
 import (
-	"govobs/api"
 	"govobs/app"
-	"govobs/config"
-	"govobs/providers/sql"
+	"govobs/app/api"
+	"govobs/app/config"
+	"govobs/app/providers/sql"
 	"log"
 	"net"
 	"time"
@@ -20,11 +20,11 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-// @title						GOVOBS - Golang Volunteasy Backend Service
-// @version					1.0
-// @securityDefinitions.apikey	AuthKey
-// @in							header
-// @name						Authorization
+//	@title						GOVOBS - Golang Volunteasy Backend Service
+//	@version					1.0
+//	@securityDefinitions.apikey	AuthKey
+//	@in							header
+//	@name						Authorization
 func main() {
 
 	var cfg config.Config

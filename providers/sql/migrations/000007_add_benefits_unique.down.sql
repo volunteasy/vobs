@@ -1,1 +1,0 @@
-alter table benefits drop index assisted_id;

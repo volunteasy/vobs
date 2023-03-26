@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"govobs/config"
-	"govobs/providers/sql"
+	"govobs/app/config"
+	"govobs/app/providers/sql"
 	"log"
 	"os"
 	"strconv"
@@ -22,12 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, _, err := sql.NewConnection(cfg.MySQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	mig, err := sql.MigrationHandler(db, cfg.MySQL)
+	mig, err := sql.MigrationHandler(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}

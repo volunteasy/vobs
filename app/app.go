@@ -2,20 +2,21 @@ package app
 
 import (
 	"database/sql"
-	"govobs/config"
-	"govobs/core/types"
+	"govobs/app/config"
+	"govobs/app/core/types"
+	orgactions "govobs/app/providers/sql/actions/organization"
 
-	"govobs/obs"
+	"govobs/app/obs"
 
-	"govobs/providers/snowflakeid"
+	"govobs/app/providers/snowflakeid"
 
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sirupsen/logrus"
 
-	userjobs "govobs/jobs/user"
+	userjobs "govobs/app/jobs/user"
 
-	useractions "govobs/providers/identity/user"
+	useractions "govobs/app/providers/identity/user"
 )
 
 type Deps struct {
@@ -40,7 +41,9 @@ func NewApp(deps Deps, config config.Config) (App, error) {
 
 	userActions := useractions.NewActions(config.AWS.UserPoolID, deps.Cognito)
 
-	userJobs := userjobs.NewJobs(userActions, nil, nil, nil, ids)
+	orgActions := orgactions.NewActions(deps.DB)
+
+	userJobs := userjobs.NewJobs(userActions, nil, nil, orgActions, ids)
 
 	app := App{
 		Users:  userJobs,
