@@ -30,7 +30,13 @@ fmt:
 	@gofumpt -w -extra .
 	@go fmt ./...
 	@go vet ./...
-	@make metalint
+
+lint:
+	@echo "Installing golangci-lint"
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.52.2
+	@echo "Running linter"
+	@$$(go env GOPATH)/bin/golangci-lint run --allow-parallel-runners --fix
+	@$$(go env GOPATH)/bin/golangci-lint run --allow-parallel-runners -c ./.golangci_not_auto.yml
 
 
 gen: deps clean
@@ -43,7 +49,8 @@ gen: deps clean
 test: gen
 	@echo "Testing application"
 	@go install github.com/rakyll/gotest@latest
-	gotest -race -failfast -timeout 5m -count=1 ./...
+	gotest -race -failfast -timeout 5m -count=1 -coverprofile=coverage.out ./... 
+	@go tool cover -html=coverage.out -o coverage.html
 
 run:
 	@echo "Running API application"
