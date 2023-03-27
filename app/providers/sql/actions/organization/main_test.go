@@ -1,8 +1,9 @@
 package organization
 
 import (
-	"govobs/app/test/settings"
 	"testing"
+
+	"govobs/app/test/settings"
 )
 
 func TestMain(m *testing.M) {

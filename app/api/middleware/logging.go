@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"govobs/app/obs"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+	"govobs/app/obs"
 )
 
 type LoggerContextKey struct{}

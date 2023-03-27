@@ -2,11 +2,11 @@ package user
 
 import (
 	"context"
-	"govobs/app/core/organization"
-	"govobs/app/core/types"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"govobs/app/core/organization"
+	"govobs/app/core/types"
 )
 
 func TestJobs_ListUserEnrollments(t *testing.T) {

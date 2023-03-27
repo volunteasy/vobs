@@ -5,17 +5,16 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"govobs/app/config"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	migratemysql "github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
+	"govobs/app/config"
 )
 
 func NewConnection(c config.MySQL) (*sql.DB, func() error, error) {
-
 	db, err := sql.Open("mysql", c.DSN)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed creating mysql connection: %w", err)

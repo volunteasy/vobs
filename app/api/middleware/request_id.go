@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"context"
-	"govobs/app/core/types"
 	"net/http"
+
+	"govobs/app/core/types"
 )
 
 type requestIDContextKey struct{}

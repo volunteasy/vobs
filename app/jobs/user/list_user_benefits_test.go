@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
-	"govobs/app/core/benefit"
-	"govobs/app/core/types"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"govobs/app/core/benefit"
+	"govobs/app/core/types"
 )
 
 func TestJobs_ListUserBenefits(t *testing.T) {
@@ -52,13 +52,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 								ID:             500,
 								AssistedID:     "200",
 								DistributionID: 22,
-								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
+								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 							},
 							{
 								ID:             501,
 								AssistedID:     "200",
 								DistributionID: 678,
-								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
+								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 							},
 						}, 10, nil
 					},
@@ -71,13 +71,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 					ID:             500,
 					AssistedID:     "200",
 					DistributionID: 22,
-					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
+					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 				},
 				{
 					ID:             501,
 					AssistedID:     "200",
 					DistributionID: 678,
-					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 00, 00, time.UTC),
+					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 				},
 			},
 			wantCount: 10,

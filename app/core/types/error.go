@@ -11,7 +11,7 @@ type Error struct {
 	Status  int    `json:"-"`
 }
 
-func NewError(message string, code string, status int) error {
+func NewError(message, code string, status int) error {
 	if code == "" {
 		code = "internal_server_error"
 	}

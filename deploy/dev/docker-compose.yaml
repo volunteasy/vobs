@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   api:
+    container_name: api
     build:
       context: '.'
       dockerfile: ./deploy/dev/Dockerfile
@@ -14,6 +15,7 @@ services:
     ports:
       - "80:8080"
   obs:
+    container_name: vector
     image: timberio/vector:0.28.1-alpine
     command: --config /vector.toml
     volumes:

@@ -5,10 +5,11 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"fmt"
-	"govobs/app/config"
-	conn "govobs/app/providers/sql"
 	"math"
 	"math/big"
+
+	"govobs/app/config"
+	conn "govobs/app/providers/sql"
 )
 
 type executor interface {

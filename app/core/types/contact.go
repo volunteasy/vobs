@@ -5,7 +5,6 @@ type Contact struct {
 	Phone   Phone
 }
 
-
 func (c Contact) Validate() error {
 	if err := c.Address.Validate(); err != nil {
 		return err
@@ -14,6 +13,6 @@ func (c Contact) Validate() error {
 	if err := c.Phone.Validate(); err != nil {
 		return err
 	}
-	
+
 	return nil
 }

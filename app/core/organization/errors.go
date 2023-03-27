@@ -2,6 +2,7 @@ package organization
 
 import (
 	"errors"
+
 	"govobs/app/core/types"
 )
 

@@ -2,21 +2,17 @@ package app
 
 import (
 	"database/sql"
-	"govobs/app/config"
-	"govobs/app/core/types"
-	orgactions "govobs/app/providers/sql/actions/organization"
-
-	"govobs/app/obs"
-
-	"govobs/app/providers/snowflakeid"
 
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sirupsen/logrus"
-
+	"govobs/app/config"
+	"govobs/app/core/types"
 	userjobs "govobs/app/jobs/user"
-
+	"govobs/app/obs"
 	useractions "govobs/app/providers/identity/user"
+	"govobs/app/providers/snowflakeid"
+	orgactions "govobs/app/providers/sql/actions/organization"
 )
 
 type Deps struct {
@@ -34,7 +30,6 @@ type App struct {
 }
 
 func NewApp(deps Deps, config config.Config) (App, error) {
-
 	obs.NewLogger(deps.Logger)
 
 	ids := snowflakeid.NewIDCreator(deps.IDNode)
@@ -52,5 +47,4 @@ func NewApp(deps Deps, config config.Config) (App, error) {
 	}
 
 	return app, nil
-
 }

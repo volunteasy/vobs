@@ -1,10 +1,9 @@
 package settings
 
 import (
-	"govobs/app/test/settings/mysql"
-
 	"github.com/ory/dockertest"
 	"github.com/pkg/errors"
+	"govobs/app/test/settings/mysql"
 )
 
 var DBTest mysql.DatabaseContextBuilder

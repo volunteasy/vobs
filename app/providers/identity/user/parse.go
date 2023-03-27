@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 	"fmt"
+
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"govobs/app/core/types"
 	"govobs/app/core/user"
 	"govobs/app/obs"
-
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 )
 
 var (

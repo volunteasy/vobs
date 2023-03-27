@@ -2,10 +2,10 @@ package mysql
 
 import (
 	"fmt"
-	"govobs/app/config"
 
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
+	"govobs/app/config"
 )
 
 const (
@@ -13,19 +13,17 @@ const (
 	expires       = 600
 )
 
-var (
-	options = dockertest.RunOptions{
-		Name:       containerName,
-		Repository: "mysql",
-		Tag:        "8.0",
-		Env: []string{
-			"MYSQL_USER=volunteasy",
-			"MYSQL_PASSWORD=volunteasy",
-			"MYSQL_DATABASE=volunteasytst",
-			"MYSQL_ROOT_PASSWORD=volunteasy",
-		},
-	}
-)
+var options = dockertest.RunOptions{
+	Name:       containerName,
+	Repository: "mysql",
+	Tag:        "8.0",
+	Env: []string{
+		"MYSQL_USER=volunteasy",
+		"MYSQL_PASSWORD=volunteasy",
+		"MYSQL_DATABASE=volunteasytst",
+		"MYSQL_ROOT_PASSWORD=volunteasy",
+	},
+}
 
 func Create(d *dockertest.Pool) (*dockertest.Resource, error) {
 	container, _ := useContainer(d, containerName)

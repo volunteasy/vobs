@@ -1,8 +1,9 @@
 package benefit
 
 import (
-	"govobs/app/core/types"
 	"time"
+
+	"govobs/app/core/types"
 )
 
 type (

@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
-	"govobs/app/core/types"
-	"govobs/app/core/user"
-	"govobs/app/obs"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"govobs/app/core/types"
+	"govobs/app/core/user"
+	"govobs/app/obs"
 )
 
 func (a actions) GetUser(ctx context.Context, id types.UserID) (user.User, error) {
@@ -15,7 +15,6 @@ func (a actions) GetUser(ctx context.Context, id types.UserID) (user.User, error
 		SetUserPoolId(a.poolID).
 		SetUsername(string(id)),
 	)
-
 	if err != nil {
 		if awsErr, ok := err.(awserr.Error); ok && awsErr.Code() == cognitoidentityprovider.ErrCodeUserNotFoundException {
 			return user.User{}, user.ErrNotFound
@@ -34,5 +33,4 @@ func (a actions) GetUser(ctx context.Context, id types.UserID) (user.User, error
 	}
 
 	return u, nil
-
 }

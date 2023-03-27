@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"govobs/app/config"
-	"govobs/app/providers/sql"
 	"log"
 	"os"
 	"strconv"
@@ -12,10 +10,11 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 	cli "github.com/urfave/cli/v2"
+	"govobs/app/config"
+	"govobs/app/providers/sql"
 )
 
 func main() {
-
 	var cfg config.Config
 	err := envconfig.Process("", &cfg)
 	if err != nil {

@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"govobs/app/obs"
 	"net/http"
 	"runtime/debug"
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"govobs/app/obs"
 )
 
 type (

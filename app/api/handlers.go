@@ -1,14 +1,14 @@
 package api
 
 import (
-	"govobs/app"
-	"govobs/app/api/handlers/docs"
-	"govobs/app/api/handlers/v1/users"
-	"govobs/app/api/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
+	"govobs/app"
+	"govobs/app/api/handlers/docs"
+	"govobs/app/api/handlers/v1/users"
+	"govobs/app/api/middleware"
 )
 
 type Deps struct {
@@ -32,7 +32,6 @@ func Handler(app app.App) http.Handler {
 	})
 
 	router.Route("/api/v1", func(r chi.Router) {
-
 		r.Route("/users", func(r chi.Router) {
 			users.Handler(r, app.Users)
 		})

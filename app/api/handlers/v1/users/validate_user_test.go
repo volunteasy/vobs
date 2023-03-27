@@ -3,16 +3,16 @@ package users
 import (
 	"context"
 	"encoding/json"
-	"govobs/app/api/rest"
-	"govobs/app/api/tests"
-	userdomain "govobs/app/core/user"
-	"govobs/app/jobs/user"
-	"govobs/app/obs"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"govobs/app/api/rest"
+	"govobs/app/api/tests"
+	userdomain "govobs/app/core/user"
+	"govobs/app/jobs/user"
+	"govobs/app/obs"
 )
 
 func TestValidateUser(t *testing.T) {
@@ -122,7 +122,6 @@ func TestValidateUser(t *testing.T) {
 			json.Unmarshal(rec.Body.Bytes(), &res)
 
 			assert.Equal(t, tc.wantBody, res)
-
 		})
 	}
 }

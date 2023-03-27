@@ -2,13 +2,13 @@ package organization
 
 import (
 	"context"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
 	"govobs/app/providers/sql/transaction"
 	"govobs/app/test/settings"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateOrganization(t *testing.T) {

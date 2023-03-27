@@ -1,9 +1,10 @@
 package distribution
 
 import (
-	"govobs/app/core/types"
 	"reflect"
 	"time"
+
+	"govobs/app/core/types"
 )
 
 type (

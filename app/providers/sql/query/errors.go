@@ -3,10 +3,11 @@ package query
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/go-sql-driver/mysql"
 )
 
-func HandleNotFoundErr(err error, mapto error) error {
+func HandleNotFoundErr(err, mapto error) error {
 	if err == nil {
 		return nil
 	}
@@ -34,5 +35,4 @@ func HandleDatabaseError(err error, handle map[uint16]error) error {
 	}
 
 	return mappedErr
-
 }

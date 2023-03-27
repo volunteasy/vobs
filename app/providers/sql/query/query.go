@@ -2,8 +2,9 @@ package query
 
 import (
 	"fmt"
-	"govobs/app/core/types"
 	"strings"
+
+	"govobs/app/core/types"
 )
 
 type Query struct {
@@ -101,7 +102,6 @@ func (q Query) Limit(limits types.ListRange) Query {
 			len(q.Args),
 		),
 	)
-
 }
 
 func (q Query) appendToQuery(append string) Query {

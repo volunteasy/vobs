@@ -1,9 +1,8 @@
 package user
 
 import (
-	"govobs/app/core/user"
-
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"govobs/app/core/user"
 )
 
 type actions struct {

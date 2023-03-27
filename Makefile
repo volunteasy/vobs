@@ -1,7 +1,14 @@
+define compile
+	@echo "Building $1"
+	@go build -o build/volunteasy-$1 govobs/cmd/$1
+endef
+
+
 build:
 	@echo "Building application"
 	@go mod tidy
-	@go build ./...
+	$(call compile,api)
+	$(call compile,cli)
 
 deps:
 	@echo "Installing dependencies"
@@ -15,6 +22,17 @@ clean:
 	@rm -rf gen/*
 
 
+fmt:
+	@echo "Formatting and organizing imports"
+	@go install github.com/daixiang0/gci@v0.6.3
+	@gci write --skip-generated .
+	@go install mvdan.cc/gofumpt@v0.3.1
+	@gofumpt -w -extra .
+	@go fmt ./...
+	@go vet ./...
+	@make metalint
+
+
 gen: deps clean
 	@echo "Generating new mock files"
 	@go generate ./...
@@ -24,7 +42,8 @@ gen: deps clean
 
 test: gen
 	@echo "Testing application"
-	@go test ./... -v
+	@go install github.com/rakyll/gotest@latest
+	gotest -race -failfast -timeout 5m -count=1 ./...
 
 run:
 	@echo "Running API application"

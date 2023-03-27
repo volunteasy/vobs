@@ -2,9 +2,9 @@ package users
 
 import (
 	"fmt"
-	"govobs/app/jobs/user"
 
 	"github.com/go-chi/chi/v5"
+	"govobs/app/jobs/user"
 )
 
 const (

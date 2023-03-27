@@ -1,8 +1,8 @@
 package types
 
 import (
-    "errors"
-    "time"
+	"errors"
+	"time"
 )
 
 var (
@@ -17,7 +17,7 @@ type (
 
 	DateRange struct {
 		Start time.Time
-		End time.Time
+		End   time.Time
 	}
 
 	ListRange struct {
@@ -28,7 +28,6 @@ type (
 func (f Filter) Validate() error {
 	return f.Range.Validate()
 }
-
 
 func (d DateRange) Validate() error {
 	if d.End.Before(d.Start) {
@@ -49,7 +48,6 @@ func (r ListRange) Validate() error {
 func (r ListRange) Limit() int {
 	return r.End - r.Start + 1
 }
-
 
 func (r ListRange) Page() int {
 	return (r.Start / r.Limit()) + 1

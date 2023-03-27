@@ -1,9 +1,8 @@
 package snowflakeid
 
 import (
-	"govobs/app/core/types"
-
 	"github.com/bwmarrin/snowflake"
+	"govobs/app/core/types"
 )
 
 func NewIDCreator(node *snowflake.Node) types.IDCreator {

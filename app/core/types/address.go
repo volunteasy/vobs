@@ -17,9 +17,7 @@ type Address struct {
 	Country     string `json:"country,omitempty"`
 }
 
-var (
-	ErrInvalidAddress = errors.New("must provide a valid address")
-)
+var ErrInvalidAddress = errors.New("must provide a valid address")
 
 var zipCodeRegexp = regexp.MustCompile(`^\d{5}-?\d{3}$`)
 

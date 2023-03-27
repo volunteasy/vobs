@@ -6,9 +6,7 @@ import (
 
 type Phone string
 
-var (
-	ErrInvalidPhone = errors.New("must provide a valid phone")
-)
+var ErrInvalidPhone = errors.New("must provide a valid phone")
 
 func (p Phone) Validate() error {
 	if p == "" {

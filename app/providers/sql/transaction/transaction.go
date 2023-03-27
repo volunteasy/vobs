@@ -3,6 +3,7 @@ package transaction
 import (
 	"context"
 	"database/sql"
+
 	"govobs/app/core/types"
 )
 
@@ -40,6 +41,5 @@ func NewTransactionOpener(db *sql.DB) types.TransactionOpener {
 				return // TODO: add log saying that it could not commit nor close the transaction
 			}
 		}
-
 	}
 }

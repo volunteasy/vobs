@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"govobs/app/core/types"
 	"net/http"
+
+	"govobs/app/core/types"
 )
 
 type Response struct {

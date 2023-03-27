@@ -3,9 +3,8 @@ package docs
 import (
 	"net/http"
 
-	_ "govobs/docs/swagger"
-
 	httpSwagger "github.com/swaggo/http-swagger"
+	_ "govobs/docs/swagger"
 )
 
 const redocTemplate = `

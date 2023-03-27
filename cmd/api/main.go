@@ -1,10 +1,6 @@
 package main
 
 import (
-	"govobs/app"
-	"govobs/app/api"
-	"govobs/app/config"
-	"govobs/app/providers/sql"
 	"log"
 	"net"
 	"time"
@@ -14,19 +10,21 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/bwmarrin/snowflake"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
-
-	_ "github.com/joho/godotenv/autoload"
+	"govobs/app"
+	"govobs/app/api"
+	"govobs/app/config"
+	"govobs/app/providers/sql"
 )
 
-//	@title						GOVOBS - Golang Volunteasy Backend Service
-//	@version					1.0
-//	@securityDefinitions.apikey	AuthKey
-//	@in							header
-//	@name						Authorization
+// @title						GOVOBS - Golang Volunteasy Backend Service
+// @version					1.0
+// @securityDefinitions.apikey	AuthKey
+// @in							header
+// @name						Authorization
 func main() {
-
 	var cfg config.Config
 	err := envconfig.Process("", &cfg)
 	if err != nil {
@@ -56,9 +54,9 @@ func main() {
 
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: creds,
-		Region:      aws.String(cfg.AWS.Region)},
+		Region:      aws.String(cfg.AWS.Region),
+	},
 	)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,7 +75,6 @@ func main() {
 			"env": cfg.Environment,
 		}),
 	}, cfg)
-
 	if err != nil {
 		log.Fatalf("could not initialize application: %s", err)
 	}

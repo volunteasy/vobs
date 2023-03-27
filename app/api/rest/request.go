@@ -2,10 +2,10 @@ package rest
 
 import (
 	"encoding/json"
-	"govobs/app/core/types"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"govobs/app/core/types"
 )
 
 type Request struct {

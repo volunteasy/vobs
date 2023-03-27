@@ -3,17 +3,17 @@ package users
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 	"govobs/app/api/rest"
 	"govobs/app/api/tests"
 	"govobs/app/core/types"
 	userdomain "govobs/app/core/user"
 	"govobs/app/jobs/user"
 	"govobs/app/obs"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUser(t *testing.T) {
@@ -112,7 +112,6 @@ func TestGetUser(t *testing.T) {
 			json.Unmarshal(rec.Body.Bytes(), &res)
 
 			assert.Equal(t, tc.wantBody, res)
-
 		})
 	}
 }

@@ -2,11 +2,11 @@ package user
 
 import (
 	"context"
-	"govobs/app/core/types"
-	"govobs/app/core/user"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"govobs/app/core/types"
+	"govobs/app/core/user"
 )
 
 func TestJobs_ValidateUser(t *testing.T) {

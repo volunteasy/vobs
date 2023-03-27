@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 	"fmt"
+
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"govobs/app/core/types"
 	"govobs/app/core/user"
 	"govobs/app/obs"
-
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 )
 
 func (a actions) GetUserWithDocument(ctx context.Context, document types.Document) (user.User, error) {
@@ -15,7 +15,6 @@ func (a actions) GetUserWithDocument(ctx context.Context, document types.Documen
 		SetUserPoolId(a.poolID).
 		SetFilter(fmt.Sprintf(`username="%s"`, document)),
 	)
-
 	if err != nil {
 		obs.Log(ctx).
 			WithError(err).
@@ -36,5 +35,4 @@ func (a actions) GetUserWithDocument(ctx context.Context, document types.Documen
 	}
 
 	return u, nil
-
 }

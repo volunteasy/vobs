@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"testing"
+
 	"govobs/app/config"
 	conn "govobs/app/providers/sql"
-	"testing"
 )
 
 type DatabaseContextBuilder func(t *testing.T) *sql.DB
@@ -28,7 +29,6 @@ func builder(c *sql.DB, port string) DatabaseContextBuilder {
 		db, mig, err := conn.NewConnection(config.MySQL{
 			DSN: fmt.Sprintf("root:volunteasy@tcp(localhost:%s)/%s?multiStatements=true", port, name),
 		})
-
 		if err != nil {
 			t.Errorf("Could not connect to database for test %s: %v", test, err)
 			t.FailNow()
@@ -62,7 +62,7 @@ func (b DatabaseContextBuilder) TX(t *testing.T) *sql.Tx {
 }
 
 func initializeData(db *sql.DB) error {
-	var scripts = []string{
+	scripts := []string{
 		`
 			INSERT INTO organizations (id, name, document, phone, address)
 			VALUES
