@@ -29,6 +29,9 @@ jobs:
             - name: Prepare environment
               run: cp deploy/dev/docker-compose.yaml -t .
 
+            - name: Get observability config file
+              run: wget -o vector.toml ${{ secrets.LOGTAIL_CONF_DEV }}
+
             - name: Generate deployment package
               run: zip -r deploy.zip . -x '*.git*'
 
