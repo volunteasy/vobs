@@ -12,36 +12,35 @@ services:
       APP_NAME: govobs
       ENVIRONMENT: production
       API_PORT: 8080
-      MYSQL_DSN: volunteasy:volunteasy@tcp(db)/volunteasy?multiStatements=true
     ports:
       - "80:8080"
-    depends_on:
-      db:
-        condition: service_healthy
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
 
-  db:
-    image: mysql:8.0
-    restart: always
-    container_name: db
-    environment:
-      MYSQL_DATABASE: 'volunteasy'
-      # So you don't have to use root, but you can if you like
-      MYSQL_USER: 'volunteasy'
-      # You can use whatever password you like
-      MYSQL_PASSWORD: 'volunteasy'
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: 'volunteasy'
-    ports:
-      - '3306:3306'
-    expose:
-      - '3306'
-    volumes:
-      - volunteasydb:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # db:
+  #   image: mysql:8.0
+  #   restart: always
+  #   container_name: db
+  #   environment:
+  #     MYSQL_DATABASE: 'volunteasy'
+  #     # So you don't have to use root, but you can if you like
+  #     MYSQL_USER: 'volunteasy'
+  #     # You can use whatever password you like
+  #     MYSQL_PASSWORD: 'volunteasy'
+  #     # Password for root access
+  #     MYSQL_ROOT_PASSWORD: 'volunteasy'
+  #   ports:
+  #     - '3306:3306'
+  #   expose:
+  #     - '3306'
+  #   volumes:
+  #     - volunteasydb:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
 
 volumes:
-  volunteasydb:
+  # volunteasydb:
