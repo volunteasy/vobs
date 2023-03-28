@@ -24,7 +24,6 @@ begin;
         address          json        not null,
         
         primary key (id),
-        foreign key (org_id) references organizations (id)
     );
 
     create table if not exists benefits
@@ -37,7 +36,6 @@ begin;
         
         primary key (id),
         unique (assisted_id, distribution_id),
-        foreign key (distribution_id) references distributions (id)
     );
 
     create index idx_benefits_queue_position_id
@@ -51,7 +49,6 @@ begin;
         status  varchar(10) not null,
         
         primary key (user_id, org_id),
-        foreign key (org_id) references organizations (id)
     );
 commit;
 
