@@ -23,7 +23,7 @@ begin;
         phone            varchar(15) not null,
         address          json        not null,
         
-        primary key (id),
+        primary key (id)
     );
 
     create table if not exists benefits
@@ -35,7 +35,7 @@ begin;
         claimed_at        datetime    not null,
         
         primary key (id),
-        unique (assisted_id, distribution_id),
+        unique (assisted_id, distribution_id)
     );
 
     create index idx_benefits_queue_position_id
@@ -48,7 +48,8 @@ begin;
         role    varchar(10) not null,
         status  varchar(10) not null,
         
-        primary key (user_id, org_id),
+        primary key (user_id, org_id)
     );
+    
 commit;
 
