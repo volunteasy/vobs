@@ -4,7 +4,7 @@ define compile
 endef
 
 
-build:
+compile:
 	@echo "Building application"
 	@go mod tidy
 	$(call compile,api)
