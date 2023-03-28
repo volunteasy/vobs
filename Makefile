@@ -10,12 +10,6 @@ build:
 	$(call compile,api)
 	$(call compile,cli)
 
-deps:
-	@echo "Installing dependencies"
-	@go install github.com/matryer/moq@v0.3.1
-	@go install github.com/swaggo/swag/cmd/swag@v1.8.10
-
-
 clean:
 	@echo "Removing generated mock files"
 	@find . -type f \( -name '*_mock.go' -o -name '*_mock_test.go' \) -exec rm {} +
@@ -25,6 +19,8 @@ clean:
 fmt:
 	@echo "Formatting and organizing imports"
 	@go install github.com/daixiang0/gci@v0.6.3
+	@go install github.com/swaggo/swag/cmd/swag@v1.8.10
+	@swag fmt ./cmd/api/main.go
 	@gci write --skip-generated .
 	@go install mvdan.cc/gofumpt@v0.3.1
 	@gofumpt -w -extra .
@@ -39,8 +35,10 @@ lint:
 	@$$(go env GOPATH)/bin/golangci-lint run --allow-parallel-runners -c ./.golangci_not_auto.yml
 
 
-gen: deps clean
+gen: clean
 	@echo "Generating new mock files"
+	@go install github.com/matryer/moq@v0.3.1
+	@go install github.com/swaggo/swag/cmd/swag@v1.8.10
 	@go generate ./...
 	@echo "Generating new swagger documentation files"
 	@swag init -q -g ./cmd/api/main.go -o ./docs/swagger

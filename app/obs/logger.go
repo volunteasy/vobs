@@ -2,12 +2,15 @@ package obs
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
 )
 
 var log *logrus.Entry
+
+var once = sync.Once{}
 
 type LoggerContextKey struct{}
 
@@ -16,7 +19,9 @@ func NewLogger(l *logrus.Entry) {
 }
 
 func NewTestLogger(t *testing.T) {
-	log = logrus.WithField("testname", t.Name())
+	once.Do(func() {
+		log = logrus.WithField("testname", t.Name())
+	})
 }
 
 func Log(ctx context.Context) *logrus.Entry {
