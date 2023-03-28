@@ -16,7 +16,8 @@ services:
     ports:
       - "80:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -37,7 +38,7 @@ services:
     volumes:
       - volunteasydb:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 5
