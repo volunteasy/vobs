@@ -42,24 +42,28 @@ func (q Query) Where(condition bool, input string, values ...interface{}) Query 
 		return q
 	}
 
-	if strings.Count(q.query, "$") != len(values) {
+	isMultipleParams := strings.Contains(input, "%s")
+
+	if !isMultipleParams && strings.Count(input, "?") != len(values) {
 		return q
 	}
 
 	// This array is an array containing string representation of the
 	// numbers to be added in the query as arguments
 	//
-	// Ex $1, $2, $3
-	placeholders := make([]any, len(values))
+	// This case stands for multiple injections, as in an IN() condition
+	// The user must not add any $ to their input, only the standard % flag
+	// The code produces a string with placeholders separated by commas
+	// like '$1, $2, $3, $4, $5', being the number of placeholders equal the number
+	// of values passed in
+	placeholders := make([]string, len(values))
 
-	// Add the values to be queried to the arguments array and set
-	// numbers of placeholders based on the new arguments array length
 	for i, value := range values {
 		q.Args = append(q.Args, value)
 
-		// The placeholder for the given value is always equal the length of
-		// the current arguments list
-		placeholders[i] = len(q.Args)
+		if isMultipleParams {
+			placeholders[i] = "?"
+		}
 	}
 
 	// Add 'OR' or 'AND' to the end of the current query.
@@ -71,37 +75,20 @@ func (q Query) Where(condition bool, input string, values ...interface{}) Query 
 
 	query := operator + input
 
-	if strings.Contains(query, "$") {
-		return q.appendToQuery(fmt.Sprintf(query, placeholders...))
+	if !isMultipleParams {
+		return q.appendToQuery(query)
 	}
 
-	// This case stands for multiple injections, as in an IN() condition
-	// The user must not add any $ to their input, only the standard % flag
-	// The code produces a string with placeholders separated by commas
-	// like '$1, $2, $3, $4, $5', being the number of placeholders equal the number
-	// of values passed in
-	placeholdersStr := make([]string, len(values))
-
-	// For each of the values in the placeholder array, add a $ to the beginning
-	for i, value := range placeholders {
-		placeholdersStr[i] = fmt.Sprintf("$%d", value)
-	}
-
-	return q.appendToQuery(fmt.Sprintf(query, strings.Join(placeholdersStr, ", ")))
+	return q.appendToQuery(fmt.Sprintf(query, strings.Join(placeholders, ", ")))
 }
 
 func (q Query) Limit(limits types.ListRange) Query {
 	q.Args = append(q.Args,
-		limits.Limit()+1,
 		limits.Start,
+		limits.Limit(),
 	)
 
-	return q.appendToQuery(
-		fmt.Sprintf("limit $%d, $%d",
-			len(q.Args)-1,
-			len(q.Args),
-		),
-	)
+	return q.appendToQuery("limit ?, ?")
 }
 
 func (q Query) appendToQuery(append string) Query {

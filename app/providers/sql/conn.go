@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	migratemysql "github.com/golang-migrate/migrate/v4/database/mysql"
@@ -15,12 +16,20 @@ import (
 )
 
 func NewConnection(c config.MySQL) (*sql.DB, func() error, error) {
-	db, err := sql.Open("mysql", c.DSN)
+	cfg, err := mysql.ParseDSN(c.DSN)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed creating mysql connection: %w", err)
+		return nil, nil, fmt.Errorf("failed creating mysql configurations: %w", err)
 	}
 
-	return db, func() error {
+	cfg.InterpolateParams = true
+	cfg.MultiStatements = true
+
+	conn, err := mysql.NewConnector(cfg)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed creating mysql connector: %w", err)
+	}
+
+	return sql.OpenDB(conn), func() error {
 		migration, err := MigrationHandler(c)
 		if err != nil {
 			return err
@@ -52,7 +61,7 @@ func MigrationHandler(c config.MySQL) (*migrate.Migrate, error) {
 		return nil, fmt.Errorf("failed to create mysql migration instance: %w", err)
 	}
 
-	migration, err := migrate.NewWithInstance("httpfs", source, c.Name, d)
+	migration, err := migrate.NewWithInstance("httpfs", source, "", d)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create migration source instance: %w", err)
 	}

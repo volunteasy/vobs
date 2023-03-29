@@ -2,6 +2,7 @@ package organization
 
 import (
 	"context"
+	"encoding/json"
 
 	"govobs/app/core/organization"
 	"govobs/app/providers/sql/query"
@@ -15,7 +16,7 @@ func (a actions) ListOrganizations(ctx context.Context, f organization.Filter) (
 	`
 
 	q := query.NewQuery(script).
-		Where(f.Name != "", "o.name like $%d", "%"+f.Name+"%").
+		Where(f.Name != "", "o.name like ?", "%"+f.Name+"%").
 		Limit(f.Range)
 
 	rows, err := a.db.QueryContext(ctx, q.Query(), q.Args...)
@@ -25,10 +26,17 @@ func (a actions) ListOrganizations(ctx context.Context, f organization.Filter) (
 
 	orgs := make([]organization.Organization, 0)
 	for o := (organization.Organization{}); rows.Next(); {
+
+		var address string
 		if err := rows.Scan(
-			&o.ID, &o.Name, &o.Document, &o.Contact.Address,
-			&o.Contact.Address,
+			&o.ID, &o.Name, &o.Document, &o.Contact.Phone,
+			&address,
 		); err != nil {
+			return nil, 0, err
+		}
+
+		err = json.Unmarshal([]byte(address), &o.Contact.Address)
+		if err != nil {
 			return nil, 0, err
 		}
 

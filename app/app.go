@@ -34,7 +34,7 @@ func NewApp(deps Deps, config config.Config) (App, error) {
 
 	ids := snowflakeid.NewIDCreator(deps.IDNode)
 
-	userActions := useractions.NewActions(config.AWS.UserPoolID, deps.Cognito)
+	userActions := useractions.NewActions(config.AWS.UserPoolID, config.AWS.UserClientID, deps.Cognito)
 
 	orgActions := orgactions.NewActions(deps.DB)
 

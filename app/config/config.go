@@ -15,16 +15,12 @@ type (
 	}
 
 	MySQL struct {
-		Host     string `envconfig:"HOST"`
-		User     string `envconfig:"USER"`
-		Password string `envconfig:"PASSWORD"`
-		Name     string `envconfig:"NAME"`
-		DSN      string `envconfig:"DSN"`
-		TLS      bool   `envconfig:"TLS"`
+		DSN string `envconfig:"DSN"`
 	}
 
 	AWS struct {
 		Region          string `envconfig:"REGION"`
+		UserClientID    string `envconfig:"USER_CLIENT_ID"`
 		UserPoolID      string `envconfig:"USER_POOL_ID"`
 		AccessKeyID     string `envconfig:"ACCESS_KEY_ID"`
 		AccessKeySecret string `envconfig:"ACCESS_KEY_SECRET"`

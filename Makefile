@@ -7,6 +7,7 @@ endef
 compile:
 	@echo "Building application"
 	@go mod tidy
+	@go build ./...
 	$(call compile,api)
 	$(call compile,cli)
 

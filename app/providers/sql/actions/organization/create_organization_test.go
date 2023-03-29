@@ -78,6 +78,8 @@ func TestCreateOrganization(t *testing.T) {
 		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			ctx, closeTX := transaction.NewTransactionOpener(settings.DBTest(t))(context.Background())
 			defer closeTX(ctx)
 

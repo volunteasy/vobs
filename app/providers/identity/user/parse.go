@@ -39,6 +39,31 @@ var userAttributesSetters = map[string]func(u *user.User, val string) error{
 	},
 }
 
+var userAttributesGetters = map[string]func(u user.User, attr *cognitoidentityprovider.AttributeType) error{
+	subUserAttr: func(u user.User, attr *cognitoidentityprovider.AttributeType) error {
+		str := string(u.ID)
+		attr.Value = &str
+		return nil
+	},
+
+	nameUserAttr: func(u user.User, attr *cognitoidentityprovider.AttributeType) error {
+		attr.Value = &u.Name
+		return nil
+	},
+
+	documentUserAttr: func(u user.User, attr *cognitoidentityprovider.AttributeType) error {
+		str := string(u.Document)
+		attr.Value = &str
+		return nil
+	},
+
+	phoneUserAttr: func(u user.User, attr *cognitoidentityprovider.AttributeType) error {
+		str := string(u.Phone)
+		attr.Value = &str
+		return nil
+	},
+}
+
 func userFromAttributes(ctx context.Context, attributes []*cognitoidentityprovider.AttributeType) (user.User, error) {
 	u := user.User{}
 
@@ -72,4 +97,21 @@ func userFromAttributes(ctx context.Context, attributes []*cognitoidentityprovid
 	}
 
 	return u, nil
+}
+
+func userToAttributes(ctx context.Context, u user.User) ([]*cognitoidentityprovider.AttributeType, error) {
+	attributes := make([]*cognitoidentityprovider.AttributeType, len(userAttributesGetters))
+
+	idx := 0
+	for key, fn := range userAttributesGetters {
+		attr := &cognitoidentityprovider.AttributeType{
+			Name: &key,
+		}
+
+		fn(u, attr)
+
+		attributes[idx] = attr
+		idx++
+	}
+	return attributes, nil
 }

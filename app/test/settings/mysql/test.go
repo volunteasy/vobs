@@ -74,7 +74,7 @@ func initializeData(db *sql.DB) error {
 
 		`,
 		`
-			INSERT INTO distribution (id, org_id, name, description, date, items, benefits_allowed, phone, address)
+			INSERT INTO distributions (id, org_id, name, description, date, items, benefits_allowed, phone, address)
 			VALUES 
 				(1, 1, 'Food Distribution', 'Distributing food to those in need', '2023-03-28 10:00:00', 50, 2, '1234567890', '{"zipCode":"03939111","houseNumber":"77","streetName":"Rua da Casa","complement":"Xeks","district":"Almados","city":"Xiexie","state":"Xie","country":"Xi"}'),
 				(2, 1, 'Clothes Donation', 'Collecting and donating clothes to those in need', '2023-03-30 14:00:00', 100, 1, '', '{}'),
@@ -85,27 +85,30 @@ func initializeData(db *sql.DB) error {
 		`
 			INSERT INTO memberships (user_id, org_id, role, status)
 			VALUES 
-				('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 1, 'owner', 'approved'),
-				('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 1, 'assisted', 'approved'),
-				('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 2, 'assisted', 'approved'),
-				('d9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 2, 'assisted', 'approved'),
-				('38463f8b-cd9c-4d80-89a5-f5ce5dc5f5db', 2, 'assisted', 'approved'),
-				('2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 'assisted', 'approved'),
+				('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 1, 'owner', 'accepted'),
+				('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 1, 'assisted', 'accepted'),
+				('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 2, 'assisted', 'accepted'),
+				('d9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 2, 'assisted', 'accepted'),
+				('38463f8b-cd9c-4d80-89a5-f5ce5dc5f5db', 2, 'assisted', 'accepted'),
+				('2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 'assisted', 'accepted'),
 				('4a4a4dc3-3f31-4c60-81c3-0051655a9c5f', 2, 'volunteer', 'pending'),
-				('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 3, 'volunteer', 'pending');
+				('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 3, 'volunteer', 'pending'),
+				('d9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 3, 'volunteer', 'pending');
 		`,
 		`
 			INSERT INTO benefits (id, assisted_id, distribution_id, queue_position_id, claimed_at)
 			VALUES 
 				(1, 'd9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 2, 1234567890, '2022-03-15 10:30:00'),
 				(2, '38463f8b-cd9c-4d80-89a5-f5ce5dc5f5db', 2, 1234567891, '2022-03-17 13:45:00'),
-				(3, '2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 1234567892, '0000-00-00 00:00:00');
+				(3, '2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 1234567892, '2022-03-17 13:50:00');
 		`,
 	}
 
 	for _, script := range scripts {
 		_, err := db.Exec(script)
-		return err
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

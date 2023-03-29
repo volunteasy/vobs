@@ -3,6 +3,7 @@ package query
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/go-sql-driver/mysql"
 )
@@ -35,4 +36,17 @@ func HandleDatabaseError(err error, handle map[uint16]error) error {
 	}
 
 	return mappedErr
+}
+
+func HandleExecSingleResult(result sql.Result, errNoRows error) error {
+	rows, err := result.RowsAffected()
+	if err != nil || rows == 1 {
+		return nil
+	}
+
+	if rows == 0 {
+		return errNoRows
+	}
+
+	return fmt.Errorf("affected more rows than expected (got: %d - wanted: 1)", rows)
 }
