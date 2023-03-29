@@ -12,6 +12,7 @@ import (
 	"govobs/app/obs"
 	useractions "govobs/app/providers/identity/user"
 	"govobs/app/providers/snowflakeid"
+	membershipActions "govobs/app/providers/sql/actions/membership"
 	orgactions "govobs/app/providers/sql/actions/organization"
 )
 
@@ -38,7 +39,9 @@ func NewApp(deps Deps, config config.Config) (App, error) {
 
 	orgActions := orgactions.NewActions(deps.DB)
 
-	userJobs := userjobs.NewJobs(userActions, nil, nil, orgActions, ids)
+	mebrActions := membershipActions.NewActions(deps.DB)
+
+	userJobs := userjobs.NewJobs(userActions, nil, mebrActions, orgActions, ids)
 
 	app := App{
 		Users:  userJobs,
