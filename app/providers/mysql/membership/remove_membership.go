@@ -9,7 +9,7 @@ import (
 	"govobs/app/providers/mysql/conn/transaction"
 )
 
-func (a actions) RemoveMembership(ctx context.Context, userID types.UserID, organizationID types.ID) error {
+func (a actions) RemoveMembership(ctx context.Context, userID types.ID, organizationID types.ID) error {
 	const script = `
 		delete from memberships where org_id = ? and user_id = ?
 	`

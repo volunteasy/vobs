@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/benefit"
 	"govobs/app/core/types"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJobs_ListUserBenefits(t *testing.T) {
@@ -16,7 +17,7 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 	type (
 		args struct {
 			ctx    context.Context
-			userID types.UserID
+			userID types.ID
 			filter benefit.Filter
 		}
 
@@ -39,7 +40,7 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 			name: "should list benefits",
 			args: args{
 				ctx:    context.Background(),
-				userID: "23",
+				userID: 23,
 				filter: benefit.Filter{
 					ClaimDateRange: types.DateRange{},
 				},
@@ -50,13 +51,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 						return []benefit.Benefit{
 							{
 								ID:             500,
-								AssistedID:     "200",
+								AssistedID:     200,
 								DistributionID: 22,
 								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 							},
 							{
 								ID:             501,
-								AssistedID:     "200",
+								AssistedID:     200,
 								DistributionID: 678,
 								ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 							},
@@ -69,13 +70,13 @@ func TestJobs_ListUserBenefits(t *testing.T) {
 			want: []benefit.Benefit{
 				{
 					ID:             500,
-					AssistedID:     "200",
+					AssistedID:     200,
 					DistributionID: 22,
 					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 				},
 				{
 					ID:             501,
-					AssistedID:     "200",
+					AssistedID:     200,
 					DistributionID: 678,
 					ClaimedAt:      time.Date(2015, 10, 21, 12, 22, 0o0, 0o0, time.UTC),
 				},

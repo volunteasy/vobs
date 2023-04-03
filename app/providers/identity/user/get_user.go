@@ -3,14 +3,15 @@ package user
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"govobs/app/core/types"
 	"govobs/app/core/user"
 	"govobs/app/obs"
+
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 )
 
-func (a actions) GetUser(ctx context.Context, id types.UserID) (user.User, error) {
+func (a actions) GetUser(ctx context.Context, id types.ID) (user.User, error) {
 	out, err := a.identity.AdminGetUserWithContext(ctx, (&cognitoidentityprovider.AdminGetUserInput{}).
 		SetUserPoolId(a.poolID).
 		SetUsername(string(id)),

@@ -7,12 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/api/rest"
 	"govobs/app/api/tests"
 	userdomain "govobs/app/core/user"
 	"govobs/app/jobs/user"
 	"govobs/app/obs"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateUser(t *testing.T) {
@@ -45,7 +46,7 @@ func TestValidateUser(t *testing.T) {
 				user: map[string]interface{}{
 					"document": "49333205605",
 					"name":     "Enots Ecitla",
-					"id":       "hwuriKWdjevn34567p",
+					"id":       554433,
 					"phone":    "8855332251561",
 				},
 			},
@@ -64,7 +65,7 @@ func TestValidateUser(t *testing.T) {
 				user: map[string]interface{}{
 					"document": 49333205605,
 					"name":     "Enots Ecitla",
-					"id":       "hwuriKWdjevn34567p",
+					"id":       554433,
 					"phone":    "8855332251561",
 				},
 			},
@@ -82,7 +83,7 @@ func TestValidateUser(t *testing.T) {
 				user: map[string]interface{}{
 					"document": "49333205605",
 					"name":     "Enots Ecitla",
-					"id":       "hwuriKWdjevn34567p",
+					"id":       554433,
 					"phone":    "8855332251561",
 				},
 			},

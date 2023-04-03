@@ -11,6 +11,19 @@ begin;
         unique (document)
     );
 
+    create table if not exists users
+    (
+        id       bigint        not null,
+        name     varchar(50)   not null,
+        document varchar(11)   not null,
+        phone    varchar(15)   not null,
+        verified boolean       not null,
+        pin      varbinary(60) not null, 
+        
+        primary key (id),
+        unique (document)
+    );
+
     create table if not exists distributions
     (
         id               bigint      not null,
@@ -29,7 +42,7 @@ begin;
     create table if not exists benefits
     (
         id                bigint      not null,
-        assisted_id       varchar(36) not null,
+        assisted_id       bigint      not null,
         distribution_id   bigint      not null,
         queue_position_id bigint      not null,
         claimed_at        datetime    not null,
@@ -43,7 +56,7 @@ begin;
 
     create table if not exists memberships
     (
-        user_id varchar(36) not null,
+        user_id bigint      not null,
         org_id  bigint      not null,
         role    varchar(10) not null,
         status  varchar(10) not null,

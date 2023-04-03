@@ -14,7 +14,7 @@ import (
 
 func TestRemoveMembership(t *testing.T) {
 	type args struct {
-		userID         types.UserID
+		userID         types.ID
 		organizationID types.ID
 	}
 
@@ -26,14 +26,14 @@ func TestRemoveMembership(t *testing.T) {
 		{
 			name: "should remove membership",
 			args: args{
-				userID:         "c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072",
+				userID:         1,
 				organizationID: 1,
 			},
 		},
 		{
 			name: "should fail membership deletion because it does not exist",
 			args: args{
-				userID:         "c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072",
+				userID:         89,
 				organizationID: 88,
 			},
 			wantErr: membership.ErrNotFound,

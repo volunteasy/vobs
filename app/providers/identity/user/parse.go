@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"govobs/app/core/types"
 	"govobs/app/core/user"
 	"govobs/app/obs"
+
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 
 var userAttributesSetters = map[string]func(u *user.User, val string) error{
 	subUserAttr: func(u *user.User, val string) error {
-		u.ID = types.UserID(val)
+		//u.ID = types.ID(val)
 		return nil
 	},
 

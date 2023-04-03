@@ -25,7 +25,7 @@ func TestSetMembershipRole(t *testing.T) {
 			name: "should set role",
 			args: args{
 				m: membership.Membership{
-					UserID: "c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072",
+					UserID: 1,
 					OrgID:  1,
 					Role:   membership.RoleAssisted,
 				},
@@ -35,7 +35,7 @@ func TestSetMembershipRole(t *testing.T) {
 			name: "should not set role for membership not found",
 			args: args{
 				m: membership.Membership{
-					UserID: "c5c0e5b5-0b5a-44ec-9d37-f43b9f16a075",
+					UserID: 10,
 					OrgID:  1,
 					Role:   membership.RoleAssisted,
 				},

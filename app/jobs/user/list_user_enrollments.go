@@ -7,7 +7,7 @@ import (
 	"govobs/app/core/types"
 )
 
-func (j jobs) ListUserEnrollments(ctx context.Context, userID types.UserID, f organization.Filter) ([]organization.Enrollment, int, error) {
+func (j jobs) ListUserEnrollments(ctx context.Context, userID types.ID, f organization.Filter) ([]organization.Enrollment, int, error) {
 	if err := f.Validate(); err != nil {
 		return nil, 0, err
 	}

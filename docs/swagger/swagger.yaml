@@ -11,12 +11,18 @@ definitions:
       message:
         type: string
     type: object
+  types.ID:
+    enum:
+    - 0
+    type: integer
+    x-enum-varnames:
+    - ZeroID
   user.User:
     properties:
       document:
         type: string
       id:
-        type: string
+        $ref: '#/definitions/types.ID'
       name:
         type: string
       phone:
@@ -95,6 +101,15 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/user.User'
+              type: object
+        "400":
+          description: In case the ID sent is invalid
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.Response'
+            - properties:
+                error:
+                  $ref: '#/definitions/types.Error'
               type: object
         "404":
           description: Not Found

@@ -17,7 +17,7 @@ func TestListEnrollments(t *testing.T) {
 
 	type (
 		args struct {
-			userID types.UserID
+			userID types.ID
 			filter organization.Filter
 		}
 
@@ -34,7 +34,7 @@ func TestListEnrollments(t *testing.T) {
 		{
 			name: "should list organizations successfully",
 			args: args{
-				userID: "d9e6b929-f6f8-4b10-a6d1-6f7e78546d15",
+				userID: 3,
 				filter: organization.Filter{
 					Filter: types.Filter{
 						Range: types.ListRange{

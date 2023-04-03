@@ -3,17 +3,19 @@ package users
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/api/rest"
 	"govobs/app/api/tests"
 	"govobs/app/core/types"
 	userdomain "govobs/app/core/user"
 	"govobs/app/jobs/user"
 	"govobs/app/obs"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUser(t *testing.T) {
@@ -23,7 +25,7 @@ func TestGetUser(t *testing.T) {
 
 	type (
 		args struct {
-			userID string
+			userID types.ID
 		}
 
 		fields struct {
@@ -43,13 +45,13 @@ func TestGetUser(t *testing.T) {
 		{
 			name: "should get user successfully",
 			args: args{
-				userID: "hwuriKWdjevn34567p",
+				userID: 565565,
 			},
 			fields: fields{
 				users: &user.JobsMock{
-					GetUserFunc: func(ctx context.Context, id types.UserID) (userdomain.User, error) {
+					GetUserFunc: func(ctx context.Context, id types.ID) (userdomain.User, error) {
 						return userdomain.User{
-							ID:       "hwuriKWdjevn34567p",
+							ID:       565565,
 							Document: "5007",
 							Phone:    "3232",
 							Name:     "Ni hao ma",
@@ -60,7 +62,7 @@ func TestGetUser(t *testing.T) {
 			wantCode: http.StatusOK,
 			wantBody: rest.Response{
 				Data: map[string]interface{}{
-					"id":       "hwuriKWdjevn34567p",
+					"id":       "565565",
 					"document": "5007",
 					"phone":    "3232",
 					"name":     "Ni hao ma",
@@ -70,11 +72,11 @@ func TestGetUser(t *testing.T) {
 		{
 			name: "should fail with user not found",
 			args: args{
-				userID: "hwuriKWdjevn34567p",
+				userID: 565565,
 			},
 			fields: fields{
 				users: &user.JobsMock{
-					GetUserFunc: func(ctx context.Context, id types.UserID) (userdomain.User, error) {
+					GetUserFunc: func(ctx context.Context, id types.ID) (userdomain.User, error) {
 						return userdomain.User{}, userdomain.ErrNotFound
 					},
 				},
@@ -99,7 +101,7 @@ func TestGetUser(t *testing.T) {
 			Handler(router, tc.fields.users)
 
 			router.ServeHTTP(rec,
-				tests.CreateRequestWithBody(http.MethodGet, "/"+tc.args.userID, nil),
+				tests.CreateRequestWithBody(http.MethodGet, fmt.Sprintf("/%d", tc.args.userID), nil),
 			)
 
 			if assert.Len(t, tc.fields.users.GetUserCalls(), 1) {

@@ -9,7 +9,7 @@ import (
 	"govobs/app/providers/mysql/conn/query"
 )
 
-func (a actions) ListEnrollments(ctx context.Context, userID types.UserID, f organization.Filter) ([]organization.Enrollment, int, error) {
+func (a actions) ListEnrollments(ctx context.Context, userID types.ID, f organization.Filter) ([]organization.Enrollment, int, error) {
 	const script = `
 		select 
 		    o.id, o.name, o.document, o.phone, o.address, m.status, m.role 

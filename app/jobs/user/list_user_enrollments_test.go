@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJobs_ListUserEnrollments(t *testing.T) {
@@ -15,7 +16,7 @@ func TestJobs_ListUserEnrollments(t *testing.T) {
 	type (
 		args struct {
 			ctx    context.Context
-			userID types.UserID
+			userID types.ID
 			filter organization.Filter
 		}
 
@@ -38,12 +39,12 @@ func TestJobs_ListUserEnrollments(t *testing.T) {
 			name: "should list benefits",
 			args: args{
 				ctx:    context.Background(),
-				userID: "23",
+				userID: 23,
 				filter: organization.Filter{},
 			},
 			fields: fields{
 				organizations: &organization.ActionsMock{
-					ListEnrollmentsFunc: func(ctx context.Context, userID types.UserID, f organization.Filter) ([]organization.Enrollment, int, error) {
+					ListEnrollmentsFunc: func(ctx context.Context, userID types.ID, f organization.Filter) ([]organization.Enrollment, int, error) {
 						return []organization.Enrollment{
 							{
 								Organization: organization.Organization{

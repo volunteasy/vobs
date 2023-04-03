@@ -3,8 +3,9 @@ package user
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"govobs/app/core/user"
+
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 )
 
 type actions struct {
@@ -26,7 +27,7 @@ func (a actions) CreateUser(ctx context.Context, u user.User) error {
 		return err
 	}
 
-	userid := string(u.ID)
+	userid := string(rune(u.ID))
 
 	_, err = a.identity.AdminCreateUser(&cognitoidentityprovider.AdminCreateUserInput{
 		UserAttributes: attr,

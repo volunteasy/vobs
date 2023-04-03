@@ -16,15 +16,19 @@ import (
 // @Produce		json
 //
 // @Success		200	{object}	rest.Response{data=user.User{}}
+// @Failure		400	{object}	rest.Response{error=types.Error{}} "In case the ID sent is invalid"
 // @Failure		404	{object}	rest.Response{error=types.Error{}}
 // @Failure		500	{object}	rest.Response{error=types.Error{}}
 // @Router			/api/v1/users/{userID} [GET]
 func getUser(users Users) http.HandlerFunc {
 	return rest.Route(
 		func(ctx context.Context, r rest.Request) rest.Response {
-			id := r.Param(UserIDParam)
+			id, err := r.ID(UserIDParam)
+			if err != nil {
+				return rest.Error(err)
+			}
 
-			u, err := users.GetUser(ctx, types.UserID(id))
+			u, err := users.GetUser(ctx, types.ID(id))
 			if err != nil {
 				return rest.Error(err)
 			}

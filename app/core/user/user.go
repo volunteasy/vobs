@@ -7,7 +7,7 @@ import (
 
 type (
 	User struct {
-		ID       types.UserID   `json:"id"`
+		ID       types.ID       `json:"id"`
 		Document types.Document `json:"document"`
 		Phone    types.Phone    `json:"phone"`
 		Name     string         `json:"name"`
@@ -44,7 +44,7 @@ func (u User) Validate() error {
 		return ErrInvalidName
 	}
 
-	if u.ID == types.ZeroUserID {
+	if u.ID == types.ZeroID {
 		return ErrNoExternalID
 	}
 

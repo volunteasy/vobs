@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/types"
 	"govobs/app/core/user"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJobs_ValidateUser(t *testing.T) {
@@ -38,7 +39,7 @@ func TestJobs_ValidateUser(t *testing.T) {
 				user: user.User{
 					Name:     "Karim Andersson",
 					Document: "50215322202",
-					ID:       "FakeID",
+					ID:       544545,
 					Phone:    "44332222",
 				},
 			},
@@ -58,7 +59,7 @@ func TestJobs_ValidateUser(t *testing.T) {
 				user: user.User{
 					Name:     "Karim Andersson",
 					Document: "50215322202",
-					ID:       "44332222",
+					ID:       44332222,
 					Phone:    "44332222",
 				},
 			},
@@ -78,7 +79,7 @@ func TestJobs_ValidateUser(t *testing.T) {
 				user: user.User{
 					Name:     "Karim Andersson",
 					Document: "50215322202",
-					ID:       "FakeID",
+					ID:       34436576,
 					Phone:    "44332222",
 				},
 			},
@@ -98,7 +99,7 @@ func TestJobs_ValidateUser(t *testing.T) {
 				user: user.User{
 					Name:     "",
 					Document: "50215322202",
-					ID:       "FakeID",
+					ID:       34436576,
 					Phone:    "44332222",
 				},
 			},

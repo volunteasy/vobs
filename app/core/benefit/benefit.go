@@ -9,7 +9,7 @@ import (
 type (
 	Benefit struct {
 		ID             types.ID
-		AssistedID     types.UserID
+		AssistedID     types.ID
 		DistributionID types.ID
 		QueuePosID     types.ID
 		ClaimedAt      time.Time
@@ -18,7 +18,7 @@ type (
 	Filter struct {
 		ClaimDateRange types.DateRange
 		DistributionID types.ID
-		AssistedID     types.UserID
+		AssistedID     types.ID
 		OrgID          types.ID
 
 		types.Filter
@@ -26,7 +26,7 @@ type (
 )
 
 func (b Benefit) Validate() error {
-	if b.AssistedID != types.ZeroUserID {
+	if b.AssistedID != types.ZeroID {
 		return ErrNoAssistedID
 	}
 

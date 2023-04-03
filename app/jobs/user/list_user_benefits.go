@@ -7,7 +7,7 @@ import (
 	"govobs/app/core/types"
 )
 
-func (j jobs) ListUserBenefits(ctx context.Context, userID types.UserID, f benefit.Filter) ([]benefit.Benefit, int, error) {
+func (j jobs) ListUserBenefits(ctx context.Context, userID types.ID, f benefit.Filter) ([]benefit.Benefit, int, error) {
 	f.AssistedID = userID
 	if err := f.Validate(); err != nil {
 		return nil, 0, err

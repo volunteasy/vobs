@@ -138,6 +138,24 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "400": {
+                        "description": "In case the ID sent is invalid",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/types.Error"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -197,6 +215,15 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ID": {
+            "type": "integer",
+            "enum": [
+                0
+            ],
+            "x-enum-varnames": [
+                "ZeroID"
+            ]
+        },
         "user.User": {
             "type": "object",
             "properties": {
@@ -204,7 +231,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "$ref": "#/definitions/types.ID"
                 },
                 "name": {
                     "type": "string"

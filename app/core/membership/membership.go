@@ -18,7 +18,7 @@ const (
 
 type (
 	Membership struct {
-		UserID types.UserID
+		UserID types.ID
 		OrgID  types.ID
 		Status Status
 		Role   Role
@@ -52,7 +52,7 @@ func (m Membership) Validate() error {
 		return ErrNoOrganizationID
 	}
 
-	if m.UserID == types.ZeroUserID {
+	if m.UserID == types.ZeroID {
 		return ErrNoUserID
 	}
 

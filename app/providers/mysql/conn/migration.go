@@ -71,6 +71,17 @@ const script = `
 		(4, 'Community Outreach', '78901234500', '5511666666666', '{"zipCode":"04004-000","houseNumber":"2468","streetName":"Avenida da Comunidade","complement":"Sala 100","district":"Moema","city":"São Paulo","state":"SP","country":"Brasil"}'),
 		(5, 'Neighbors Helping Neighbors', '23456789000', '5511555555555', '{"zipCode":"05005-000","houseNumber":"1357","streetName":"Rua dos Vizinhos","complement":"Apartamento 50","district":"Vila Leopoldina","city":"São Paulo","state":"SP","country":"Brasil"}');
 		
+	INSERT INTO users (id, name, document, phone, verified, pin) VALUES
+		(1, 'John Doe', '12345678901', '555-1234', true, 0x123456),
+		(2, 'Jane Smith', '23456789012', '555-5678', true, 0x234567),
+		(3, 'Bob Johnson', '34567890123', '555-9012', false, 0x345678),
+		(4, 'Mary Brown', '45678901234', '555-3456', false, 0x456789),
+		(5, 'Mark Davis', '56789012345', '555-6789', true, 0x567890),
+		(6, 'Sara Lee', '67890123456', '555-0123', true, 0x678901),
+		(7, 'Tom Jones', '78901234567', '555-4567', false, 0x789012),
+		(8, 'Amy Green', '89012345678', '555-8901', true, 0x890123),
+		(9, 'David White', '90123456789', '555-2345', true, 0x901234),
+		(10, 'Lisa Black', '01234567890', '555-6789', false, 0x012345);
 
 	INSERT INTO distributions (id, org_id, name, description, date, items, benefits_allowed, phone, address)
 	VALUES 
@@ -83,20 +94,20 @@ const script = `
 
 	INSERT INTO memberships (user_id, org_id, role, status)
 	VALUES 
-		('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 1, 'owner', 'accepted'),
-		('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 1, 'assisted', 'accepted'),
-		('c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072', 2, 'assisted', 'accepted'),
-		('d9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 2, 'assisted', 'accepted'),
-		('38463f8b-cd9c-4d80-89a5-f5ce5dc5f5db', 2, 'assisted', 'accepted'),
-		('2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 'assisted', 'accepted'),
-		('4a4a4dc3-3f31-4c60-81c3-0051655a9c5f', 2, 'volunteer', 'pending'),
-		('a98e7bd2-d9e9-4d60-9a9f-c5e0db10d7fa', 3, 'volunteer', 'pending'),
-		('d9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 3, 'volunteer', 'pending');
-		
-
+		(1, 1, 'owner', 'accepted'),
+		(2, 1, 'assisted', 'accepted'),
+		(1, 2, 'assisted', 'accepted'),
+		(3, 2, 'assisted', 'accepted'),
+		(4, 2, 'assisted', 'accepted'),
+		(5, 2, 'assisted', 'accepted'),
+		(6, 2, 'volunteer', 'pending'),
+		(2, 3, 'volunteer', 'pending'),
+		(3, 3, 'volunteer', 'pending');
+			
+	
 	INSERT INTO benefits (id, assisted_id, distribution_id, queue_position_id, claimed_at)
 	VALUES 
-		(1, 'd9e6b929-f6f8-4b10-a6d1-6f7e78546d15', 2, 1234567890, '2022-03-15 10:30:00'),
-		(2, '38463f8b-cd9c-4d80-89a5-f5ce5dc5f5db', 2, 1234567891, '2022-03-17 13:45:00'),
-		(3, '2f91d4a7-758a-4f7c-b9ba-63011e17bb4d', 2, 1234567892, '2022-03-17 13:50:00');
+		(1, 3, 2, 1234567890, '2022-03-15 10:30:00'),
+		(2, 4, 2, 1234567891, '2022-03-17 13:45:00'),
+		(3, 5, 2, 1234567892, '2022-03-17 13:50:00');
 `

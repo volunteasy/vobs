@@ -27,7 +27,7 @@ func TestCreateMembership(t *testing.T) {
 			name: "should create membership successfully",
 			args: args{
 				m: membership.Membership{
-					UserID: "1",
+					UserID: 8,
 					OrgID:  1,
 					Status: membership.StatusAccepted,
 					Role:   membership.RoleAssisted,
@@ -38,7 +38,7 @@ func TestCreateMembership(t *testing.T) {
 			name: "should fail because membership already exists",
 			args: args{
 				m: membership.Membership{
-					UserID: "c5c0e5b5-0b5a-44ec-9d37-f43b9f16a072",
+					UserID: 1,
 					OrgID:  1,
 					Status: membership.StatusAccepted,
 					Role:   membership.RoleAssisted,
