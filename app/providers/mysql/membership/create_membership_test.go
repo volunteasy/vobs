@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/membership"
-	"govobs/app/providers/sql/transaction"
-	"govobs/app/test/settings"
+	"govobs/app/providers/mysql/conn/transaction"
+	"govobs/app/providers/mysql/tests"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateMembership(t *testing.T) {
@@ -17,7 +18,7 @@ func TestCreateMembership(t *testing.T) {
 		m membership.Membership
 	}
 
-	tests := []struct {
+	for _, tt := range []struct {
 		name    string
 		args    args
 		wantErr error
@@ -45,13 +46,12 @@ func TestCreateMembership(t *testing.T) {
 			},
 			wantErr: membership.ErrAlreadyExists,
 		},
-	}
-	for _, tt := range tests {
+	} {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx, closeTX := transaction.NewTransactionOpener(settings.DBTest(t))(context.Background())
+			ctx, closeTX := transaction.NewTransactionOpener(tests.NewDatabase(t))(context.Background())
 			defer closeTX(ctx)
 
 			err := actions{}.CreateMembership(ctx, tt.args.m)

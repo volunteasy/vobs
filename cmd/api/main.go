@@ -5,6 +5,11 @@ import (
 	"net"
 	"time"
 
+	"govobs/app"
+	"govobs/app/api"
+	"govobs/app/config"
+	"govobs/app/providers/mysql/conn"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,10 +18,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
-	"govobs/app"
-	"govobs/app/api"
-	"govobs/app/config"
-	"govobs/app/providers/sql"
 )
 
 // @title						GOVOBS - Golang Volunteasy Backend Service
@@ -35,12 +36,12 @@ func main() {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	db, migrate, err := sql.NewConnection(cfg.MySQL)
+	db, err := conn.NewConnection(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = migrate()
+	err = conn.MigrateDatabase(db, cfg.MySQL.AddTestData)
 	if err != nil {
 		log.Fatal(err)
 	}

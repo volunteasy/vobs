@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"govobs/app/core/membership"
-	"govobs/app/providers/sql/query"
-	"govobs/app/providers/sql/transaction"
+	"govobs/app/providers/mysql/conn/query"
+	"govobs/app/providers/mysql/conn/transaction"
 )
 
 func (a actions) CreateMembership(ctx context.Context, m membership.Membership) error {

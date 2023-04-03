@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
-	"govobs/app/test/settings"
+	"govobs/app/providers/mysql/tests"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetOrganization(t *testing.T) {
@@ -64,7 +65,7 @@ func TestGetOrganization(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			org, err := actions{db: settings.DBTest(t)}.
+			org, err := actions{db: tests.NewDatabase(t)}.
 				GetOrganization(context.Background(), tc.args.id)
 
 			assert.Equal(t, tc.want, org)

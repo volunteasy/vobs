@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/membership"
 	"govobs/app/core/types"
-	"govobs/app/providers/sql/transaction"
-	"govobs/app/test/settings"
+	"govobs/app/providers/mysql/conn/transaction"
+	"govobs/app/providers/mysql/tests"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRemoveMembership(t *testing.T) {
@@ -16,7 +17,8 @@ func TestRemoveMembership(t *testing.T) {
 		userID         types.UserID
 		organizationID types.ID
 	}
-	tests := []struct {
+
+	for _, tt := range []struct {
 		name    string
 		args    args
 		wantErr error
@@ -36,10 +38,9 @@ func TestRemoveMembership(t *testing.T) {
 			},
 			wantErr: membership.ErrNotFound,
 		},
-	}
-	for _, tt := range tests {
+	} {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx, closeTX := transaction.NewTransactionOpener(settings.DBTest(t))(context.Background())
+			ctx, closeTX := transaction.NewTransactionOpener(tests.NewDatabase(t))(context.Background())
 			defer closeTX(ctx)
 
 			err := actions{}.RemoveMembership(ctx, tt.args.userID, tt.args.organizationID)

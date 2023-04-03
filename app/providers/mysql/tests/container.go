@@ -1,16 +1,20 @@
-package mysql
+package tests
 
 import (
 	"fmt"
 
+	"govobs/app/config"
+	"govobs/app/providers/mysql/conn"
+
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
-	"govobs/app/config"
+	"github.com/pkg/errors"
 )
 
 const (
 	containerName = "mysql_volunteasy_testing_container"
 	expires       = 600
+	dsnTemplate   = "root:volunteasy@tcp(localhost:%s)/"
 )
 
 var options = dockertest.RunOptions{
@@ -23,6 +27,12 @@ var options = dockertest.RunOptions{
 		"MYSQL_DATABASE=volunteasytst",
 		"MYSQL_ROOT_PASSWORD=volunteasy",
 	},
+}
+
+var dsn string
+
+func DSN() string {
+	return dsn
 }
 
 func Create(d *dockertest.Pool) (*dockertest.Resource, error) {
@@ -60,17 +70,56 @@ func Create(d *dockertest.Pool) (*dockertest.Resource, error) {
 	return container, nil
 }
 
-func Startup(d *dockertest.Resource) (DatabaseContextBuilder, error) {
-	port := d.GetPort("3306/tcp")
+func Startup(d *dockertest.Resource) error {
+	dsn = fmt.Sprintf(dsnTemplate, d.GetPort("3306/tcp"))
 
-	conn, _, err := useConnection(config.MySQL{
-		DSN: fmt.Sprintf("root:volunteasy@tcp(localhost:%s)/%s?multiStatements=true", port, "volunteasytst"),
+	conn, err := conn.NewConnection(config.MySQL{
+		DSN: dsn,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("an error occurred when pinging database: %w", err)
+		return fmt.Errorf("an error occurred when pinging database: %w", err)
 	}
 
-	return builder(conn, port), nil
+	conn.Close()
+
+	return nil
+}
+
+func MySQL(d *dockertest.Pool) (purge func(), err error) {
+	res, err := Create(d)
+	if err != nil {
+		if res != nil {
+			defer d.Purge(res)
+		}
+
+		return nil, err
+	}
+
+	err = d.Retry(func() (err error) {
+		return Startup(res)
+	})
+
+	if err != nil {
+		defer d.Purge(res)
+		return nil, err
+	}
+
+	return func() {
+		d.Purge(res)
+	}, nil
+}
+
+func NewPool() (*dockertest.Pool, error) {
+	pool, err := dockertest.NewPool("")
+	if err != nil {
+		return nil, errors.Wrap(err, "the docker pool connection could not be established")
+	}
+
+	if err := pool.Client.Ping(); err != nil {
+		return nil, errors.Wrap(err, "could not contact docker pool")
+	}
+
+	return pool, nil
 }
 
 func useContainer(d *dockertest.Pool, name string) (*dockertest.Resource, error) {

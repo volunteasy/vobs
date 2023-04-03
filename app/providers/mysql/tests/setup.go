@@ -1,4 +1,4 @@
-package settings
+package tests
 
 import (
 	"os"
@@ -11,7 +11,7 @@ func SetupTest(m *testing.M) {
 		panic(err.Error())
 	}
 
-	_, purge, err := MySQL(docker)
+	purge, err := MySQL(docker)
 	if err != nil {
 		panic(err.Error())
 	}

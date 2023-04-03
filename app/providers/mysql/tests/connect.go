@@ -1,4 +1,4 @@
-package mysql
+package tests
 
 import (
 	"context"
@@ -7,22 +7,10 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-
-	"govobs/app/config"
-	conn "govobs/app/providers/sql"
 )
 
 type executor interface {
 	ExecContext(ctx context.Context, sql string, arguments ...interface{}) (sql.Result, error)
-}
-
-func useConnection(cfg config.MySQL) (*sql.DB, func() error, error) {
-	db, mig, err := conn.NewConnection(cfg)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return db, mig, db.Ping()
 }
 
 func createName() string {

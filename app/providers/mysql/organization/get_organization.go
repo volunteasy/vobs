@@ -6,7 +6,7 @@ import (
 
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
-	"govobs/app/providers/sql/query"
+	"govobs/app/providers/mysql/conn/query"
 )
 
 func (a actions) GetOrganization(ctx context.Context, id types.ID) (o organization.Organization, err error) {

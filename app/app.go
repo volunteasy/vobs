@@ -3,17 +3,18 @@ package app
 import (
 	"database/sql"
 
-	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
-	"github.com/bwmarrin/snowflake"
-	"github.com/sirupsen/logrus"
 	"govobs/app/config"
 	"govobs/app/core/types"
 	userjobs "govobs/app/jobs/user"
 	"govobs/app/obs"
 	useractions "govobs/app/providers/identity/user"
+	membershipActions "govobs/app/providers/mysql/membership"
+	orgactions "govobs/app/providers/mysql/organization"
 	"govobs/app/providers/snowflakeid"
-	membershipActions "govobs/app/providers/sql/actions/membership"
-	orgactions "govobs/app/providers/sql/actions/organization"
+
+	"github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/bwmarrin/snowflake"
+	"github.com/sirupsen/logrus"
 )
 
 type Deps struct {

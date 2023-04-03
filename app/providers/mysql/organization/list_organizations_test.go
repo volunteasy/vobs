@@ -4,10 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
-	"govobs/app/test/settings"
+	"govobs/app/providers/mysql/tests"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListOrganizations(t *testing.T) {
@@ -134,7 +135,7 @@ func TestListOrganizations(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			org, count, err := actions{db: settings.DBTest(t)}.
+			org, count, err := actions{db: tests.NewDatabase(t)}.
 				ListOrganizations(context.Background(), tc.args.filter)
 
 			assert.Equal(t, tc.wantCount, count)

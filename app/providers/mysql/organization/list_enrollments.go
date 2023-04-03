@@ -6,7 +6,7 @@ import (
 
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
-	"govobs/app/providers/sql/query"
+	"govobs/app/providers/mysql/conn/query"
 )
 
 func (a actions) ListEnrollments(ctx context.Context, userID types.UserID, f organization.Filter) ([]organization.Enrollment, int, error) {

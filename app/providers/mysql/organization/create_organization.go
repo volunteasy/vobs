@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	"govobs/app/core/organization"
-	"govobs/app/providers/sql/query"
-	"govobs/app/providers/sql/transaction"
+	"govobs/app/providers/mysql/conn/query"
+	"govobs/app/providers/mysql/conn/transaction"
 )
 
 func (a actions) CreateOrganization(ctx context.Context, o organization.Organization) error {

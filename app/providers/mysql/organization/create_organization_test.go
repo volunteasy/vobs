@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"govobs/app/core/organization"
 	"govobs/app/core/types"
-	"govobs/app/providers/sql/transaction"
-	"govobs/app/test/settings"
+	"govobs/app/providers/mysql/conn/transaction"
+	"govobs/app/providers/mysql/tests"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateOrganization(t *testing.T) {
@@ -80,7 +81,7 @@ func TestCreateOrganization(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx, closeTX := transaction.NewTransactionOpener(settings.DBTest(t))(context.Background())
+			ctx, closeTX := transaction.NewTransactionOpener(tests.NewDatabase(t))(context.Background())
 			defer closeTX(ctx)
 
 			err := actions{}.CreateOrganization(ctx, tc.args.org)

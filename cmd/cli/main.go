@@ -6,12 +6,13 @@ import (
 	"os"
 	"strconv"
 
+	"govobs/app/config"
+	"govobs/app/providers/mysql/conn"
+
 	migrate "github.com/golang-migrate/migrate/v4"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 	cli "github.com/urfave/cli/v2"
-	"govobs/app/config"
-	"govobs/app/providers/sql"
 )
 
 func main() {
@@ -21,7 +22,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mig, err := sql.MigrationHandler(cfg.MySQL)
+	db, err := conn.NewConnection(cfg.MySQL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mig, err := conn.MigrationHandler(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,6 +61,13 @@ func main() {
 						Action: func(c *cli.Context) error {
 							version, _ := strconv.Atoi(c.Args().First())
 							return mig.Force(version)
+						},
+					},
+					{
+						Name:  "testdata",
+						Usage: "adds mocked data to the database for all tables",
+						Action: func(c *cli.Context) error {
+							return conn.AddTestData(db)
 						},
 					},
 				},

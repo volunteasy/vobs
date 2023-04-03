@@ -5,8 +5,8 @@ import (
 
 	"govobs/app/core/membership"
 	"govobs/app/core/types"
-	"govobs/app/providers/sql/query"
-	"govobs/app/providers/sql/transaction"
+	"govobs/app/providers/mysql/conn/query"
+	"govobs/app/providers/mysql/conn/transaction"
 )
 
 func (a actions) RemoveMembership(ctx context.Context, userID types.UserID, organizationID types.ID) error {

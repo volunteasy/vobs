@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"govobs/app/core/organization"
-	"govobs/app/providers/sql/query"
+	"govobs/app/providers/mysql/conn/query"
 )
 
 func (a actions) ListOrganizations(ctx context.Context, f organization.Filter) ([]organization.Organization, int, error) {

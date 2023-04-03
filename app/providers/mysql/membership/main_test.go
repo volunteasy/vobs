@@ -1,11 +1,10 @@
 package membership
 
 import (
+	"govobs/app/providers/mysql/tests"
 	"testing"
-
-	"govobs/app/test/settings"
 )
 
 func TestMain(m *testing.M) {
-	settings.SetupTest(m)
+	tests.SetupTest(m)
 }

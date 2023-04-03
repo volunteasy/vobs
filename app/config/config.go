@@ -15,7 +15,8 @@ type (
 	}
 
 	MySQL struct {
-		DSN string `envconfig:"DSN"`
+		DSN         string `envconfig:"DSN"`
+		AddTestData bool   `envconfig:"ADD_TEST_DATA"`
 	}
 
 	AWS struct {
