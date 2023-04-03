@@ -55,11 +55,12 @@ func Create(d *dockertest.Pool) (*dockertest.Resource, error) {
 		return container, nil
 	}
 
-	err = d.Retry(func() error {
-		container, err := useContainer(d, containerName)
+	err = d.Retry(func() (err error) {
+		container, err = useContainer(d, containerName)
 		if container != nil {
 			return nil
 		}
+
 		return err
 	})
 
