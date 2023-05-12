@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+  api:
+    container_name: api
+    image: vobs-api
+    build:
+      context: '.'
+      dockerfile: ./build/Dockerfile
+    restart: unless-stopped
+    env_file:
+       - ".env"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+    ports:
+      - "80:80"

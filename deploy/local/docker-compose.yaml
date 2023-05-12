@@ -1,0 +1,41 @@
+version: '3.3'
+services:
+  api:
+    container_name: api
+    image: nrbs-api
+    build:
+      context: '../../'
+      dockerfile: ./build/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - "../../src/web/.env"
+    environment:
+      # Simulating staging environment to test docker settings locally
+      ASPNETCORE_ENVIRONMENT: Staging
+    ports:
+      - "80:80"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.0
+    restart: always
+    container_name: db
+    environment:
+      MYSQL_DATABASE: 'vobs'
+      MYSQL_USER: 'vobs'
+      MYSQL_PASSWORD: 'vobs'
+      MYSQL_ROOT_PASSWORD: 'vobs'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - vobsdb:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  vobsdb:
