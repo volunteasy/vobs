@@ -2,7 +2,7 @@ version: '3.3'
 services:
   api:
     container_name: api
-    image: vobs-api
+    image: volunteasy-api
     build:
       context: '../../'
       dockerfile: ./build/Dockerfile
@@ -14,28 +14,27 @@ services:
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - "80:80"
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#  db:
-#    image: mysql:8.0
-#    restart: always
-#    container_name: db
-#    environment:
-#      MYSQL_DATABASE: 'vobs'
-#      MYSQL_USER: 'vobs'
-#      MYSQL_PASSWORD: 'vobs'
-#      MYSQL_ROOT_PASSWORD: 'vobs'
-#    ports:
-#      - '3306:3306'
-#    expose:
-#      - '3306'
-#    volumes:
-#      - vobsdb:/var/lib/mysql
-#    healthcheck:
-#      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
-#volumes:
-#  vobsdb:
+    depends_on:
+          db:
+            condition: service_healthy
+  db:
+    image: postgres:14-alpine
+    container_name: db
+    command: [ "postgres", "-c", "log_statement=all" ]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=volunteasy
+      - DATABASE_HOST=localhost
+    ports:
+      - '5432:5432'
+    volumes:
+      - vobsdb:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "volunteasy", "-U", "postgres" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
+volumes:
+    vobsdb:
