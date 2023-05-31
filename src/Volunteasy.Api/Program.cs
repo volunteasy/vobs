@@ -1,14 +1,10 @@
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using dotenv.net;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -57,8 +53,6 @@ builder.Services.AddCors(x =>
         };
     });
 
-IdentityModelEventSource.ShowPII = true;
-
 builder.Host.UseSerilog(new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console(new CompactJsonFormatter())
@@ -68,9 +62,10 @@ builder.Host.UseSerilog(new LoggerConfiguration()
 
 #region Infrastructure setup
 
-    builder.Services.AddDbContext<Data>(
-        o => o.UseNpgsql(
-            builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "")
+    builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
+            builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "",
+            op => op.MigrationsAssembly("Volunteasy.Api")
+        )
     );
 
     var firebaseApiKey = builder.Configuration.GetValue<string>("FIREBASE_KEY");
@@ -94,7 +89,7 @@ builder.Host.UseSerilog(new LoggerConfiguration()
 
 
 #region Application setup
-
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddScoped<ISession, Session>();
     builder.Services.AddScoped<IIdentityService, IdentityService>();
 

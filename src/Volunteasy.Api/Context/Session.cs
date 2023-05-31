@@ -7,11 +7,10 @@ public class Session : ISession
 {
     private readonly HttpContext _context;
 
-    public Session(HttpContext context)
+    public Session(IHttpContextAccessor context)
     {
-        _context = context;
+        _context = context.HttpContext ?? new DefaultHttpContext();
     }
-
 
     public string ExternalId => _context.User.Identity?.Name ?? "";
     

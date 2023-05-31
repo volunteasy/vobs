@@ -37,6 +37,11 @@
 
     <ItemGroup>
       <Folder Include="bin\Debug\net7.0\" />
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Migrations\20230531224143_user.Designer.cs" />
     </ItemGroup>
 
 </Project>
