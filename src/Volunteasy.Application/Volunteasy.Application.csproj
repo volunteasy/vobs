@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Volunteasy.Core\Volunteasy.Core.csproj" />
+    </ItemGroup>
+
 </Project>
