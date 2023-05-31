@@ -5,7 +5,7 @@ endif
 
 .PHONY: migrate
 migrate:
-	@dotnet ef migrations add $(name) --project src/Web
+	@dotnet ef migrations add $(name) --project src/Volunteasy.Api
 
 .PHONY: up
 up:
