@@ -16,5 +16,5 @@ public class Session : ISession
     
     public bool IsAuthenticated => _context.User.Identity?.IsAuthenticated ?? false;
 
-    public long Id => Convert.ToInt64(_context.User.FindFirst(ClaimTypes.Name)?.Value);
+    public long UserId => Convert.ToInt64(_context.User.FindFirst("volunteasy_id")?.Value);
 }

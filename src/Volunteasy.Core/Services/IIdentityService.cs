@@ -4,6 +4,6 @@ namespace Volunteasy.Core.Services;
 
 public interface IIdentityService
 {
-    Task<Response<UserToken>> SignUp(UserIdentification identification);
-    Task<Response<UserToken>> SignIn(UserCredentials identification);
+    Task<UserToken> RegisterUser(UserIdentification identification);
+    Task<UserToken> AuthenticateUser(UserCredentials identification);
 }

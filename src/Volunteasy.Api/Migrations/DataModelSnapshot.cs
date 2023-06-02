@@ -34,6 +34,10 @@ namespace Volunteasy.Api.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("character varying(11)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ExternalId")
                         .HasColumnType("text");
 
@@ -43,6 +47,9 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Document")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

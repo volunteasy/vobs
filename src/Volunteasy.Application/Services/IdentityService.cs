@@ -1,6 +1,6 @@
+using Microsoft.Extensions.Logging;
 using Volunteasy.Core.Data;
 using Volunteasy.Core.DTOs;
-using Volunteasy.Core.Errors;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
@@ -12,63 +12,56 @@ public class IdentityService : IIdentityService
 
     private readonly IAuthenticator _authenticator;
 
-    public IdentityService(Data data, IAuthenticator authenticator)
+    private readonly ILogger<IdentityService> _log;
+
+    public IdentityService(Data data, IAuthenticator authenticator, ILogger<IdentityService> log)
     {
         _data = data;
         _authenticator = authenticator;
+        _log = log;
     }
 
-    public async Task<Response<UserToken>> SignUp(UserIdentification identification)
+    public async Task<UserToken> RegisterUser(UserIdentification identification)
     {
+        var user = _data.Add(new User
+        {
+            Document = identification.Document,
+            Name = identification.Name,
+            Email = identification.Email
+        });
+        
+        await _data.SaveChangesAsync();
+
+        var res = new UserToken();
+
         try
         {
-            var (externalId, token) = await _authenticator.SignUp(new UserCredentials
+            var  (externalId, token) = await _authenticator.SignUp(user.Entity.Id, new UserCredentials
             {
                 Email = identification.Email,
                 Password = identification.Password
             });
 
-            _data.Add(new User
-            {
-                ExternalId = externalId,
-                Document = identification.Document,
-                Name = identification.Name
-            });
-
-            await _data.SaveChangesAsync();
-            return Response<UserToken>.Created(new UserToken
-            {
-                Token = token
-            });
+            res = res with { ExternalId = externalId, Token = token};
         }
-        catch (DuplicateEmailException e)
+        catch (Exception)
         {
-            return Response<UserToken>.BadRequest("Este e-mail já está sendo usado por outra conta");
+            _log.LogWarning("failed creating user: rolling it back");
+            _data.Users.Remove(user.Entity);
+            
+            #pragma warning disable CS4014
+            _data.SaveChangesAsync();
+            #pragma warning restore CS4014
+            
+            throw;
         }
-        catch (Exception e)
-        {
-            return Response<UserToken>.UnhandledError(e.Message);
-        }
+        
+        return res;
     }
     
-    public async Task<Response<UserToken>> SignIn(UserCredentials identification)
+    public async Task<UserToken> AuthenticateUser(UserCredentials identification)
     {
-        try
-        {
-            var (_, token) = await _authenticator.SignIn(identification);
-            return Response<UserToken>.Content(new UserToken { Token = token });
-        }
-        catch (InvalidPasswordException)
-        {
-            return Response<UserToken>.BadRequest("Este e-mail já está sendo usado por outra conta");
-        }
-        catch (EmailNotFoundException)
-        {
-            return Response<UserToken>.BadRequest("Este e-mail não foi encontrado para nenhum usuário");
-        }
-        catch (Exception e)
-        {
-            return Response<UserToken>.UnhandledError(e.Message);
-        }
+        var (_, token) = await _authenticator.SignIn(identification);
+        return new UserToken { Token = token };
     }
 }

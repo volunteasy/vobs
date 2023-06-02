@@ -4,11 +4,14 @@ namespace Volunteasy.Core.Model;
 
 public class User : Resource
 {
-    public string? ExternalId { get; init; }
+    public string? ExternalId { get; set; }
     
     [Required, MaxLength(11), MinLength(3)]
-    public string? Document { get; init; }
+    public string? Document { get; set; }
     
-    [Required, MaxLength(50), MinLength(3)]
-    public string? Name { get; init; }
+    [Required, MaxLength(50), MinLength(5)]
+    public string? Name { get; set; }
+    
+    [Required, EmailAddress]
+    public string? Email { get; init; }
 }

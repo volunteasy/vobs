@@ -36,7 +36,7 @@ public class Auth : IAuthenticator
         _signUpUrl = signUpUrl;
     }
 
-    public async Task<(string, string)> SignUp(UserCredentials identification)
+    public async Task<(string, string)> SignUp(long userId, UserCredentials identification)
     {
         var res = await _http.PostAsync(_signUpUrl, JsonContent.Create(new
         {
@@ -47,17 +47,22 @@ public class Auth : IAuthenticator
 
         var body = await res.Content.ReadFromJsonAsync<FirebaseAuthResponse>();
 
-        if (body?.Error is null)
-            return (body?.LocalId ?? "", body?.IdToken ?? "");
+        if (body?.Error is not null)
+            switch (body.Error.Message)
+            {
+                case "EMAIL_EXISTS":
+                    throw new DuplicateUserException();
+                default:
+                    _log.LogWarning("Unhandled firebase error: {Error}", body.Error.Message);
+                    throw new ApplicationException(body.Error.Message);
+            }
 
-        switch (body.Error.Message)
+        await _auth.SetCustomUserClaimsAsync(body?.LocalId ?? "", new Dictionary<string, object>
         {
-            case "EMAIL_EXISTS":
-                throw new DuplicateEmailException();
-            default:
-                _log.LogWarning("Unhandled firebase error: {Error}", body.Error.Message);
-                throw new ApplicationException(body.Error.Message);
-        }
+            { "volunteasy_id", userId }
+        });
+
+        return await SignIn(identification);
     }
 
     public async Task<(string, string)> SignIn(UserCredentials identification)
@@ -79,47 +84,17 @@ public class Auth : IAuthenticator
             case "INVALID_PASSWORD":
                 throw new InvalidPasswordException();
             case "EMAIL_NOT_FOUND":
-                throw new EmailNotFoundException();
+                throw new UserNotFoundException();
             case "USER_DISABLED":
-                throw new EmailNotFoundException();
+                throw new UserNotFoundException();
             default:
                 _log.LogWarning("Unhandled firebase error: {Error}", body.Error.Message);
-                throw new ApplicationException(body.Error.Message);
+                throw new ApplicationException($"Firebase: {body.Error.Message}");
         }
     }
 
-    public async Task<ClaimsPrincipal?> GetClaimsByToken(string token)
+    public Task RemoveUserByExternalId(string ext)
     {
-        try
-        {
-            if (string.IsNullOrEmpty(token))
-                return null;
-            
-            var claims = await _auth.VerifyIdTokenAsync(token);
-        
-            if (claims is null || claims.ExpirationTimeSeconds <= 0) 
-            {
-                _log.LogWarning("firebase token verification returned null");
-                return null;
-            }
-            
-            var user = await _data.Users.SingleAsync(x => x.ExternalId == claims.Uid);
-
-            return new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new List<Claim>
-                    {
-                        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new(ClaimTypes.Expired, (claims.ExpirationTimeSeconds <= 0).ToString()),
-                        new (ClaimTypes.UserData, claims.Uid),
-                    }, "Bearer"
-                )
-            );
-        }
-        catch (Exception e)
-        {
-            _log.LogWarning("Could not get/parse token: {Exception}", e);
-            return null;
-        }
+        return _auth.DeleteUserAsync(ext);
     }
 }
