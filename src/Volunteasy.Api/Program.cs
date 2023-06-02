@@ -50,8 +50,8 @@ var builder = WebApplication.CreateBuilder(args);
 
     var firebaseApiKey = builder.Configuration.GetValue<string>("FIREBASE_KEY");
     var firebaseCredentials = builder.Configuration.GetValue<string>("FIREBASE_CREDS");
-    var firebaseSignUp = builder.Configuration.GetSection("Firebase").GetValue<string>("SignUpURL")! + firebaseApiKey;
-    var firebaseSignIn = builder.Configuration.GetSection("Firebase").GetValue<string>("SignInURL")! + firebaseApiKey;
+    var firebaseSignUp = builder.Configuration.GetValue<string>("FIREBASE_SIGNUP_URL")! + firebaseApiKey;
+    var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL")! + firebaseApiKey;
     var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
     {
         Credential = GoogleCredential.FromJson(firebaseCredentials)
