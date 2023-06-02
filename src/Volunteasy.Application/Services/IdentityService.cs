@@ -55,6 +55,9 @@ public class IdentityService : IIdentityService
             
             throw;
         }
+
+        user.Entity.ExternalId = res.ExternalId;
+        await _data.SaveChangesAsync();
         
         return res;
     }
