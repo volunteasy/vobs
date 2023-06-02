@@ -40,7 +40,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Configuration.AddEnvironmentVariables();
 #endregion
 
-
 #region Infrastructure setup
 
     builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
@@ -68,7 +67,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 #endregion
 
-
 #region Application setup
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddScoped<Volunteasy.Application.ISession, Session>();
@@ -76,7 +74,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUserService, UserService>();
 
 #endregion
-
 
 #region API Setup
 
@@ -134,7 +131,6 @@ var builder = WebApplication.CreateBuilder(args);
     });
 
 #endregion
-
 
 var app = builder.Build();
 if (!app.Environment.IsProduction())
