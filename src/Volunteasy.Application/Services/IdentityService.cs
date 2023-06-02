@@ -44,9 +44,9 @@ public class IdentityService : IIdentityService
 
             res = res with { ExternalId = externalId, Token = token};
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            _log.LogWarning("failed creating user: rolling it back");
+            _log.LogInformation(e, "failed creating user: rolling it back");
             _data.Users.Remove(user.Entity);
             
             #pragma warning disable CS4014
