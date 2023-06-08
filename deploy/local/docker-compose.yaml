@@ -35,6 +35,31 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+      
+  firebase:
+#    platform: linux/arm64/v8
+    image: spine3/firebase-emulator
+    container_name: firebase
+    env_file:
+      - ../../src/Volunteasy.Api/.env
+    environment:
+      - ENABLE_UI=true
+      - UI_ENABLED=true
+#      - UI_EMULATOR_PORT=10000
+#      - RDB_EMULATOR_PORT=10001
+#      - FIRESTORE_EMULATOR_PORT=10002
+#      - AUTH_EMULATOR_PORT=10003
+#      - PUBSUB_EMULATOR_PORT=10004
+#      - FUNCTIONS_EMULATOR_PORT=10005
+#      - STORAGE_EMULATOR_PORT=10006
+    ports:
+      - "10000:4000" # UI Emulator
+      - "10001:9000" # Realtime DB
+      - "10002:8080" # Firestore
+      - "10003:9099" # Auth
+      - "10004:8085" # PubSub
+      - "10005:5001" # Functions
+      - "10006:9199" # Cloud Storage
 
 volumes:
     vobsdb:

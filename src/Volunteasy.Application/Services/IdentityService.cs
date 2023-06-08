@@ -21,50 +21,6 @@ public class IdentityService : IIdentityService
         _log = log;
     }
 
-    public async Task<UserToken> RegisterUser(UserIdentification identification)
-    {
-        var user = _data.Add(new User
-        {
-            Document = identification.Document,
-            Name = identification.Name,
-            Email = identification.Email
-        });
-        
-        await _data.SaveChangesAsync();
-
-        var res = new UserToken();
-
-        try
-        {
-            var  (externalId, token) = await _authenticator.SignUp(user.Entity.Id, new UserCredentials
-            {
-                Email = identification.Email,
-                Password = identification.Password
-            });
-
-            res = res with { ExternalId = externalId, Token = token};
-        }
-        catch (Exception e)
-        {
-            _log.LogInformation(e, "failed creating user: rolling it back");
-            _data.Users.Remove(user.Entity);
-            
-            #pragma warning disable CS4014
-            _data.SaveChangesAsync();
-            #pragma warning restore CS4014
-            
-            throw;
-        }
-
-        user.Entity.ExternalId = res.ExternalId;
-        await _data.SaveChangesAsync();
-        
-        return res;
-    }
-    
-    public async Task<UserToken> AuthenticateUser(UserCredentials identification)
-    {
-        var (_, token) = await _authenticator.SignIn(identification);
-        return new UserToken { Token = token };
-    }
+    public async Task<UserToken> AuthenticateUser(UserCredentials identification) => 
+        new() { Token = await _authenticator.SignIn(identification) };
 }

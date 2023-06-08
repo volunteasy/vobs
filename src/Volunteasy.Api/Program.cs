@@ -1,3 +1,4 @@
+using System.Text;
 using dotenv.net;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
@@ -11,6 +12,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Volunteasy.Api.Context;
+using Volunteasy.Api.Middleware;
 using Volunteasy.Application;
 using Volunteasy.Application.Services;
 using Volunteasy.Core.Data;
@@ -18,7 +20,6 @@ using Volunteasy.Core.Services;
 using Volunteasy.Infrastructure.Firebase;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 #region Environment setup
     // This is meant to load env vars in a local environment.
@@ -49,11 +50,9 @@ var builder = WebApplication.CreateBuilder(args);
         )
     );
 
-    var firebaseApiKey = builder.Configuration.GetValue<string>("FIREBASE_KEY");
     var firebaseCredentials = builder.Configuration.GetValue<string>("FIREBASE_CREDS");
-    var firebaseSignUp = builder.Configuration.GetValue<string>("FIREBASE_SIGNUP_URL")! + firebaseApiKey;
-    var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL")! + firebaseApiKey;
-    var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
+    var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL");
+var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
     {
         Credential = GoogleCredential.FromJson(firebaseCredentials)
     }));
@@ -61,9 +60,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IAuthenticator>(b => new Auth(
             fb,
             b.GetService<ILogger<Auth>>()!,
-            b.GetService<Data>()!,
-            firebaseSignIn,
-            firebaseSignUp
+            firebaseSignIn ?? ""
         ));
 
 #endregion
@@ -94,9 +91,11 @@ var builder = WebApplication.CreateBuilder(args);
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidIssuer = "https://securetoken.google.com/volunteasy-bade3",
-                ValidAudience = "volunteasy-bade3",
-                IssuerSigningKey = new SymmetricSecurityKey("AIzaSyDisNRN_J1155cBbNFbhCZOKKKvMHU5LCU"u8.ToArray()),
+                ValidIssuer = builder.Configuration.GetValue<string>("FIREBASE_ISSUER"),
+                ValidAudience = builder.Configuration.GetValue<string>("GCP_PROJECT"),
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? "")),
                 NameClaimType = "user_id"
             };
         });
@@ -146,6 +145,7 @@ if (!app.Environment.IsProduction())
 
 app
     .UseHttpLogging()
+    .UseMiddleware<ExceptionMiddleware>()
     .UseAuthentication()
     .UseAuthorization();
 

@@ -1,14 +1,10 @@
 using System.Net.Http.Json;
-using System.Security.Claims;
 using FirebaseAdmin.Auth;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using Volunteasy.Application;
 using Volunteasy.Core.Data;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Errors;
-using Volunteasy.Core.Model;
 
 namespace Volunteasy.Infrastructure.Firebase;
 
@@ -20,52 +16,44 @@ public class Auth : IAuthenticator
 
     private readonly HttpClient _http;
 
-    private readonly Data _data;
-
-    private readonly string _signUpUrl;
-
     private readonly string _signInUrl;
 
-    public Auth(FirebaseAuth auth, ILogger<Auth> log, Data data, string signInUrl, string signUpUrl)
+    public Auth(FirebaseAuth auth, ILogger<Auth> log, string signInUrl)
     {
         _auth = auth;
         _log = log;
         _http = new HttpClient();
-        _data = data;
         _signInUrl = signInUrl;
-        _signUpUrl = signUpUrl;
     }
 
-    public async Task<(string, string)> SignUp(long userId, UserCredentials identification)
+    public async Task<string> SignUp(long userId, UserCredentials identification)
     {
-        var res = await _http.PostAsync(_signUpUrl, JsonContent.Create(new
+        try
         {
-            identification.Email,
-            identification.Password,
-            ReturnSecureToken = true
-        }));
-
-        var body = await res.Content.ReadFromJsonAsync<FirebaseAuthResponse>();
-
-        if (body?.Error is not null)
-            switch (body.Error.Message)
+            var rec  = await _auth.CreateUserAsync(new UserRecordArgs
             {
-                case "EMAIL_EXISTS":
-                    throw new DuplicateUserException();
-                default:
-                    _log.LogWarning("Unhandled firebase error: {Error}", body.Error.Message);
-                    throw new ApplicationException(body.Error.Message);
-            }
+                Email = identification.Email,
+                Password = identification.Password,
+            });
 
-        await _auth.SetCustomUserClaimsAsync(body?.LocalId ?? "", new Dictionary<string, object>
+            await _auth.SetCustomUserClaimsAsync(rec.Uid, new Dictionary<string, object>
+            {
+                { "volunteasy_id", userId }
+            });
+
+            return rec.Uid;
+        }
+        catch (FirebaseAuthException e)
         {
-            { "volunteasy_id", userId }
-        });
+            if (e.AuthErrorCode == AuthErrorCode.EmailAlreadyExists)
+                throw new DuplicateUserException();
 
-        return await SignIn(identification);
+            _log.LogWarning(e, "Unhandled firebase error");
+            throw;
+        }
     }
 
-    public async Task<(string, string)> SignIn(UserCredentials identification)
+    public async Task<string> SignIn(UserCredentials identification)
     {
         var res = await _http.PostAsync(_signInUrl, JsonContent.Create(new
         {
@@ -77,7 +65,7 @@ public class Auth : IAuthenticator
         var body = await res.Content.ReadFromJsonAsync<FirebaseAuthResponse>();
 
         if (body?.Error is null)
-            return (body?.LocalId ?? "", body?.IdToken ?? "");
+            return body?.IdToken ?? "";
 
         switch (body.Error.Message)
         {
