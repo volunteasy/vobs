@@ -21,7 +21,4 @@ public class Membership
     
     [Required]
     public DateTime MemberSince { get; set; }
-    
-    [Required]
-    public bool Active { get; set; }
 }

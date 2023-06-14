@@ -54,3 +54,20 @@ public class DuplicateMembershipException : ApplicationException
     
     public override string? HelpLink { get; set; } = "400";
 }
+
+public class DuplicateOrganizationException : ApplicationException
+{
+    public DuplicateOrganizationException(
+        string? message = "Ops! Uma organização com este documento já existe") : base(message) {}
+    
+    public override string? HelpLink { get; set; } = "400";
+}
+
+
+public class InvalidMembershipFilterException : ApplicationException
+{
+    public InvalidMembershipFilterException(
+        string? message = "Ops! Você precisa filtrar por uma organização ou usuário") : base(message) {}
+    
+    public override string? HelpLink { get; set; } = "400";
+}

@@ -5,7 +5,9 @@ namespace Volunteasy.Core.DTOs;
 
 public record MembershipFilter : Filter
 {
-    public long OrganizationId { get; init; }
+    public long? OrganizationId { get; init; }
+    
+    public long? MemberId { get; init; }
     
     public MembershipRole? Type { get; init; }
     
@@ -19,6 +21,8 @@ public record MembershipFilter : Filter
 public record OrganizationMember
 {
     public string? MemberName { get; init; }
+    
+    public string? OrganizationName { get; init; }
     
     public long OrganizationId { get; init; }
     

@@ -28,6 +28,19 @@ public class OrganizationController : BaseController
     [HttpGet("{organizationId:long}")]
     public async Task<IActionResult> GetOrganizationById(long organizationId)
         => Ok(await _organizations.GetOrganizationById(organizationId));
+    
+    [HttpGet]
+    public async Task<IActionResult> ListOrganizations(string? name, int start, int end)
+    {
+        var filter = new OrganizationFilter
+        {
+            Name = name,
+            ReadRange = (start, end)
+        };
+        
+        var (organizations, hasNext) = await _organizations.ListOrganizations(filter);
+        return PaginatedList(organizations, filter, hasNext);
+    }
 
     [HttpPut("{organizationId:long}")]
     public async Task<IActionResult> UpdateOrganizationById(long organizationId, Organization registration)

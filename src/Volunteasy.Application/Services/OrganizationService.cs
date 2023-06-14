@@ -1,3 +1,4 @@
+using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Volunteasy.Core.Data;
 using Volunteasy.Core.DTOs;
@@ -22,19 +23,37 @@ public class OrganizationService : IOrganizationService
     
     public async Task<Organization> CreateOrganization(Organization org)
     {
-        var res = await _data.Organizations.AddAsync(org);
-        await _data.Memberships.AddAsync(new Membership
+        try
         {
-            MemberId = _session.UserId,
-            OrganizationId = res.Entity.Id,
-            Role = MembershipRole.Owner,
-            Status = MembershipStatus.Approved,
-            Active = true,
-            MemberSince = DateTime.Now.ToUniversalTime()
-        });
+            var res = await _data.Organizations.AddAsync(org);
+            await _data.Memberships.AddAsync(new Membership
+            {
+                MemberId = _session.UserId,
+                OrganizationId = res.Entity.Id,
+                Role = MembershipRole.Owner,
+                Status = MembershipStatus.Approved,
+                MemberSince = DateTime.Now.ToUniversalTime()
+            });
 
-        await _data.SaveChangesAsync();
-        return res.Entity;
+            await _data.SaveChangesAsync();
+            return res.Entity;
+        }
+        catch (UniqueConstraintException)
+        {
+            throw new DuplicateOrganizationException();
+        }
+        
+    }
+
+    public async Task<(IEnumerable<Organization>, bool)> ListOrganizations(OrganizationFilter filter)
+    {
+        var query = _data.Organizations.AsQueryable();
+
+        if (filter.Name != null)
+            query = query.Where(x => 
+                x.Name != null && x.Name.Contains(filter.Name));
+
+        return await query.Paginate(filter);
     }
 
     public async Task<Organization> GetOrganizationById(long id)
@@ -76,24 +95,12 @@ public class OrganizationService : IOrganizationService
         if (role == MembershipRole.Assisted)
             status = MembershipStatus.Approved;
         
-        var existingMembership = await _data.Memberships
-            .SingleOrDefaultAsync(x => x.MemberId == memberId);
-
-        if (existingMembership != null)
-        {
-            existingMembership.Active = true;
-            existingMembership.Status = status;
-            await _data.SaveChangesAsync();
-            return;
-        }
-        
         await _data.Memberships.AddAsync(new Membership
         {
             MemberId = memberId,
             OrganizationId = organizationId,
             Role = role,
             Status = status,
-            Active = true,
             MemberSince = DateTime.Now.ToUniversalTime()
         });
 
@@ -103,8 +110,9 @@ public class OrganizationService : IOrganizationService
     public async Task RemoveMembership(long orgId, long memberId)
     {
         var membership = await GetMembershipById(orgId, memberId);
+        // TODO: Send revoked membership e-mail if admin is removing;
 
-        membership.Active = false;
+        _data.Memberships.Remove(membership);
         await _data.SaveChangesAsync();
     }
 
@@ -118,6 +126,12 @@ public class OrganizationService : IOrganizationService
     
     public async Task ChangeMembershipStatus(long orgId, long memberId, MembershipStatus status)
     {
+        if (status == MembershipStatus.Declined)
+        {
+            await RemoveMembership(orgId, memberId);
+            return;
+        }
+
         var membership = await GetMembershipById(orgId, memberId);
         membership.Status = status;
         
@@ -126,9 +140,17 @@ public class OrganizationService : IOrganizationService
 
     public async Task<(IEnumerable<OrganizationMember>, bool)> ListMemberships(MembershipFilter filter)
     {
-        var query = _data.Memberships
-            .Where(m => m.OrganizationId == filter.OrganizationId)
-            .Where(m => m.Active);
+        if (filter.OrganizationId == null && filter.MemberId == null)
+            throw new InvalidMembershipFilterException();
+
+
+        var query = _data.Memberships.AsQueryable();
+
+        if (filter.OrganizationId != null)
+            query = query.Where(x => x.OrganizationId == filter.OrganizationId);
+        
+        if (filter.MemberId != null)
+            query = query.Where(x => x.MemberId == filter.MemberId);
 
         if (filter.Type != null)
             query = query.Where(x => x.Role == filter.Type);
@@ -144,19 +166,22 @@ public class OrganizationService : IOrganizationService
             query = query
                 .Where(x => x.MemberSince <= filter.MemberUntil);
 
-        return await query.Join(
-            _data.Users, 
-            m => m.MemberId, 
-            u => u.Id, 
-            (membership, user) => new OrganizationMember
-        {
-            Role = membership.Role,
-            Status = membership.Status,
-            MemberSince = membership.MemberSince,
-            OrganizationId = membership.OrganizationId,
-            MemberId = membership.MemberId,
-            MemberName = user.Name,
-        }).Paginate(filter);
+        return await query.Join(_data.Users, 
+            membership => membership.MemberId, user => user.Id, (membership, user) => new
+            {
+                Membership = membership, User = user
+            })
+            .Join(_data.Organizations, 
+                mu => mu.Membership.OrganizationId, o => o.Id, (mu, organization) => new OrganizationMember
+            {
+                Role = mu.Membership.Role,
+                Status = mu.Membership.Status,
+                MemberSince = mu.Membership.MemberSince,
+                OrganizationId = mu.Membership.OrganizationId,
+                MemberId = mu.Membership.MemberId,
+                MemberName = mu.User.Name, 
+                OrganizationName = organization.Name
+            }).Paginate(filter);
     }
 
     // This is not meant to be used as a CRUD method. It evaluates if the logged in user has access to it
