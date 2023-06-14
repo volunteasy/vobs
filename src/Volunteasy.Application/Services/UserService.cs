@@ -1,3 +1,4 @@
+using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Volunteasy.Core.Data;
@@ -26,29 +27,33 @@ public class UserService : IUserService
         _authenticator = authenticator;
     }
     
-    public async Task<User> CreateUser(UserIdentification identification)
+    public async Task<User> CreateUser(UserRegistration registration)
     {
         var user = _data.Add(new User
         {
-            Document = identification.Document,
-            Name = identification.Name,
-            Email = identification.Email
+            Document = registration.Document,
+            Name = registration.Name,
+            Email = registration.Email
         });
-        
-        await _data.SaveChangesAsync();
-        
+
         try
         {
+            await _data.SaveChangesAsync();
+            
             var  externalId = await _authenticator.SignUp(user.Entity.Id, new UserCredentials
             {
-                Email = identification.Email,
-                Password = identification.Password
+                Email = registration.Email,
+                Password = registration.Password
             });
 
             user.Entity.ExternalId = externalId;
             await _data.SaveChangesAsync();
             
             return user.Entity;
+        }
+        catch (UniqueConstraintException)
+        {
+            throw new DuplicateUserException();
         }
         catch (Exception e)
         {
@@ -72,7 +77,7 @@ public class UserService : IUserService
         };
     }
 
-    public async Task UpdateUser(long id, UpdateUserDataRequest identification)
+    public async Task UpdateUser(long id, UserDetails identification)
     {
         if (id != _session.UserId)
             throw new UserNotAuthorizedException();
@@ -88,6 +93,15 @@ public class UserService : IUserService
         user.Document = identification.Document;
         user.Name = identification.Name;
 
-        await _data.SaveChangesAsync();
+        try
+        {
+            await _data.SaveChangesAsync();
+        }
+        catch (UniqueConstraintException)
+        {
+            throw new DuplicateUserException();
+        }
+
+        
     }
 }

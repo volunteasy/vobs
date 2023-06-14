@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Volunteasy.Core.DTOs;
 
-public record UserIdentification
+public record UserRegistration
 {
     [Required, MaxLength(11), MinLength(3)]
     public string? Document { get; init; }
@@ -26,15 +26,7 @@ public record UserCredentials
     public string? Password { get; init; }
 }
 
-public record UserToken
-{
-    public long UserId { get; init; }
-    
-    public string? ExternalId { get; init; }
-    public string? Token { get; init; }
-}
-
-public record UpdateUserDataRequest
+public record UserDetails
 {
     [Required, MaxLength(11), MinLength(3)]
     public string? Document { get; init; }

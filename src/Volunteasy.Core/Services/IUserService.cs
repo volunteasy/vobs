@@ -5,9 +5,9 @@ namespace Volunteasy.Core.Services;
 
 public interface IUserService
 {
-    Task<User> CreateUser(UserIdentification identification);
+    Task<User> CreateUser(UserRegistration registration);
     
     public Task<User> GetUserById(long id);
 
-    public Task UpdateUser(long id, UpdateUserDataRequest identification);
+    public Task UpdateUser(long id, UserDetails identification);
 }

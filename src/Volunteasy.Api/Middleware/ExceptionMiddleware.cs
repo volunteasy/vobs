@@ -1,5 +1,3 @@
-using Volunteasy.Api.Response;
-
 namespace Volunteasy.Api.Middleware;
 
 public class ExceptionMiddleware
@@ -22,26 +20,30 @@ public class ExceptionMiddleware
         }
         catch (Exception e)
         {
-            var status = 0;
-            if (e is not ApplicationException && !int.TryParse(e.HelpLink, out status))
+            
+            if (e is ApplicationException && int.TryParse(e.HelpLink, out var status))
             {
-                _logger.LogError(e, "Captured unexpected error");
+                _logger.LogWarning("Captured expected error: {Message}, {Type}", e.Message, e.GetType().Name);
+                ctx.Response.StatusCode = status;
+            
                 await ctx.Response.WriteAsJsonAsync(new Response.Response
                 {
                     Context = ctx,
-                    Reason = "UnexpectedError",
-                    Message = "Ops! Um erro inesperado ocorreu. Tente novamente mais tarde"
+                    Reason = e.GetType().Name,
+                    Message = e.Message
                 });
+                
+                return;
             }
 
-            _logger.LogWarning(e, "Captured expected error");
-            ctx.Response.StatusCode = status;
-            
+            _logger.LogError(e, "Captured unexpected error");
+            ctx.Response.StatusCode = 500;
+                
             await ctx.Response.WriteAsJsonAsync(new Response.Response
             {
                 Context = ctx,
-                Reason = e.GetType().Name,
-                Message = e.Message
+                Reason = "UnexpectedError",
+                Message = "Ops! Um erro inesperado ocorreu. Tente novamente mais tarde"
             });
         }
     }

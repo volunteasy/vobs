@@ -21,9 +21,9 @@ public class UserController : BaseController
         Summary = "Create user",
         Description = "Creates a new user. After that, they can use their credentials to authenticate to our services"
     )]
-    public async Task<IActionResult> CreateUser(UserIdentification identification)
+    public async Task<IActionResult> CreateUser(UserRegistration registration)
     {
-        var res = await _users.CreateUser(identification);
+        var res = await _users.CreateUser(registration);
         return Created(res.Id.ToString(), null);
     }
 
@@ -33,7 +33,7 @@ public class UserController : BaseController
         Description = "Updates user data. At the moment, only document and name fields are updated"
     )]
     [Authorize]
-    public async Task<IActionResult> UpdatedUser(long userId, UpdateUserDataRequest userIdentification)
+    public async Task<IActionResult> UpdatedUser(long userId, UserDetails userIdentification)
     {
         await _users.UpdateUser(userId, userIdentification);
         return NoContent();

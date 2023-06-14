@@ -7,11 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Model\" />
-      <Folder Include="VOs\" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="6.0.3" />
+      <PackageReference Include="IdGen" Version="3.0.3" />
+      <PackageReference Include="IdGen.DependencyInjection" Version="3.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     </ItemGroup>

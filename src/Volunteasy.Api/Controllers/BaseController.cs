@@ -10,20 +10,20 @@ public class BaseController : Controller
     protected Response.Response Payload => new Response.Response { Context = HttpContext };
 
     [NonAction]
-    protected IActionResult PaginatedList<TK>(IEnumerator<TK> list, Filter listFilter, bool hasNext = false)
+    protected IActionResult PaginatedList<TK>(IEnumerable<TK> list, Filter listFilter, bool hasNext = false)
     {
         new List<KeyValuePair<string, StringValues>>
         {
             new("X-Has-Next", hasNext.ToString().ToLower()),
-            new("X-Next-Page", $"start={listFilter.NextPage.Item1}&end=start={listFilter.NextPage.Item1}")
+            new("X-Next-Page", $"start={listFilter.NextPage.Item1}&end={listFilter.NextPage.Item2}")
         }.ForEach(HttpContext.Response.Headers.Add);
 
         return Ok(Payload with
         {
             Data = new
             {
-                HasNext = hasNext.ToString().ToLower(),
-                NextPage = $"start={listFilter.NextPage.Item1}&end=start={listFilter.NextPage.Item1}",
+                HasNext = hasNext,
+                NextPage = $"start={listFilter.NextPage.Item1}&end={listFilter.NextPage.Item2}",
                 Items = list
             }
         });

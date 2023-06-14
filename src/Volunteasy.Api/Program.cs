@@ -1,8 +1,10 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using dotenv.net;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
+using IdGen.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Volunteasy.Api.Context;
 using Volunteasy.Api.Middleware;
+using Volunteasy.Api.Response;
 using Volunteasy.Application;
 using Volunteasy.Application.Services;
 using Volunteasy.Core.Data;
@@ -44,6 +47,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Infrastructure setup
 
+    builder.Services.AddIdGen(123);
+
     builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
             builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "",
             op => op.MigrationsAssembly("Volunteasy.Api")
@@ -52,16 +57,13 @@ var builder = WebApplication.CreateBuilder(args);
 
     var firebaseCredentials = builder.Configuration.GetValue<string>("FIREBASE_CREDS");
     var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL");
-var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
+    var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
     {
         Credential = GoogleCredential.FromJson(firebaseCredentials)
     }));
 
     builder.Services.AddScoped<IAuthenticator>(b => new Auth(
-            fb,
-            b.GetService<ILogger<Auth>>()!,
-            firebaseSignIn ?? ""
-        ));
+        fb, b.GetService<ILogger<Auth>>()!, firebaseSignIn ?? ""));
 
 #endregion
 
@@ -70,6 +72,7 @@ var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
     builder.Services.AddScoped<Volunteasy.Application.ISession, Session>();
     builder.Services.AddScoped<IIdentityService, IdentityService>();
     builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
 #endregion
 
@@ -104,29 +107,41 @@ var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
     {
         logging.ResponseBodyLogLimit = 0;
         logging.RequestBodyLogLimit = 0;
-        logging.LoggingFields = HttpLoggingFields.None;
+        logging.LoggingFields = HttpLoggingFields.ResponseStatusCode;
     });
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(new IdConverter());
+        });
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "VolunteasyAPI", Version = "v1" });
-        var securityScheme = new OpenApiSecurityScheme
+
+        var sec = new OpenApiSecurityScheme
         {
             Name = "Authorization",
             Type = SecuritySchemeType.Http,
             Scheme = "bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme."
+            Description = "JWT Authorization header using the Bearer scheme.",
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "jwt",
+            },
         };
-
-        c.AddSecurityDefinition("jwt", securityScheme);
+        
+        c.AddSecurityDefinition("jwt", sec);
 
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
-            { securityScheme, new[] { "jwt" } }
+            { sec, new[] { "jwt" } }
         });
     });
 
