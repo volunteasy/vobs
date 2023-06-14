@@ -237,14 +237,23 @@ function getLocationHeader(h) {
 
 async function debugResponse(res = new Response()){
     var headers = {};
+
     res.headers.forEach((v, k) => {
         headers[k] = v
     })
+
+    var txt = "";
+
+    try {
+        txt = await res.text()
+    } catch (error) {
+        
+    }
     
     return {
         headers: headers,
         status: res.status,
-        text: await res.text(),
+        text: txt,
         url: res.url
     }
 }
