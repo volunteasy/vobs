@@ -72,7 +72,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<Volunteasy.Application.ISession, Session>();
     builder.Services.AddScoped<IIdentityService, IdentityService>();
     builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+    builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+    builder.Services.AddScoped<IMembershipService, MembershipService>();
 
 #endregion
 
@@ -90,6 +91,23 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
         .AddJwtBearer(options =>
         {
             options.Authority = "https://securetoken.google.com/volunteasy-bade3";
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async ctx =>
+                {
+                    var userId = Convert.ToInt64(
+                        ctx.Principal?.FindFirst("volunteasy_id")?.Value);
+
+                    var service = ctx.HttpContext.RequestServices
+                        .GetService<IIdentityService>();
+                    
+                    if (service is null) 
+                        return;
+                    
+                    ctx.Principal?.AddIdentities(
+                        await service.GetUserSessionClaims(userId));
+                }
+            };
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -121,6 +139,14 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "VolunteasyAPI", Version = "v1" });
+        c.AddServer(new OpenApiServer
+        {
+            Url = "http://localhost:5000"
+        });
+        c.AddServer(new OpenApiServer
+        {
+            Url = "http://volunteasy-dev.eba-sq86vjma.sa-east-1.elasticbeanstalk.com"
+        });
 
         var sec = new OpenApiSecurityScheme
         {

@@ -21,6 +21,11 @@ const test = {
             document: `10799843000${generateNum(980, 10)}`,
             email: `vainafe+${generateNum(100, 1)}@goo${generateNum(10000, 1)}.com`,
             id: 0
+        },
+        {
+            document: `10729843000${generateNum(980, 10)}`,
+            email: `vainafe+${generateNum(100, 1)}@goo${generateNum(10000, 1)}.com`,
+            id: 0
         }
     ],
     
@@ -101,32 +106,33 @@ const test = {
 
         {
             name: "CreateOrganization",
-            fn: function(resolve, reject) {
-                const org = test.organizations[0];
-
-                return fetch(test.url + "/organizations", {
-                    method: "POST",
-                    headers: test.headers,
-                    body: JSON.stringify({
-                        document: org.document,
-                        phoneNumber: "4322222222",
-                        name: "Annelise Keating ONG's " + generateNum(1000, 1),
-                        coordinateX: 10.77,
-                        coordinateY: 103.77,
-                        addressName: "Street Boys, " + generateNum(1000, 1),
-                    })
-                }).then(async (res) => {
-
-                    if (res.status != 201 || getLocationHeader(res.headers).length == 0){
-                        reject({
-                            err: "org creation was not succesful or location header was not found",
-                            res: res,
+            fn: async function(resolve, reject) {
+                for (const org of test.organizations) {
+                    await fetch(test.url + "/organizations", {
+                        method: "POST",
+                        headers: test.headers,
+                        body: JSON.stringify({
+                            document: org.document,
+                            phoneNumber: "4322222222",
+                            name: "Annelise Keating ONG's " + generateNum(1000, 1),
+                            coordinateX: 10.77,
+                            coordinateY: 103.77,
+                            addressName: "Street Boys, " + generateNum(1000, 1),
                         })
-                    }
-    
-                    test.organizations[0].id = getLocationHeader(res.headers);
-                    resolve()
-                })
+                    }).then(async (res) => {
+
+                        if (res.status != 201 || getLocationHeader(res.headers).length == 0){
+                            reject({
+                                err: "org creation was not succesful or location header was not found",
+                                res: res,
+                            })
+                        }
+
+                        test.organizations[0].id = getLocationHeader(res.headers);
+                    })
+                }
+
+                resolve()
             }
         },
 
@@ -195,29 +201,31 @@ const test = {
 (async() => {
     console.info("Started tests")
 
-    for (const routine of test.routines) {
-        console.info(`Running routine: ${routine.name}`);
+    try {
+        for (const routine of test.routines) {
+            console.info(`Running routine: ${routine.name}`);
 
-        try {
-            var res = await new Promise(routine.fn)
-            if (test.debug){
-                console.debug(res);
+            try {
+                var res = await new Promise(routine.fn)
+                if (test.debug){
+                    console.debug(res);
+                }
+
+            } catch (error) {
+                if (error.err && error.res){
+                    error = {
+                        err: `${routine.name}: ${error.err}`,
+                        details: await debugResponse(error.res)
+                    }
+                }
+
+                throw error;
             }
 
-        } catch (error) {
-            if (error.err && error.res){
-                error = {
-                    err: `${routine.name}: ${error.err}`,
-                    details: await debugResponse(error.res)
-                }
-            } 
-            
-            console.error(error);
-
-            return
+            console.info(`Finished routine successfully: ${routine.name}`);
         }
-
-        console.info(`Finished routine successfully: ${routine.name}`);
+    } catch (error){
+        console.error(error)
     }
     
     console.info("Finished tests successfully")

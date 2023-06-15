@@ -13,13 +13,13 @@ namespace Volunteasy.Api.Controllers;
 [Route("/api/v1/organizations/{organizationId:long}/members")]
 public class MembershipController : BaseController
 {
-    private readonly IOrganizationService _organizations;
+    private readonly IMembershipService _memberships;
 
     private readonly ISession _session;
     
-    public MembershipController(IOrganizationService organizations, ISession session)
+    public MembershipController(IMembershipService memberships, ISession session)
     {
-        _organizations = organizations;
+        _memberships = memberships;
         _session = session;
     }
     
@@ -28,18 +28,16 @@ public class MembershipController : BaseController
         Summary = "Enroll organization",
         Description = "Enrolls the current user in the organization specified by the parameterized id"
     )]
-    public async Task<IActionResult> EnrollOrganization(long organizationId,
-        [SwaggerParameter("Possible values are 'volunteer' and 'assisted'. Defaults to 'assisted'")]
-        MembershipRole enrollAs)
+    public async Task<IActionResult> EnrollOrganization(long organizationId, MembershipRole enrollAs)
     {
-        await _organizations.CreateMembership(organizationId, _session.UserId, enrollAs);
+        await _memberships.EnrollOrganization(organizationId, _session.UserId, enrollAs);
         return NoContent();
     }
 
     [HttpDelete]
     public async Task<IActionResult> LeaveOrganization(long organizationId)
     {
-        await _organizations.RemoveMembership(organizationId, _session.UserId);
+        await _memberships.LeaveOrganization(organizationId, _session.UserId);
         return NoContent();
     }
     
@@ -49,26 +47,26 @@ public class MembershipController : BaseController
     {
         var filter = new MembershipFilter
         {
-            MemberSince = since, MemberUntil = until, Type = role,
+            MemberSince = since?.ToUniversalTime(), MemberUntil = until?.ToUniversalTime(), Type = role,
             Status = status, OrganizationId = organizationId,
             ReadRange = (start, end)
         };
         
-        var (members, hasNext) = await _organizations.ListMemberships(filter);
+        var (members, hasNext) = await _memberships.ListMemberships(filter);
         return PaginatedList(members, filter, hasNext);
     }
 
     [HttpPut("{memberId:long}/role")]
     public async Task<IActionResult> ChangeMembershipRole(long organizationId, long memberId, MembershipRole role)
     {
-        await _organizations.ChangeMembershipType(organizationId, memberId, role);
+        await _memberships.ChangeMembershipRole(organizationId, memberId, role);
         return NoContent();
     }
     
     [HttpPut("{memberId:long}/status")]
     public async Task<IActionResult> ChangeMembershipStatus(long organizationId, long memberId, MembershipStatus status)
     {
-        await _organizations.ChangeMembershipStatus(organizationId, memberId, status);
+        await _memberships.ChangeMembershipStatus(organizationId, memberId, status);
         return NoContent();
     }
 }
