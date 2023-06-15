@@ -30,22 +30,28 @@ var builder = WebApplication.CreateBuilder(args);
     if (builder.Environment.IsDevelopment())
         DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: false));
 
-    var logger = new LoggerConfiguration()
-        .Enrich.FromLogContext()
-        .WriteTo.Console(new CompactJsonFormatter())
-        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-        .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker", LogEventLevel.Warning)
-        .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor", LogEventLevel.Warning)
-        .MinimumLevel.Override("Microsoft.AspNetCore.Routing.EndpointMiddleware", LogEventLevel.Warning)
-        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal)
-        .Filter.ByExcluding(ev =>
-        {
-            ev.RemovePropertyIfPresent("HostingRequestStartingLog");
-            ev.RemovePropertyIfPresent("HostingRequestFinishedLog");
+    var loggerCfg = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore.Routing.EndpointMiddleware", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal);
 
-            return false;
-        })
-        .CreateLogger();
+    if (!builder.Environment.IsDevelopment())
+    {
+        loggerCfg = loggerCfg.WriteTo.NewRelicLogs(
+            applicationName: builder.Configuration.GetValue<string>("NR_APP") ?? "",
+            licenseKey: builder.Configuration.GetValue<string>("NR_LICENSE") ?? "");
+    }
+    else
+    {
+        loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
+    }
+        
+        
+    var logger = loggerCfg.CreateLogger();
 
     builder.Services.AddSerilog(logger);
     builder.Host.UseSerilog(logger);
