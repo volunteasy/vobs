@@ -30,17 +30,25 @@ var builder = WebApplication.CreateBuilder(args);
     if (builder.Environment.IsDevelopment())
         DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: false));
 
-    builder.Host.UseSerilog(new LoggerConfiguration()
+    var logger = new LoggerConfiguration()
         .Enrich.FromLogContext()
         .WriteTo.Console(new CompactJsonFormatter())
         .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
         .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.AspNetCore.Routing.EndpointMiddleware", LogEventLevel.Warning)
-        .MinimumLevel.Override("Microsoft.AspNetCore.Hosting.Diagnostics", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal)
-        .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Warning)
-        .CreateLogger());
+        .Filter.ByExcluding(ev =>
+        {
+            ev.RemovePropertyIfPresent("HostingRequestStartingLog");
+            ev.RemovePropertyIfPresent("HostingRequestFinishedLog");
+
+            return false;
+        })
+        .CreateLogger();
+
+    builder.Services.AddSerilog(logger);
+    builder.Host.UseSerilog(logger);
 
     builder.Configuration.AddEnvironmentVariables();
 #endregion
@@ -121,13 +129,6 @@ var builder = WebApplication.CreateBuilder(args);
             };
         });
 
-    builder.Services.AddHttpLogging(logging =>
-    {
-        logging.ResponseBodyLogLimit = 0;
-        logging.RequestBodyLogLimit = 0;
-        logging.LoggingFields = HttpLoggingFields.ResponseStatusCode;
-    });
-
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
@@ -185,7 +186,13 @@ if (!app.Environment.IsProduction())
 }
 
 app
-    .UseHttpLogging()
+    .UseSerilogRequestLogging(options =>
+    {
+        options.GetMessageTemplateProperties = (context, s, arg3, arg4) =>
+        {
+            return new List<LogEventProperty>();
+        };
+    })
     .UseMiddleware<ExceptionMiddleware>()
     .UseAuthentication()
     .UseAuthorization();
