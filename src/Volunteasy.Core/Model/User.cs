@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Volunteasy.Core.Model;
 
-public class User : Resource
+public class User : IdBased
 {
     public string? ExternalId { get; set; }
     

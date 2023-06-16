@@ -3,7 +3,7 @@ using Volunteasy.Core.VOs;
 
 namespace Volunteasy.Core.Model;
 
-public class Organization : Resource
+public class Organization : IdBased
 {
     [Required, MaxLength(14), MinLength(14)]
     public string? Document { get; set; }

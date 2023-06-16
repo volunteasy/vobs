@@ -1,6 +1,6 @@
 namespace Volunteasy.Core.Model;
 
-public class Resource
+public class IdBased
 {
     public long Id { get; set; }
 }
