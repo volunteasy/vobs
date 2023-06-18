@@ -115,9 +115,14 @@ const test = {
                             document: org.document,
                             phoneNumber: "4322222222",
                             name: "Annelise Keating ONG's " + generateNum(1000, 1),
-                            coordinateX: 10.77,
-                            coordinateY: 103.77,
-                            addressName: "Street Boys, " + generateNum(1000, 1),
+                            address : {
+                                coordinateX: 10.77,
+                                coordinateY: 103.77,
+                                addressName: "Street Boys, " + generateNum(1000, 1),
+                                zipCode: "09998099",
+                                addressNumber: "43"
+                            }
+                            
                         })
                     }).then(async (res) => {
 

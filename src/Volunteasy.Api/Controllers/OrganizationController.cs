@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Volunteasy.Core.DTOs;
-using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
 namespace Volunteasy.Api.Controllers;
@@ -19,7 +18,7 @@ public class OrganizationController : BaseController
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateOrganization(Organization registration)
+    public async Task<IActionResult> CreateOrganization(OrganizationRegistration registration)
         => Created((await _organizations.CreateOrganization(registration)).Id.ToString(), null);
 
     [HttpGet("{organizationId:long}")]
@@ -27,21 +26,16 @@ public class OrganizationController : BaseController
         => Ok(await _organizations.GetOrganizationById(organizationId));
     
     [HttpGet]
-    public async Task<IActionResult> ListOrganizations(string? name, int start, int end)
+    public async Task<IActionResult> ListOrganizations([FromQuery] OrganizationFilter filter)
     {
-        var filter = new OrganizationFilter
-        {
-            Name = name,
-            ReadRange = (start, end)
-        };
         
-        var (organizations, hasNext) = await _organizations.ListOrganizations(filter);
-        return PaginatedList(organizations, filter, hasNext);
+        var (organizations, next) = await _organizations.ListOrganizations(filter);
+        return PaginatedList(organizations, next);
     }
 
     [HttpPut("{organizationId:long}")]
     [Authorize]
-    public async Task<IActionResult> UpdateOrganizationById(long organizationId, Organization registration)
+    public async Task<IActionResult> UpdateOrganizationById(long organizationId, OrganizationRegistration registration)
     {
         await _organizations.UpdateOrganizationById(organizationId, registration);
         return NoContent();

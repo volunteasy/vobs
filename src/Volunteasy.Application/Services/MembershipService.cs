@@ -95,7 +95,7 @@ public class MembershipService : IMembershipService
         await _data.SaveChangesAsync();
     }
 
-    public async Task<(IEnumerable<OrganizationMember>, bool)> ListMemberships(MembershipFilter filter)
+    public async Task<(IEnumerable<OrganizationMember>, string?)> ListMemberships(MembershipFilter filter)
     {
         if (filter.OrganizationId == null && filter.MemberId == null)
             throw new InvalidMembershipFilterException();
@@ -137,7 +137,7 @@ public class MembershipService : IMembershipService
                 MemberId = mu.Membership.MemberId,
                 MemberName = mu.User.Name, 
                 OrganizationName = organization.Name
-            }).Paginate(filter);
+            }).Paginate(filter.PageToken, member => member.MemberId);
     }
 
     private Task<Membership?> GetMembershipById(long orgId, long memberId)

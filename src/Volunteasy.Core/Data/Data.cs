@@ -14,6 +14,8 @@ public class Data : DbContext
 
     public DbSet<Membership> Memberships { get; set; } = null!;
 
+    public DbSet<Address> Addresses { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(x =>
@@ -26,9 +28,6 @@ public class Data : DbContext
         modelBuilder.Entity<Organization>(x =>
         {
             x.Property(u => u.Id).HasValueGenerator<IdValueGenerator>();
-            x.HasMany(o => o.Memberships)
-                .WithOne(m => m.Organization);
-            
             x.HasIndex(c => c.Document).IsUnique();
         });
 

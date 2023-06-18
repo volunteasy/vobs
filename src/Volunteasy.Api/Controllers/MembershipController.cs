@@ -42,18 +42,10 @@ public class MembershipController : BaseController
     }
     
     [HttpGet]
-    public async Task<IActionResult> ListMemberships(long organizationId, int start, int end,
-        DateTime? since, DateTime? until, MembershipRole? role, MembershipStatus? status)
+    public async Task<IActionResult> ListMemberships([FromQuery] MembershipFilter filter)
     {
-        var filter = new MembershipFilter
-        {
-            MemberSince = since?.ToUniversalTime(), MemberUntil = until?.ToUniversalTime(), Type = role,
-            Status = status, OrganizationId = organizationId,
-            ReadRange = (start, end)
-        };
-        
-        var (members, hasNext) = await _memberships.ListMemberships(filter);
-        return PaginatedList(members, filter, hasNext);
+        var (members, next) = await _memberships.ListMemberships(filter);
+        return PaginatedList(members, next);
     }
 
     [HttpPut("{memberId:long}/role")]

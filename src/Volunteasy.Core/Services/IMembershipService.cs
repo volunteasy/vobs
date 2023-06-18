@@ -14,5 +14,5 @@ public interface IMembershipService
     
     public Task ChangeMembershipStatus(long orgId, long memberId, MembershipStatus status);
     
-    public Task<(IEnumerable<OrganizationMember>, bool)> ListMemberships(MembershipFilter filter);
+    public Task<(IEnumerable<OrganizationMember>, string?)> ListMemberships(MembershipFilter filter);
 }

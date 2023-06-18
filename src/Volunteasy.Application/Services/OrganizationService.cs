@@ -21,11 +21,18 @@ public class OrganizationService : IOrganizationService
         _session = session;
     }
     
-    public async Task<Organization> CreateOrganization(Organization org)
+    public async Task<Organization> CreateOrganization(OrganizationRegistration org)
     {
         try
         {
-            var res = await _data.Organizations.AddAsync(org);
+            var res = await _data.Organizations.AddAsync(new Organization
+            {
+                Document = org.Document,
+                Name = org.Name,
+                PhoneNumber = org.PhoneNumber,
+                Address = org.Address
+            });
+            
             await _data.Memberships.AddAsync(new Membership
             {
                 MemberId = _session.UserId,
@@ -45,7 +52,7 @@ public class OrganizationService : IOrganizationService
         
     }
 
-    public async Task<(IEnumerable<Organization>, bool)> ListOrganizations(OrganizationFilter filter)
+    public async Task<(IEnumerable<Organization>, string?)> ListOrganizations(OrganizationFilter filter)
     {
         var query = _data.Organizations.AsQueryable();
 
@@ -53,7 +60,7 @@ public class OrganizationService : IOrganizationService
             query = query.Where(x => 
                 x.Name != null && x.Name.Contains(filter.Name));
 
-        return await query.Paginate(filter);
+        return await query.Paginate(filter.PageToken, organization => organization.Id);
     }
 
     public async Task<Organization> GetOrganizationById(long id)
@@ -67,7 +74,7 @@ public class OrganizationService : IOrganizationService
         };
     }
 
-    public async Task UpdateOrganizationById(long id, Organization organization)
+    public async Task UpdateOrganizationById(long id, OrganizationRegistration organization)
     {
         var org = await _data.Organizations
             .SingleOrDefaultAsync(x => x.Id == id);
@@ -78,9 +85,7 @@ public class OrganizationService : IOrganizationService
         if (!IsUserOrganizationOwner(id, _session.UserId))
             throw new UserNotAuthorizedException();
 
-        org.CoordinateX = organization.CoordinateX;
-        org.CoordinateY = organization.CoordinateY;
-        org.AddressName = organization.AddressName;
+        org.Address = organization.Address;
         org.Document = organization.Document;
         org.PhoneNumber = organization.PhoneNumber;
         org.Name = organization.Name;

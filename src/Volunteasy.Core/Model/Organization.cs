@@ -11,11 +11,8 @@ public class Organization : IdBased
     [Required, MaxLength(255), MinLength(3)]
     public string? Name { get; set; }
     
-    public float CoordinateX { get; set; }
-    
-    public float CoordinateY { get; set; }
-    
-    public string? AddressName { get; set; }
+    [Required]
+    public Address? Address { get; set; }
     
     [Required, MaxLength(32)]
     public string? PhoneNumber { get; set; }
