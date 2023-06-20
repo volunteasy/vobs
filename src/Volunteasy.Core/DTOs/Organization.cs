@@ -3,7 +3,12 @@ using Volunteasy.Core.Model;
 
 namespace Volunteasy.Core.DTOs;
 
-public record OrganizationFilter(string? Name) : Filter();
+public record OrganizationFilter 
+{
+    public string? Name { get; init; }
+
+    public PaginationDetails Pagination { get; init; } = new();
+}
 
 public record OrganizationRegistration(
     [Required, MaxLength(14), MinLength(14)]

@@ -22,6 +22,36 @@ namespace Volunteasy.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Volunteasy.Core.Model.Address", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AddressName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AddressNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("CoordinateX")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CoordinateY")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ZipCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("Volunteasy.Core.Model.Membership", b =>
                 {
                     b.Property<long>("MemberId")
@@ -58,14 +88,8 @@ namespace Volunteasy.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("AddressName")
-                        .HasColumnType("text");
-
-                    b.Property<float>("CoordinateX")
-                        .HasColumnType("real");
-
-                    b.Property<float>("CoordinateY")
-                        .HasColumnType("real");
+                    b.Property<long>("AddressId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Document")
                         .IsRequired()
@@ -83,6 +107,9 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId")
+                        .IsUnique();
 
                     b.HasIndex("Document")
                         .IsUnique();
@@ -125,18 +152,28 @@ namespace Volunteasy.Api.Migrations
 
             modelBuilder.Entity("Volunteasy.Core.Model.Membership", b =>
                 {
-                    b.HasOne("Volunteasy.Core.Model.Organization", "Organization")
-                        .WithMany("Memberships")
-                        .HasForeignKey("OrganizationId")
+                    b.HasOne("Volunteasy.Core.Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Organization");
+                    b.HasOne("Volunteasy.Core.Model.Organization", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Volunteasy.Core.Model.Organization", b =>
                 {
-                    b.Navigation("Memberships");
+                    b.HasOne("Volunteasy.Core.Model.Address", "Address")
+                        .WithOne()
+                        .HasForeignKey("Volunteasy.Core.Model.Organization", "AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
                 });
 #pragma warning restore 612, 618
         }

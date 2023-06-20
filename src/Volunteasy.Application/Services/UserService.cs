@@ -2,7 +2,6 @@ using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Volunteasy.Core.Data;
-using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Errors;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
@@ -27,7 +26,7 @@ public class UserService : IUserService
         _authenticator = authenticator;
     }
     
-    public async Task<User> CreateUser(UserRegistration registration)
+    public async Task<User> CreateUser(UserRegistration registration, bool shallow = false)
     {
         var user = _data.Add(new User
         {
@@ -39,6 +38,8 @@ public class UserService : IUserService
         try
         {
             await _data.SaveChangesAsync();
+
+            if (shallow) return user.Entity;
             
             var  externalId = await _authenticator.SignUp(user.Entity.Id, new UserCredentials
             {
@@ -48,7 +49,7 @@ public class UserService : IUserService
 
             user.Entity.ExternalId = externalId;
             await _data.SaveChangesAsync();
-            
+
             return user.Entity;
         }
         catch (UniqueConstraintException)

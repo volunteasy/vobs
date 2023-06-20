@@ -1,4 +1,4 @@
-using Volunteasy.Core.DTOs;
+using Volunteasy.Core.Model;
 
 namespace Volunteasy.Application;
 

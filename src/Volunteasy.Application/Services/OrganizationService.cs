@@ -42,6 +42,12 @@ public class OrganizationService : IOrganizationService
                 MemberSince = DateTime.Now.ToUniversalTime()
             });
 
+            await _data.Resources.AddAsync(new Resource
+            {
+                OrganizationId = res.Entity.Id,
+                Name = "Cesta básica"
+            });
+            
             await _data.SaveChangesAsync();
             return res.Entity;
         }
@@ -52,7 +58,7 @@ public class OrganizationService : IOrganizationService
         
     }
 
-    public async Task<(IEnumerable<Organization>, string?)> ListOrganizations(OrganizationFilter filter)
+    public async Task<(IEnumerable<Organization>, string?)> ListOrganizations(OrganizationFilter filter, long pageToken)
     {
         var query = _data.Organizations.AsQueryable();
 
@@ -60,12 +66,16 @@ public class OrganizationService : IOrganizationService
             query = query.Where(x => 
                 x.Name != null && x.Name.Contains(filter.Name));
 
-        return await query.Paginate(filter.PageToken, organization => organization.Id);
+        return await query
+            .Where(x => x.Id >= pageToken)
+            .OrderBy(x => x.Id)
+            .Paginate(x => x.Id);
     }
 
     public async Task<Organization> GetOrganizationById(long id)
     {
         var org = await _data.Organizations
+            .Include(x => x.Address)
             .SingleOrDefaultAsync(x => x.Id == id);
         
         return org switch

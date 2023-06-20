@@ -42,9 +42,10 @@ public class MembershipController : BaseController
     }
     
     [HttpGet]
-    public async Task<IActionResult> ListMemberships([FromQuery] MembershipFilter filter)
+    public async Task<IActionResult> ListMemberships([FromQuery] MembershipFilter filter, long organizationId, long pageToken)
     {
-        var (members, next) = await _memberships.ListMemberships(filter);
+        var (members, next) = await _memberships.ListMemberships(
+            filter with { OrganizationId = organizationId }, pageToken);
         return PaginatedList(members, next);
     }
 

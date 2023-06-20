@@ -168,34 +168,32 @@ const test = {
             fn: async function(resolve, reject) {
                 const org = test.organizations[0];
 
-                var page = "start=0&end=9"
-                var hasNext = true;
+                var token = ""
                 var items = [];
-
-                while (hasNext) {
-                    await fetch(test.url + `/organizations/${org.id.toString()}/members?` + page, {
+                
+                do {
+                    await fetch(test.url + `/organizations/${org.id.toString()}/members?pageToken=` + token, {
                         method: "GET",
                         headers: test.headers,
                     }).then(async (res) => {
-    
+
                         if (res.status != 200){
                             reject({
-                                err: "org retrieval was not succesful",
+                                err: "org members retrieval was not succesful",
                                 res: res,
                             })
                         }
 
                         return res.json()
                     }).then(({data}) => {
-                        hasNext = data?.hasNext
-                        page = data?.nextPage
+                        token = data?.nextPageToken ?? undefined
                         items = [
                             ...items,
                             ...data?.items
                         ]
 
                     })
-                }
+                } while (token)
 
                 resolve(items)
             }

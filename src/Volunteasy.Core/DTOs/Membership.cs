@@ -1,36 +1,24 @@
-using System.ComponentModel.DataAnnotations;
 using Volunteasy.Core.Enums;
 
 namespace Volunteasy.Core.DTOs;
 
-public record MembershipFilter : Filter
+public record MembershipFilter : PaginationDetails
 {
-    public long? OrganizationId { get; init; }
-    
-    public long? MemberId { get; init; }
-    
-    public MembershipRole? Type { get; init; }
-    
-    public MembershipStatus? Status { get; init; }
-    
-    public DateTime? MemberSince { get; init; }
-    
-    public DateTime? MemberUntil { get; init; }
+    public long? OrganizationId;
+    public long? MemberId;
+    public MembershipRole? Role;
+    public MembershipStatus? Status;
+    public DateTime? MemberSince;
+    public DateTime? MemberUntil;
 }
 
 public record OrganizationMember
 {
-    public string? MemberName { get; init; }
-    
-    public string? OrganizationName { get; init; }
-    
-    public long OrganizationId { get; init; }
-    
-    public long MemberId { get; init; }
-    
-    public MembershipRole Role { get; init; }
-    
-    public MembershipStatus Status { get; init; }
-    
-    public DateTime MemberSince { get; init; }
+    public string? MemberName;
+    public string? OrganizationName;
+    public long OrganizationId;
+    public long MemberId;
+    public MembershipRole Role;
+    public MembershipStatus Status;
+    public DateTime MemberSince;
 }

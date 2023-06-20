@@ -14,5 +14,5 @@ public class Address : IdBased
     
     public float CoordinateX { get; set; }
     
-    public float CoordinateY { get; set; } 0
+    public float CoordinateY { get; set; }
 }

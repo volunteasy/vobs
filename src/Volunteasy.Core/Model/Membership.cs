@@ -8,8 +8,6 @@ public class Membership
     [Required]
     public long OrganizationId { get; set; }
     
-    public Organization? Organization { get; set; }
-    
     [Required]
     public long MemberId { get; set; }
     

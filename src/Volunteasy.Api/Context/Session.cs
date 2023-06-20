@@ -7,21 +7,25 @@ namespace Volunteasy.Api.Context;
 
 public class Session : ISession
 {
-    private readonly HttpContext _context;
+    private readonly ClaimsPrincipal _user;
 
     public Session(IHttpContextAccessor context)
     {
-        _context = context.HttpContext ?? new DefaultHttpContext();
+        var ctx = context.HttpContext ?? new DefaultHttpContext();
+        _user = ctx.User;
+        
+        UserId = Convert.ToInt64(ctx.User.FindFirst("volunteasy_id")?.Value);
+        OrganizationId = Convert.ToInt64(ctx.Request.RouteValues["organizationId"]);
     }
 
-    public long UserId => Convert.ToInt64(User.FindFirst("volunteasy_id")?.Value);
-
-    private ClaimsPrincipal User => _context.User;
-
-    public MembershipRole GetMembershipRole(long organizationId)
+    public long UserId { get; }
+    
+    public long OrganizationId { get; }
+    
+    public MembershipRole CurrentRole()
     {
-        var orgAuthentication = User.Identities
-            .Where(identity => identity.Name == organizationId.ToString())
+        var orgAuthentication = _user.Identities
+            .Where(identity => identity.Name == OrganizationId.ToString())
             .Select(identity => identity.AuthenticationType ?? "")
             .SingleOrDefault();
 
