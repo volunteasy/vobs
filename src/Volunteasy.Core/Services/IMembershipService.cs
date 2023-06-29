@@ -1,6 +1,5 @@
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Enums;
-using Volunteasy.Core.Model;
 
 namespace Volunteasy.Core.Services;
 

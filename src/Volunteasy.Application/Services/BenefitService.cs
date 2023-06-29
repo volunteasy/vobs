@@ -1,5 +1,5 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Volunteasy.Core.Data;
 using Volunteasy.Core.Enums;
 using Volunteasy.Core.Errors;
@@ -25,7 +25,7 @@ public class BenefitService : ServiceBase, IBenefitService
         if (demand.Items == null || !demand.Items.Any(x => x.Quantity > 0))
             throw new BenefitItemsCountException();
 
-        var assistedId = Session.CurrentRole() == MembershipRole.Assisted
+        var assistedId = Session.CurrentRole == MembershipRole.Assisted
             ? Session.UserId
             : await GetUserIdFromDemand(demand);
         
@@ -53,58 +53,74 @@ public class BenefitService : ServiceBase, IBenefitService
 
     public async Task<BenefitDetails> GetBenefitById(long benefitId)
     {
-        var benefit = Data.Benefits
-            .Where(b => b.Id == benefitId)
-            .Join(Data.Users, b => b.AssistedId, r => r.Id, (benefit, user) => new { Benefit = benefit, UserName = user.Name })
-            .Join(Data.Distributions, bu => bu.Benefit.DistributionId, d => d.Id, (bu, dist) => new
-            {
-                bu.Benefit, bu.UserName, DistributionName = dist.Name, DistributionDate = dist.OccursAt
-            }).Select(vl => new BenefitDetails
-            {
-                
-            }).Include(x => x.Items, );
+        var benefit = await GetBenefitDetails(Data.Benefits
+                .Where(b => b.Id == benefitId))
+            .Include(x => x.Items)
+            .SingleOrDefaultAsync();
+
+        if (benefit == null)
+            throw new BenefitNotFoundException();
+        
+        return benefit;
     }
 
     public async Task<(IEnumerable<BenefitDetails>, string?)> ListBenefits(BenefitFilter filter, long pageToken)
     {
-        throw new NotImplementedException();
+        var query = new List<KeyValuePair<bool, Expression<Func<Benefit, bool>>>>
+            {
+                new(filter.DistributionId != null, b => b.DistributionId == filter.DistributionId),
+                new(filter.ClaimedSince != null, b => b.ClaimedAt >= filter.ClaimedSince),
+                new(filter.ClaimedUntil != null, b => b.ClaimedAt <= filter.ClaimedUntil),
+            }.Where(queryFilter => queryFilter.Key)
+            .Aggregate(Data.Benefits.AsQueryable(),
+                (current, queryFilter) => current.Where(queryFilter.Value))
+            .Where(b => b.Id >= pageToken);
+            
+            return await GetBenefitDetails(query).Paginate(b => b.Id);
     }
 
     public async Task ClaimBenefit(long benefitId)
     {
-        throw new NotImplementedException();
+        var benefit = await Data.Benefits.SingleOrDefaultAsync(b => b.Id == benefitId);
+        if (benefit == null)
+            throw new BenefitNotFoundException();
+
+        benefit.ClaimedAt = DateTime.UtcNow;
+        await Data.SaveChangesAsync();
     }
 
     public async Task CancelBenefit(long benefitId)
     {
-        throw new NotImplementedException();
+        var benefit = await Data.Benefits.SingleOrDefaultAsync(b => b.Id == benefitId);
+        if (benefit == null)
+            throw new BenefitNotFoundException();
+
+        benefit.RevokedReason = RevokedBenefitReason.Canceled;
+        await Data.SaveChangesAsync();
     }
 
-    public Task ValidateBenefitDemand(BenefitDemand _, long __)
+    private IQueryable<BenefitDetails> GetBenefitDetails(IQueryable<Benefit> q)
     {
-        return Task.CompletedTask;
-    }
+        return q.Join(Data.Users, b => b.AssistedId, r => r.Id,
+                (benefit, user) => new { Benefit = benefit, UserName = user.Name })
+            .Join(Data.Distributions, bu => bu.Benefit.DistributionId, d => d.Id, (bu, dist) => new
+            {
+                bu.Benefit, bu.UserName, DistributionName = dist.Name, DistributionDate = dist.StartsAt
+            }).Select(vl => new BenefitDetails
+            {
+                DistributionId = vl.Benefit.DistributionId,
+                DistributionDate = vl.DistributionDate,
+                DistributionName = vl.DistributionName,
 
-    public async Task ValidateBenefitDemand()
-    {
-        throw new NotImplementedException();
-    }
+                UserId = vl.Benefit.AssistedId,
+                UserName = vl.UserName,
 
-    public async Task AddBenefitItem(long benefitId, BenefitDemandItem item)
-    {
-        throw new NotImplementedException();
+                ClaimedAt = vl.Benefit.ClaimedAt,
+                ItemsCount = Data.BenefitItems.Count(bi =>
+                    bi.BenefitId == vl.Benefit.Id),
+                Id = vl.Benefit.Id,
+            });
     }
-
-    public async Task RemoveBenefitItem(long benefitId, long resourceId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task SetBenefitItemQuantity(long benefitId, long resourceId, decimal quantity)
-    {
-        throw new NotImplementedException();
-    }
-
 
     private async Task<long> GetUserIdFromDemand(BenefitDemand demand)
     {

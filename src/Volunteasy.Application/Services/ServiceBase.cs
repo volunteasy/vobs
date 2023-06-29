@@ -1,4 +1,5 @@
 using Volunteasy.Core.Data;
+using Volunteasy.Core.Services;
 
 namespace Volunteasy.Application.Services;
 
@@ -8,7 +9,7 @@ public class ServiceBase
 
     protected readonly ISession Session;
 
-    public ServiceBase(Data data, ISession session)
+    protected ServiceBase(Data data, ISession session)
     {
         Data = data;
         Session = session;

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Volunteasy.Core.DTOs;
+using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
 namespace Volunteasy.Api.Controllers;

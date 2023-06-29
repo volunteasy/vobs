@@ -2,8 +2,8 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Microsoft.EntityFrameworkCore;
 using Volunteasy.Core.Data;
-using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Enums;
+using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
 namespace Volunteasy.Application.Services;

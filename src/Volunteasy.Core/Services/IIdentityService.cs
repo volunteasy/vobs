@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Volunteasy.Core.DTOs;
+using Volunteasy.Core.Model;
 
 namespace Volunteasy.Core.Services;
 

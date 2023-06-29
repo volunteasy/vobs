@@ -1,12 +1,21 @@
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Volunteasy.Core.Model;
+using Volunteasy.Core.Services;
 
 namespace Volunteasy.Core.Data;
 
 public class Data : DbContext
 {
-    public Data(DbContextOptions opt) : base(opt) {}
+    private readonly ISession _session;
+
+    private readonly ILogger<Data> _log;
+    public Data(DbContextOptions opt, ISession session, ILogger<Data> log) : base(opt)
+    {
+        _session = session;
+        _log = log;
+    }
     
 
     public DbSet<Address> Addresses { get; init; } = null!;
@@ -107,6 +116,8 @@ public class Data : DbContext
         
         modelBuilder.Entity<BenefitItem>(x =>
         {
+            x.HasKey(b => new { b.BenefitId, b.ResourceId });
+            
             x.HasOne<Benefit>().WithMany()
                 .HasForeignKey(b => b.BenefitId).IsRequired();
             
@@ -123,5 +134,33 @@ public class Data : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseExceptionProcessor();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new ())
+    {
+        AssignOrganizationId();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+    
+    private void AssignOrganizationId()
+    {
+
+        var changes = ChangeTracker
+            .Entries()
+            .Where(e =>
+                e.State == EntityState.Added &&
+                e.CurrentValues.Properties
+                    .Any(p => p.Name == "OrganizationId"));
+        
+        foreach (var entry in changes)
+        {
+            if (_session.OrganizationId == 0)
+            {
+                _log.LogWarning("Entity of type {EntityType} and id {Id} has no proper organizationId", entry.Metadata.Name, entry.CurrentValues["Id"]);
+                continue;
+            }
+            
+            entry.CurrentValues["OrganizationId"] = _session.OrganizationId;
+        }
     }
 }

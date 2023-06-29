@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Volunteasy.Api.Context;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Enums;
 using Volunteasy.Core.Services;
-using ISession = Volunteasy.Application.ISession;
+using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Controllers;
 
@@ -57,6 +58,7 @@ public class MembershipController : BaseController
     }
     
     [HttpPut("{memberId:long}/status")]
+    [AuthorizeRoles(MembershipRole.Owner)]
     public async Task<IActionResult> ChangeMembershipStatus(long organizationId, long memberId, MembershipStatus status)
     {
         await _memberships.ChangeMembershipStatus(organizationId, memberId, status);

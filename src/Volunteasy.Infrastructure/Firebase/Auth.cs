@@ -2,9 +2,8 @@ using System.Net.Http.Json;
 using FirebaseAdmin.Auth;
 using Microsoft.Extensions.Logging;
 using Volunteasy.Application;
-using Volunteasy.Core.Data;
-using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Errors;
+using Volunteasy.Core.Model;
 
 namespace Volunteasy.Infrastructure.Firebase;
 

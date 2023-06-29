@@ -83,7 +83,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Application setup
     builder.Services.AddHttpContextAccessor();
-    builder.Services.AddScoped<Volunteasy.Application.ISession, Session>();
+    builder.Services.AddScoped<Volunteasy.Core.Services.ISession, Session>();
     builder.Services.AddScoped<IIdentityService, IdentityService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IOrganizationService, OrganizationService>();
@@ -192,13 +192,7 @@ if (!app.Environment.IsProduction())
 }
 
 app
-    .UseSerilogRequestLogging(options =>
-    {
-        options.GetMessageTemplateProperties = (context, s, arg3, arg4) =>
-        {
-            return new List<LogEventProperty>();
-        };
-    })
+    .UseSerilogRequestLogging()
     .UseMiddleware<ExceptionMiddleware>()
     .UseAuthentication()
     .UseAuthorization();

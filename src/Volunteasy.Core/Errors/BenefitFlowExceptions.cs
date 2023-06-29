@@ -26,3 +26,12 @@ public class BenefitUnauthorizedForUserException : ApplicationException
     
     public override string? HelpLink { get; set; } = "400";
 }
+
+public class BenefitItemAlreadySetException : ApplicationException
+{
+    public BenefitItemAlreadySetException(
+        string? message = "Cada item deve ser único em um benefício") 
+        : base(message) {}
+    
+    public override string? HelpLink { get; set; } = "412";
+}

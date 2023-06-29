@@ -14,14 +14,4 @@ public interface IBenefitService
     public Task ClaimBenefit(long benefitId);
     
     public Task CancelBenefit(long benefitId);
-
-    public Task ValidateBenefitDemand(BenefitDemand demand, long assistedId);
-
-
-
-    public Task AddBenefitItem(long benefitId, BenefitDemandItem item);
-    
-    public Task RemoveBenefitItem(long benefitId, long resourceId);
-
-    public Task SetBenefitItemQuantity(long benefitId, long resourceId, decimal quantity);
 }

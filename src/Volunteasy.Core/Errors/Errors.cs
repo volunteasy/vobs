@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Volunteasy.Core.Errors;
 
 public class InvalidPasswordException : ApplicationException
@@ -70,4 +72,32 @@ public class InvalidMembershipFilterException : ApplicationException
         string? message = "Ops! Você precisa filtrar por uma organização ou usuário") : base(message) {}
     
     public override string? HelpLink { get; set; } = "400";
+}
+
+public class BenefitNotFoundException : ApplicationException
+{
+    public BenefitNotFoundException(
+        string? message = "O benefício solicitado não foi encontrado") : base(message) {}
+    
+    public override string? HelpLink { get; set; } = "404";
+}
+
+
+public class ResourceNotFoundException : ApplicationException
+{
+    public ResourceNotFoundException(string message = "Ops! O recurso solicitado não foi encontrado")
+    {
+        Message = message;
+    }
+
+    public ResourceNotFoundException(Type resource)
+    {
+        var attribute = (DisplayNameAttribute?) Attribute.GetCustomAttribute(resource, typeof(DisplayNameAttribute));
+
+        Message = attribute != null
+            ? $"Ops, não foi possível encontrar um(a) {attribute.DisplayName.ToLower()} com os parâmetros informados"
+            : "Ops! O recurso solicitado não foi encontrado";
+    }
+
+    public override string Message { get; }
 }
