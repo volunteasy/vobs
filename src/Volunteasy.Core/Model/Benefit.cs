@@ -112,4 +112,4 @@ public record BenefitItemDetails
     public StockMovement? StockMovement { get; init; }
 }
 
-public record BenefitFilter(long? DistributionId, DateTime? ClaimedUntil, DateTime? ClaimedSince);
+public record BenefitFilter(long? AssistedId, long? DistributionId, DateTime? ClaimedUntil, DateTime? ClaimedSince);

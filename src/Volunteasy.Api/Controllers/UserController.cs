@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
@@ -11,9 +12,15 @@ namespace Volunteasy.Api.Controllers;
 public class UserController : BaseController
 {
     private readonly IUserService _users;
-    public UserController(IUserService users)
+
+    private readonly IMembershipService _memberships;
+
+    private readonly IBenefitService _benefits;
+    public UserController(IUserService users, IMembershipService memberships, IBenefitService benefits)
     {
         _users = users;
+        _memberships = memberships;
+        _benefits = benefits;
     }
     
     [HttpPost]
@@ -47,4 +54,20 @@ public class UserController : BaseController
     [Authorize]
     public async Task<IActionResult> GetUserById(long userId) =>
         Ok(await _users.GetUserById(userId));
+    
+    [HttpGet("{userId:long}/memberships")]
+    public async Task<IActionResult> ListUserMemberships([FromQuery] MembershipFilter filter, long userId, long pageToken)
+    {
+        var (members, next) = await _memberships.ListMemberships(
+            filter with { MemberId = userId }, pageToken);
+        return PaginatedList(members, next);
+    }
+    
+    [HttpGet("{userId:long}/benefits")]
+    public async Task<IActionResult> ListUserBenefits([FromQuery] BenefitFilter filter, long userId, long pageToken)
+    {
+        var (members, next) = await _benefits.ListBenefits(
+            filter with { AssistedId = userId }, pageToken);
+        return PaginatedList(members, next);
+    }
 }
