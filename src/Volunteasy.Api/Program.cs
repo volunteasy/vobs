@@ -88,6 +88,9 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IOrganizationService, OrganizationService>();
     builder.Services.AddScoped<IMembershipService, MembershipService>();
+    builder.Services.AddScoped<IDistributionService, DistributionService>();
+    builder.Services.AddScoped<IBenefitService, BenefitService>();
+    builder.Services.AddScoped<IBenefitItemService, BenefitItemService>();
 
 #endregion
 

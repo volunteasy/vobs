@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using Volunteasy.Core.DTOs;
+using Volunteasy.Core.Enums;
 using Volunteasy.Core.Services;
+using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Controllers;
 
@@ -10,10 +13,16 @@ namespace Volunteasy.Api.Controllers;
 public class OrganizationController : BaseController
 {
     private readonly IOrganizationService _organizations;
+
+    private readonly IMembershipService _memberships;
+
+    private readonly ISession _session;
     
-    public OrganizationController(IOrganizationService organizations)
+    public OrganizationController(IOrganizationService organizations, IMembershipService memberships, ISession session)
     {
         _organizations = organizations;
+        _memberships = memberships;
+        _session = session;
     }
 
     [HttpPost]
@@ -38,6 +47,17 @@ public class OrganizationController : BaseController
     public async Task<IActionResult> UpdateOrganizationById(long organizationId, OrganizationRegistration registration)
     {
         await _organizations.UpdateOrganizationById(organizationId, registration);
+        return NoContent();
+    }
+    
+    [HttpPost("{organizationId:long}/enroll")]
+    [SwaggerOperation(
+        Summary = "Enroll organization",
+        Description = "Enrolls the current user in the organization specified by the parameterized id"
+    )]
+    public async Task<IActionResult> EnrollOrganization(long organizationId, [FromQuery] MembershipRole enrollAs)
+    {
+        await _memberships.EnrollOrganization(organizationId, _session.UserId, enrollAs);
         return NoContent();
     }
 }
