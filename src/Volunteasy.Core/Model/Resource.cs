@@ -12,5 +12,3 @@ public class Resource
     
 }
 
-public record ResourceEdition([Required, MaxLength(255)] string? Name);
-

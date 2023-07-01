@@ -6,7 +6,7 @@ using Volunteasy.Core.Services;
 namespace Volunteasy.Api.Controllers;
 
 [ApiController]
-[Route("/api/v1/{organizationId:long}/distributions")]
+[Route("/api/v1/organizations/{organizationId:long}/distributions")]
 [Authorize]
 public class DistributionController : BaseController
 {

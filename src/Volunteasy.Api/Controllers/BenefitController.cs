@@ -6,7 +6,7 @@ using Volunteasy.Core.Services;
 namespace Volunteasy.Api.Controllers;
 
 [ApiController]
-[Route("/api/v1/{organizationId:long}/benefits")]
+[Route("/api/v1/organizations/{organizationId:long}/benefits")]
 [Authorize]
 public class BenefitController : BaseController
 {

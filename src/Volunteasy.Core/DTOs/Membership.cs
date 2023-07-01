@@ -1,24 +1,28 @@
+using System.Text.Json.Serialization;
 using Volunteasy.Core.Enums;
 
 namespace Volunteasy.Core.DTOs;
 
-public record MembershipFilter : PaginationDetails
+public record MembershipFilter
 {
-    public long? OrganizationId;
-    public long? MemberId;
-    public MembershipRole? Role;
-    public MembershipStatus? Status;
-    public DateTime? MemberSince;
-    public DateTime? MemberUntil;
+    public long? OrganizationId { get; set; }
+    public long? MemberId { get; set; }
+    public MembershipRole? Role { get; set; }
+    public MembershipStatus? Status { get; set; }
+    public DateTime? MemberSince { get; set; }
+    public DateTime? MemberUntil { get; set; }
 }
 
 public record OrganizationMember
 {
-    public string? MemberName;
-    public string? OrganizationName;
-    public long OrganizationId;
-    public long MemberId;
-    public MembershipRole Role;
-    public MembershipStatus Status;
-    public DateTime MemberSince;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? MemberName { get; set; }
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? OrganizationName { get; set; }
+    public long OrganizationId { get; set; }
+    public long MemberId { get; set; }
+    public MembershipRole Role { get; set; }
+    public MembershipStatus Status { get; set; }
+    public DateTime MemberSince { get; set; }
 }

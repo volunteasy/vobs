@@ -133,8 +133,7 @@ var builder = WebApplication.CreateBuilder(args);
                 ValidAudience = builder.Configuration.GetValue<string>("GCP_PROJECT"),
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(
-                        builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? "")),
-                NameClaimType = "user_id"
+                        builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? ""))
             };
         });
 

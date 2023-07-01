@@ -66,10 +66,11 @@ public class Data : DbContext
             x.HasIndex(m => m.Role);
             x.HasIndex(m => m.Status);
 
-            x.HasOne<Organization>().WithMany()
+            x.HasOne<Organization>().WithMany(o => o.Memberships)
                 .HasForeignKey(m => m.OrganizationId).IsRequired();
             
-            x.HasOne<User>().WithMany().HasForeignKey(m => m.MemberId);
+            x.HasOne<User>().WithMany()
+                .HasForeignKey(m => m.MemberId).IsRequired();
         });
         
         modelBuilder.Entity<Resource>(x =>
@@ -77,7 +78,7 @@ public class Data : DbContext
             x.Property(r => r.Id).HasValueGenerator<IdValueGenerator>();
             x.HasIndex(r => r.Name);
 
-            x.HasOne<Organization>().WithMany()
+            x.HasOne<Organization>().WithMany(o => o.Resources)
                 .HasForeignKey(r => r.OrganizationId).IsRequired();
         });
         
@@ -90,7 +91,7 @@ public class Data : DbContext
             x.HasOne<Organization>().WithMany()
                 .HasForeignKey(s => s.OrganizationId).IsRequired();
             
-            x.HasOne<Resource>().WithMany()
+            x.HasOne<Resource>(s => s.Resource).WithMany()
                 .HasForeignKey(s => s.ResourceId).IsRequired();
         });
         
@@ -99,7 +100,7 @@ public class Data : DbContext
             x.Property(d => d.Id).HasValueGenerator<IdValueGenerator>();
             x.HasIndex(d => d.Name);
 
-            x.HasOne<Organization>().WithMany()
+            x.HasOne<Organization>().WithMany(o => o.Distributions)
                 .HasForeignKey(d => d.OrganizationId).IsRequired();
         });
         
@@ -107,10 +108,10 @@ public class Data : DbContext
         {
             x.Property(b => b.Id).HasValueGenerator<IdValueGenerator>();
 
-            x.HasOne<Organization>().WithMany()
+            x.HasOne<Organization>().WithMany(o => o.Benefits)
                 .HasForeignKey(b => b.OrganizationId).IsRequired();
             
-            x.HasOne<Distribution>().WithMany()
+            x.HasOne<Distribution>().WithMany(d => d.Benefits)
                 .HasForeignKey(b => b.DistributionId);
         });
         
@@ -118,13 +119,13 @@ public class Data : DbContext
         {
             x.HasKey(b => new { b.BenefitId, b.ResourceId });
             
-            x.HasOne<Benefit>().WithMany()
+            x.HasOne<Benefit>().WithMany(b => b.Items)
                 .HasForeignKey(b => b.BenefitId).IsRequired();
             
             x.HasOne<Resource>().WithMany()
                 .HasForeignKey(b => b.ResourceId).IsRequired();
 
-            x.HasOne<StockMovement>().WithOne()
+            x.HasOne<StockMovement>(b => b.StockMovement).WithOne()
                 .HasForeignKey<BenefitItem>(b => b.StockMovementId)
                 .IsRequired();
         });
@@ -154,12 +155,17 @@ public class Data : DbContext
         
         foreach (var entry in changes)
         {
+            var orgId = entry.CurrentValues["OrganizationId"];
+            
+            if (orgId != null && (long)orgId != 0)
+                continue;
+            
             if (_session.OrganizationId == 0)
             {
-                _log.LogWarning("Entity of type {EntityType} and id {Id} has no proper organizationId", entry.Metadata.Name, entry.CurrentValues["Id"]);
+                _log.LogWarning("Entity of type {EntityType} no proper organizationId", entry.Metadata.Name);
                 continue;
             }
-            
+
             entry.CurrentValues["OrganizationId"] = _session.OrganizationId;
         }
     }

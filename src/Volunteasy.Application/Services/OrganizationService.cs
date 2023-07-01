@@ -36,7 +36,6 @@ public class OrganizationService : IOrganizationService
             await _data.Memberships.AddAsync(new Membership
             {
                 MemberId = _session.UserId,
-                OrganizationId = res.Entity.Id,
                 Role = MembershipRole.Owner,
                 Status = MembershipStatus.Approved,
                 MemberSince = DateTime.Now.ToUniversalTime()
@@ -44,7 +43,6 @@ public class OrganizationService : IOrganizationService
 
             await _data.Resources.AddAsync(new Resource
             {
-                OrganizationId = res.Entity.Id,
                 Name = "Cesta básica"
             });
             

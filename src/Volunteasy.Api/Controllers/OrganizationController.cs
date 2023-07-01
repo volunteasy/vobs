@@ -29,10 +29,7 @@ public class OrganizationController : BaseController
     [Authorize]
     public async Task<IActionResult> CreateOrganization(OrganizationRegistration registration)
         => Created((await _organizations.CreateOrganization(registration)).Id.ToString(), null);
-
-    [HttpGet("{organizationId:long}")]
-    public async Task<IActionResult> GetOrganizationById(long organizationId)
-        => Ok(await _organizations.GetOrganizationById(organizationId));
+    
 
     [HttpGet]
     public async Task<IActionResult> ListOrganizations([FromQuery] OrganizationFilter filter,
@@ -41,6 +38,10 @@ public class OrganizationController : BaseController
         var (organizations, next) = await _organizations.ListOrganizations(filter, pageToken);
         return PaginatedList(organizations, next);
     }
+    
+    [HttpGet("{organizationId:long}")]
+    public async Task<IActionResult> GetOrganizationById(long organizationId)
+        => Ok(await _organizations.GetOrganizationById(organizationId));
 
     [HttpPut("{organizationId:long}")]
     [Authorize]

@@ -17,4 +17,13 @@ public class Organization : IdBased
     
     [Required, MaxLength(32)]
     public string? PhoneNumber { get; set; }
+    
+    
+    public IEnumerable<Membership>? Memberships { get; set; }
+    
+    public IEnumerable<Distribution>? Distributions { get; set; }
+    
+    public IEnumerable<Benefit>? Benefits { get; set; }
+    
+    public IEnumerable<Resource>? Resources { get; set; }
 }

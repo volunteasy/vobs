@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Volunteasy.Core.Enums;
 using static System.Enum;
 using ISession = Volunteasy.Core.Services.ISession;
@@ -7,33 +6,27 @@ namespace Volunteasy.Api.Context;
 
 public class Session : ISession
 {
-    private readonly ClaimsPrincipal _user;
+    private readonly HttpContext? _context;
 
     public Session(IHttpContextAccessor context)
     {
-        var ctx = context.HttpContext ?? new DefaultHttpContext();
-        _user = ctx.User;
-        
-        UserId = Convert.ToInt64(ctx.User.FindFirst("volunteasy_id")?.Value);
-        OrganizationId = Convert.ToInt64(ctx.Request.RouteValues["organizationId"]);
+        _context = context.HttpContext;
     }
     
     public Session(HttpContext ctx)
     {
-        _user = ctx.User;
-        UserId = Convert.ToInt64(ctx.User.FindFirst("volunteasy_id")?.Value);
-        OrganizationId = Convert.ToInt64(ctx.Request.RouteValues["organizationId"]);
+        _context = ctx;
     }
 
-    public long UserId { get; }
+    public long UserId => Convert.ToInt64(_context?.User.FindFirst("volunteasy_id")?.Value);
     
-    public long OrganizationId { get; }
+    public long OrganizationId => Convert.ToInt64(_context?.Request.RouteValues["organizationId"]);
     
     public MembershipRole CurrentRole
     {
         get
         {
-            var orgAuthentication = _user.Identities
+            var orgAuthentication = _context?.User.Identities
                 .Where(identity => identity.Name == OrganizationId.ToString())
                 .Select(identity => identity.AuthenticationType ?? "")
                 .SingleOrDefault();
