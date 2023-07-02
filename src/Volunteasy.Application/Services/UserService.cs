@@ -32,7 +32,9 @@ public class UserService : IUserService
         {
             Document = registration.Document,
             Name = registration.Name,
-            Email = registration.Email
+            Email = registration.Email,
+            Address = registration.Address,
+            PhoneAddress = registration.PhoneAddress,
         });
 
         try
