@@ -12,8 +12,8 @@ using Volunteasy.Core.Data;
 namespace Volunteasy.Api.Migrations
 {
     [DbContext(typeof(Data))]
-    [Migration("20230701153935_MembershipMemberRequired")]
-    partial class MembershipMemberRequired
+    [Migration("20230702223850_SchemaInitializer")]
+    partial class SchemaInitializer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,9 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("OrganizationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("Position")
                         .HasColumnType("bigint");
 
                     b.Property<int?>("RevokedReason")
@@ -255,7 +258,6 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<long?>("ImportId")
@@ -329,15 +331,17 @@ namespace Volunteasy.Api.Migrations
 
             modelBuilder.Entity("Volunteasy.Core.Model.Benefit", b =>
                 {
-                    b.HasOne("Volunteasy.Core.Model.Distribution", null)
+                    b.HasOne("Volunteasy.Core.Model.Distribution", "Distribution")
                         .WithMany("Benefits")
                         .HasForeignKey("DistributionId");
 
                     b.HasOne("Volunteasy.Core.Model.Organization", null)
-                        .WithMany()
+                        .WithMany("Benefits")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Distribution");
                 });
 
             modelBuilder.Entity("Volunteasy.Core.Model.BenefitItem", b =>
@@ -348,7 +352,7 @@ namespace Volunteasy.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Volunteasy.Core.Model.Resource", null)
+                    b.HasOne("Volunteasy.Core.Model.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -360,13 +364,15 @@ namespace Volunteasy.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Resource");
+
                     b.Navigation("StockMovement");
                 });
 
             modelBuilder.Entity("Volunteasy.Core.Model.Distribution", b =>
                 {
                     b.HasOne("Volunteasy.Core.Model.Organization", null)
-                        .WithMany()
+                        .WithMany("Distributions")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -375,13 +381,13 @@ namespace Volunteasy.Api.Migrations
             modelBuilder.Entity("Volunteasy.Core.Model.Membership", b =>
                 {
                     b.HasOne("Volunteasy.Core.Model.User", null)
-                        .WithMany()
+                        .WithMany("Memberships")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Volunteasy.Core.Model.Organization", null)
-                        .WithMany()
+                        .WithMany("Memberships")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -401,7 +407,7 @@ namespace Volunteasy.Api.Migrations
             modelBuilder.Entity("Volunteasy.Core.Model.Resource", b =>
                 {
                     b.HasOne("Volunteasy.Core.Model.Organization", null)
-                        .WithMany()
+                        .WithMany("Resources")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -441,6 +447,22 @@ namespace Volunteasy.Api.Migrations
             modelBuilder.Entity("Volunteasy.Core.Model.Distribution", b =>
                 {
                     b.Navigation("Benefits");
+                });
+
+            modelBuilder.Entity("Volunteasy.Core.Model.Organization", b =>
+                {
+                    b.Navigation("Benefits");
+
+                    b.Navigation("Distributions");
+
+                    b.Navigation("Memberships");
+
+                    b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("Volunteasy.Core.Model.User", b =>
+                {
+                    b.Navigation("Memberships");
                 });
 #pragma warning restore 612, 618
         }
