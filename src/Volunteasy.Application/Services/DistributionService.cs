@@ -20,10 +20,12 @@ public class DistributionService : ServiceBase, IDistributionService
 
     public async Task<Distribution> GetDistributionById(long distributionId)
     {
-        var distribution = await Data.Distributions.SingleOrDefaultAsync(d => d.Id == distributionId);
+        var distribution = await Data.Distributions
+            .SingleOrDefaultAsync(d => d.Id == distributionId);
+        
         if (distribution == null)
             throw new ResourceNotFoundException(typeof(Distribution));
-
+        
         return distribution;
     }
 
@@ -43,7 +45,7 @@ public class DistributionService : ServiceBase, IDistributionService
         await Data.SaveChangesAsync();
     }
 
-    public async Task ReopenDistribution(long distributionId)
+    public async Task OpenDistribution(long distributionId)
     {
         var distribution = await GetDistributionById(distributionId);
         distribution.Canceled = false;

@@ -72,6 +72,9 @@ namespace Volunteasy.Api.Migrations
                     b.Property<long>("OrganizationId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("Position")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("RevokedReason")
                         .HasColumnType("integer");
 

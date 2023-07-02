@@ -13,10 +13,13 @@ namespace Volunteasy.Api.Controllers;
 public class DistributionController : BaseController
 {
     private readonly IDistributionService _distributions;
+
+    private readonly IBenefitService _benefits;
     
-    public DistributionController(IDistributionService distributions)
+    public DistributionController(IDistributionService distributions, IBenefitService benefits)
     {
         _distributions = distributions;
+        _benefits = benefits;
     }
 
     [HttpPost]
@@ -25,6 +28,7 @@ public class DistributionController : BaseController
         => Created((await _distributions.CreateDistribution(props)).Id.ToString(), null);
 
     [HttpGet]
+    [AuthorizeRoles]
     public async Task<IActionResult> ListDistributions([FromQuery] DistributionFilter filter, [FromQuery] long pageToken)
     {
         var (organizations, next) = await _distributions.ListDistributions(filter, pageToken);
@@ -32,6 +36,7 @@ public class DistributionController : BaseController
     }
     
     [HttpGet("{distributionId:long}")]
+    [AuthorizeRoles]
     public async Task<IActionResult> GetDistributionById(long distributionId)
         => Ok(await _distributions.GetDistributionById(distributionId));
     
@@ -43,6 +48,19 @@ public class DistributionController : BaseController
         return NoContent();
     }
     
+    [HttpGet("{distributionId:long}/queue")]
+    [AuthorizeRoles(MembershipRole.Owner, MembershipRole.Volunteer)]
+    public async Task<IActionResult> ListQueue(long distributionId)
+    {
+        var (organizations, next) = await _benefits.ListBenefits(new BenefitFilter
+        {
+            DistributionId = distributionId, 
+            NotClaimedOnly = true
+        }, 0);
+        
+        return PaginatedList(organizations, next);
+    }
+    
     [HttpPost("{distributionId:long}/cancel")]
     [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
     public async Task<IActionResult> CancelDistribution(long distributionId)
@@ -51,11 +69,11 @@ public class DistributionController : BaseController
         return NoContent();
     }
     
-    [HttpPost("{distributionId:long}/reopen")]
+    [HttpPost("{distributionId:long}/open")]
     [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
-    public async Task<IActionResult> ReopenDistribution(long distributionId)
+    public async Task<IActionResult> OpenDistribution(long distributionId)
     {
-        await _distributions.ReopenDistribution(distributionId);
+        await _distributions.OpenDistribution(distributionId);
         return NoContent();
     }
 }

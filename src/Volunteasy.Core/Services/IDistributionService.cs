@@ -13,7 +13,7 @@ public interface IDistributionService
 
     public Task CancelDistribution(long distributionId);
     
-    public Task ReopenDistribution(long distributionId);
+    public Task OpenDistribution(long distributionId);
 
     public Task UpdateDistribution(long distributionId, DistributionCreationProperties props);
 }

@@ -35,7 +35,14 @@ public class Data : DbContext
     public DbSet<StockMovement> StockMovements { get; init; } = null!;
 
     public DbSet<Benefit> Benefits { get; init; } = null!;
-    
+
+    public int? BenefitQueuePosition(long distributionId, long benefitId) =>
+        Benefits
+            .Where(b => b.DistributionId == distributionId && b.ClaimedAt == null)
+            .OrderBy(b => b.Position ?? 0)
+            .ToList()
+            .Select((b, idx) => new { Pos = idx + 1, Id = b.Id })
+            .SingleOrDefault(b => b.Id == benefitId)?.Pos;
     public DbSet<BenefitItem> BenefitItems { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

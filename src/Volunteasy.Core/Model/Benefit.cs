@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Volunteasy.Core.Model;
 
-public record Benefit
+public record Benefit : IId, IOrganization
 {
     public long Id { get; init; }
 
@@ -13,6 +13,8 @@ public record Benefit
     public Distribution? Distribution { get; set; }
 
     public long? DistributionId { get; init; }
+    
+    public long? Position { get; init; }
 
     public DateTime? ClaimedAt { get; set; }
     
@@ -32,46 +34,33 @@ public enum RevokedBenefitReason
     Canceled = 5,
 }
 
-public record BenefitItem
+public record BenefitAnalysisRequest
 {
-    public long BenefitId { get; init; }
-    
-    public long OrganizationId { get; init; }
-    
-    public long ResourceId { get; init; }
-    
-    public long StockMovementId { get; init; }
-    
-    [Required, Range(1, double.MaxValue)]
-    public decimal Quantity { get; set; }
-    
-    public StockMovement? StockMovement { get; init; }
-    
-    public Resource? Resource { get; init; }
+    [Required]
+    public long DistributionId { get; init; }
+    public IEnumerable<BenefitDemandItem>? Items { get; init; }
 }
 
-public record BenefitDemand
+public record BenefitProvision
 {
-    public long? UserId { get; init; }
     public long? DistributionId { get; init; }
     
-    public UserRegistration? NewShallowUser { get; init; }
+    [Required]
+    public AssistedUser? AssistedUser { get; init; }
     
     public IEnumerable<BenefitDemandItem>? Items { get; init; }
 }
 
-public record BenefitDemandItem
+public record AssistedUser
 {
-    
-    [Required, Range(1, double.MaxValue)]
-    public decimal Quantity { get; init; }
-}
-
-public record BenefitDemandAssisted
-{
+    [Required, MaxLength(11), MinLength(3)]
     public string? Document { get; init; }
     
+    [MaxLength(50), MinLength(1)]
+    public string? Name { get; init; }
     public Address? Address { get; init; }
+    
+    public string? Phone { get; set; }
 }
 
 public record BenefitDetails
@@ -94,20 +83,24 @@ public record BenefitDetails
     
     
     public int ItemsCount { get; init; }
+    
+    public int? Position { get; set; }
 
     public IList<BenefitItemDetails>? Items { get; init; }
 }
 
-public record BenefitItemDetails
+
+public record BenefitAnalysisResult
 {
-    public long ResourceId { get; init; }
     
-    public string? ResourceName { get; init; }
-    
-    public long StockMovementId { get; init; }
-    
-    [Required, Range(1, double.MaxValue)]
-    public decimal Quantity { get; init; }
 }
 
-public record BenefitFilter(long? AssistedId, long? DistributionId, DateTime? ClaimedUntil, DateTime? ClaimedSince);
+
+public record BenefitFilter{
+    public long? AssistedId  { get; set; }
+    public long? DistributionId  { get; set; }
+    public DateTime? ClaimedUntil  { get; set; }
+    public DateTime? ClaimedSince  { get; set; }
+    public bool NotClaimedOnly  { get; set; } = false;
+
+};

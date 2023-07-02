@@ -9,3 +9,13 @@ public class OrganizationBasedResource : IdBased
 {
     public long OrganizationId { get; set; }
 }
+
+public interface IOrganization
+{
+    public long OrganizationId { get; }
+}
+
+public interface IId
+{
+    public long Id { get; }
+}

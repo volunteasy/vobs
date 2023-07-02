@@ -5,14 +5,14 @@ using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Context;
 
-[AttributeUsage(AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.All)]
 public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
 {
     private readonly MembershipRole[] _roles;
 
-    public AuthorizeRolesAttribute(params MembershipRole[] roles)
+    public AuthorizeRolesAttribute(params MembershipRole[]? roles)
     {
-        _roles = roles;
+        _roles = roles ?? new [] { MembershipRole.Assisted, MembershipRole.Owner, MembershipRole.Volunteer};
     }
 
     public void OnAuthorization(AuthorizationFilterContext context)

@@ -35,3 +35,13 @@ public class BenefitItemAlreadySetException : ApplicationException
     
     public override string? HelpLink { get; set; } = "412";
 }
+
+
+public class DistributionClosedOrFullException : ApplicationException
+{
+    public DistributionClosedOrFullException(
+        string? message = "Esta distribuição já ocorreu ou não está aceitando novos beneficiários no momento") 
+        : base(message) {}
+    
+    public override string? HelpLink { get; set; } = "412";
+}

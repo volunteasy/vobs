@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Volunteasy.Core.Model;
 
 namespace Volunteasy.Application.Services;
 
@@ -16,6 +17,16 @@ public static class UtilityService
         return list.Count <= pageSize ? 
             (list, null) : 
             (list.Take(pageSize), idGetter(list.Last()).ToString());
+    }
+
+    public static IQueryable<T> WithPageToken<T>(this IQueryable<T> query, long page) where T : IId
+    {
+        return query.Where(x => x.Id >= page);
+    }
+    
+    public static IQueryable<T> WithOrganization<T>(this IQueryable<T> query, long orgId) where T : IOrganization
+    {
+        return query.Where(x => x.OrganizationId >= orgId);
     }
     
     public static IQueryable<T> WithFilters<T>(this IQueryable<T> query, params KeyValuePair<bool, Expression<Func<T, bool>>>[] filters)

@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Volunteasy.Api.Context;
+using Volunteasy.Core.Enums;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
@@ -12,14 +15,29 @@ public class BenefitController : BaseController
 {
     private readonly IBenefitService _benefits;
     
-    public BenefitController(IBenefitService benefits)
+    private readonly IBenefitProvisionService _benefitProvision;
+    
+    public BenefitController(IBenefitService benefits, IBenefitProvisionService benefitProvision)
     {
         _benefits = benefits;
+        _benefitProvision = benefitProvision;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateBenefit(BenefitDemand demand)
-        => Created((await _benefits.CreateBenefit(demand)).Id.ToString(), null);
+    [HttpPost("request")]
+    [AuthorizeRoles(MembershipRole.Assisted)]
+    public async Task<IActionResult> RequestBenefit(BenefitAnalysisRequest analysisRequest)
+    {
+        var res = await _benefitProvision.RequestBenefit(analysisRequest);
+        return Created(res.Id.ToString(), new { res.Position });
+    }
+
+    [HttpPost("provide")]
+    [AuthorizeRoles(MembershipRole.Owner, MembershipRole.Volunteer)]
+    public async Task<IActionResult> ProvideBenefit(BenefitProvision provision)
+    {
+        var res = await _benefitProvision.ProvideBenefit(provision);
+        return Created(res.Id.ToString(), new { res.Position });
+    }
 
     [HttpGet]
     public async Task<IActionResult> ListBenefits([FromQuery] BenefitFilter filter, [FromQuery] long pageToken)
@@ -36,13 +54,6 @@ public class BenefitController : BaseController
     public async Task<IActionResult> ClaimBenefit(long benefitId)
     {
         await _benefits.ClaimBenefit(benefitId);
-        return NoContent();
-    }
-    
-    [HttpPost("{benefitId:long}/cancel")]
-    public async Task<IActionResult> CancelBenefit(long benefitId)
-    {
-        await _benefits.CancelBenefit(benefitId);
         return NoContent();
     }
 }
