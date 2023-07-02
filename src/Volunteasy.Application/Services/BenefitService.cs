@@ -22,8 +22,16 @@ public class BenefitService : ServiceBase, IBenefitService
 
     public async Task<Benefit> CreateBenefit(BenefitDemand demand)
     {
+
+        var resourceId = await 
+            Data.Resources
+                .Where(r => r.OrganizationId == Session.OrganizationId)
+                .Select(r => r.Id)
+                .SingleOrDefaultAsync();
+
         if (demand.Items == null || !demand.Items.Any(x => x.Quantity > 0))
             throw new BenefitItemsCountException();
+
 
         var assistedId = Session.CurrentRole == MembershipRole.Assisted
             ? Session.UserId
@@ -31,7 +39,7 @@ public class BenefitService : ServiceBase, IBenefitService
         
         var isImmediate = demand.DistributionId == null;
 
-        return (await Data.Benefits.AddAsync(new Benefit
+        var res = await Data.Benefits.AddAsync(new Benefit
         {
             AssistedId = assistedId,
             DistributionId = demand.DistributionId,
@@ -39,23 +47,25 @@ public class BenefitService : ServiceBase, IBenefitService
             Items = demand.Items.Select(x => new BenefitItem
             {
                 Quantity = x.Quantity,
-                ResourceId = x.ResourceId,
+                ResourceId = resourceId,
                 StockMovement = new StockMovement
                 {
                     Date = DateTime.UtcNow,
                     Quantity = x.Quantity,
-                    ResourceId = x.ResourceId,
+                    ResourceId = resourceId,
                     Type = isImmediate ? StockMovementType.Output : StockMovementType.Reserved,
                 }
-            })
-        })).Entity;
+            }).ToList()
+        });
+
+        await Data.SaveChangesAsync();
+        return res.Entity;
     }
 
     public async Task<BenefitDetails> GetBenefitById(long benefitId)
     {
-        var benefit = await GetBenefitDetails(Data.Benefits
-                .Where(b => b.Id == benefitId))
-            .Include(x => x.Items)
+        var benefit = await GetBenefitDetails(
+                Data.Benefits.Where(b => b.Id == benefitId), true)
             .SingleOrDefaultAsync();
 
         if (benefit == null)
@@ -99,24 +109,37 @@ public class BenefitService : ServiceBase, IBenefitService
         await Data.SaveChangesAsync();
     }
 
-    private IQueryable<BenefitDetails> GetBenefitDetails(IQueryable<Benefit> q)
+    private IQueryable<BenefitDetails> GetBenefitDetails(IQueryable<Benefit> q, bool includeItems = false)
     {
-        return q.Join(Data.Users, b => b.AssistedId, r => r.Id,
+        if (includeItems)
+            q = q.Include(b => b.Items);
+        return q
+            .Include(b => b.Distribution)
+            .Join(Data.Users, b => b.AssistedId, r => r.Id,
                 (benefit, user) => new { Benefit = benefit, UserName = user.Name })
-            .Join(Data.Distributions, bu => bu.Benefit.DistributionId, d => d.Id, (bu, dist) => new
-            {
-                bu.Benefit, bu.UserName, DistributionName = dist.Name, DistributionDate = dist.StartsAt
-            }).Select(vl => new BenefitDetails
+            .Select(vl => new BenefitDetails
             {
                 DistributionId = vl.Benefit.DistributionId,
-                DistributionDate = vl.DistributionDate,
-                DistributionName = vl.DistributionName,
+                DistributionDate = vl.Benefit.Distribution == null ? null : vl.Benefit.Distribution.StartsAt,
+                DistributionName = vl.Benefit.Distribution == null ? null : vl.Benefit.Distribution.Name,
 
                 UserId = vl.Benefit.AssistedId,
                 UserName = vl.UserName,
 
+                Items = !includeItems ? null : Data.BenefitItems
+                    .Include(i => i.Resource)
+                    .Where(b => b.BenefitId == vl.Benefit.Id)
+                    .Select(i => new BenefitItemDetails
+                    {
+                        Quantity = i.Quantity, 
+                        ResourceId = i.ResourceId, 
+                        ResourceName = i.Resource == null ? null : i.Resource.Name,
+                        StockMovementId = i.StockMovementId,
+                        
+                    })
+                    .ToList(),
                 ClaimedAt = vl.Benefit.ClaimedAt,
-                ItemsCount = Data.BenefitItems.Count(bi =>
+                ItemsCount = vl.Benefit.Items != null ? vl.Benefit.Items.Count : Data.BenefitItems.Count(bi =>
                     bi.BenefitId == vl.Benefit.Id),
                 Id = vl.Benefit.Id,
             });
@@ -138,9 +161,24 @@ public class BenefitService : ServiceBase, IBenefitService
         if (demand.NewShallowUser is null)
             throw new BenefitUnauthorizedForUserException();
 
-        var newUser = await _users.CreateUser(demand.NewShallowUser, shallow: true);
-
-        await _members.EnrollOrganization(Session.OrganizationId, newUser.Id, MembershipRole.Assisted);
-        return newUser.Id;
+        var user = Data.Add(new User
+        {
+            Document = demand.NewShallowUser.Document,
+            Name = demand.NewShallowUser.Name,
+            Email = demand.NewShallowUser.Email,
+            Address = demand.NewShallowUser.Address,
+            Memberships = new List<Membership>
+            {
+                new()
+                {
+                    Role = MembershipRole.Assisted,
+                    Status = MembershipStatus.Approved,
+                    MemberSince = DateTime.Now.ToUniversalTime(),
+                    OrganizationId = Session.OrganizationId,
+                }
+            }
+        });
+         
+        return user.Entity.Id;
     }
 }

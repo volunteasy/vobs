@@ -69,7 +69,7 @@ public class Data : DbContext
             x.HasOne<Organization>().WithMany(o => o.Memberships)
                 .HasForeignKey(m => m.OrganizationId).IsRequired();
             
-            x.HasOne<User>().WithMany()
+            x.HasOne<User>().WithMany(u => u.Memberships)
                 .HasForeignKey(m => m.MemberId).IsRequired();
         });
         
@@ -111,7 +111,7 @@ public class Data : DbContext
             x.HasOne<Organization>().WithMany(o => o.Benefits)
                 .HasForeignKey(b => b.OrganizationId).IsRequired();
             
-            x.HasOne<Distribution>().WithMany(d => d.Benefits)
+            x.HasOne<Distribution>(b => b.Distribution).WithMany(d => d.Benefits)
                 .HasForeignKey(b => b.DistributionId);
         });
         
@@ -122,7 +122,7 @@ public class Data : DbContext
             x.HasOne<Benefit>().WithMany(b => b.Items)
                 .HasForeignKey(b => b.BenefitId).IsRequired();
             
-            x.HasOne<Resource>().WithMany()
+            x.HasOne<Resource>(b => b.Resource).WithMany()
                 .HasForeignKey(b => b.ResourceId).IsRequired();
 
             x.HasOne<StockMovement>(b => b.StockMovement).WithOne()

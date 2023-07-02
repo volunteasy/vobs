@@ -65,10 +65,10 @@ public struct DistributionCreationProperties
         };
 }
 
-public struct DistributionFilter
+public record DistributionFilter
 {
     public DateTime? OccursAt { get; set; }
     
     [MinLength(1), MaxLength(100)]
     public string? Name { get; set; }
-};
+}

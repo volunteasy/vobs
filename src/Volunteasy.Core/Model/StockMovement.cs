@@ -4,7 +4,6 @@ namespace Volunteasy.Core.Model;
 
 public class StockMovement : OrganizationBasedResource
 {
-    [Required]
     public string? Description { get; set; }
     
     [Required]

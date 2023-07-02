@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Volunteasy.Core.Data;
@@ -11,9 +12,11 @@ using Volunteasy.Core.Data;
 namespace Volunteasy.Api.Migrations
 {
     [DbContext(typeof(Data))]
-    partial class DataModelSnapshot : ModelSnapshot
+    [Migration("20230701181002_StockDescriptionNullable")]
+    partial class StockDescriptionNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -325,7 +328,7 @@ namespace Volunteasy.Api.Migrations
 
             modelBuilder.Entity("Volunteasy.Core.Model.Benefit", b =>
                 {
-                    b.HasOne("Volunteasy.Core.Model.Distribution", "Distribution")
+                    b.HasOne("Volunteasy.Core.Model.Distribution", null)
                         .WithMany("Benefits")
                         .HasForeignKey("DistributionId");
 
@@ -334,8 +337,6 @@ namespace Volunteasy.Api.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Distribution");
                 });
 
             modelBuilder.Entity("Volunteasy.Core.Model.BenefitItem", b =>
@@ -346,7 +347,7 @@ namespace Volunteasy.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Volunteasy.Core.Model.Resource", "Resource")
+                    b.HasOne("Volunteasy.Core.Model.Resource", null)
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -357,8 +358,6 @@ namespace Volunteasy.Api.Migrations
                         .HasForeignKey("Volunteasy.Core.Model.BenefitItem", "StockMovementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Resource");
 
                     b.Navigation("StockMovement");
                 });

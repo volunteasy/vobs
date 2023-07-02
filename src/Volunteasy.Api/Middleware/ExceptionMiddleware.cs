@@ -1,3 +1,5 @@
+using Volunteasy.Core.Errors;
+
 namespace Volunteasy.Api.Middleware;
 
 public class ExceptionMiddleware
@@ -18,33 +20,47 @@ public class ExceptionMiddleware
         {
             await _next(ctx);
         }
+        catch (ResourceNotFoundException e)
+        {
+            ctx.Response.StatusCode = 404;
+            await CaptureExpectedException(e, ctx);
+        }
         catch (Exception e)
         {
             
             if (e is ApplicationException && int.TryParse(e.HelpLink, out var status))
             {
-                _logger.LogWarning("Captured expected error: {Message}, {Type}", e.Message, e.GetType().Name);
                 ctx.Response.StatusCode = status;
-            
-                await ctx.Response.WriteAsJsonAsync(new Response.Response
-                {
-                    Context = ctx,
-                    Reason = e.GetType().Name,
-                    Message = e.Message
-                });
-                
+                await CaptureExpectedException(e, ctx);
                 return;
             }
 
-            _logger.LogError(e, "Captured unexpected error");
-            ctx.Response.StatusCode = 500;
-                
-            await ctx.Response.WriteAsJsonAsync(new Response.Response
-            {
-                Context = ctx,
-                Reason = "UnexpectedError",
-                Message = "Ops! Um erro inesperado ocorreu. Tente novamente mais tarde"
-            });
+            await CaptureUnexpectedException(e, ctx);
         }
+    }
+
+    private async Task CaptureExpectedException(Exception e, HttpContext context)
+    {
+        _logger.LogWarning("Captured expected error: {Message}, {Type}", e.Message, e.GetType().Name);
+            
+        await context.Response.WriteAsJsonAsync(new Response.Response
+        {
+            Context = context,
+            Reason = e.GetType().Name,
+            Message = e.Message
+        });
+    }
+    
+    private async Task CaptureUnexpectedException(Exception e, HttpContext context)
+    {
+        _logger.LogError(e, "Captured unexpected error");
+        context.Response.StatusCode = 500;
+            
+        await context.Response.WriteAsJsonAsync(new Response.Response
+        {
+            Context = context,
+            Reason = "UnexpectedError",
+            Message = "Ops! Um erro inesperado ocorreu. Tente novamente mais tarde"
+        });
     }
 }

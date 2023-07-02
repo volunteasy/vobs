@@ -30,20 +30,24 @@ public class OrganizationService : IOrganizationService
                 Document = org.Document,
                 Name = org.Name,
                 PhoneNumber = org.PhoneNumber,
-                Address = org.Address
-            });
-            
-            await _data.Memberships.AddAsync(new Membership
-            {
-                MemberId = _session.UserId,
-                Role = MembershipRole.Owner,
-                Status = MembershipStatus.Approved,
-                MemberSince = DateTime.Now.ToUniversalTime()
-            });
-
-            await _data.Resources.AddAsync(new Resource
-            {
-                Name = "Cesta básica"
+                Address = org.Address,
+                Memberships = new List<Membership>
+                {
+                    new()
+                    {
+                        MemberId = _session.UserId,
+                        Role = MembershipRole.Owner,
+                        Status = MembershipStatus.Approved,
+                        MemberSince = DateTime.Now.ToUniversalTime()
+                    }
+                },
+                Resources = new List<Resource>
+                {
+                    new()
+                    {
+                        Name = "Cesta básica"
+                    }
+                }
             });
             
             await _data.SaveChangesAsync();
@@ -89,9 +93,6 @@ public class OrganizationService : IOrganizationService
 
         if (org == null)
             throw new OrganizationNotFoundException();
-        
-        if (!IsUserOrganizationOwner(id, _session.UserId))
-            throw new UserNotAuthorizedException();
 
         org.Address = organization.Address;
         org.Document = organization.Document;

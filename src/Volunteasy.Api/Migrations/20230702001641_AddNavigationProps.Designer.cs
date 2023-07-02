@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Volunteasy.Core.Data;
@@ -11,9 +12,11 @@ using Volunteasy.Core.Data;
 namespace Volunteasy.Api.Migrations
 {
     [DbContext(typeof(Data))]
-    partial class DataModelSnapshot : ModelSnapshot
+    [Migration("20230702001641_AddNavigationProps")]
+    partial class AddNavigationProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,7 +349,7 @@ namespace Volunteasy.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Volunteasy.Core.Model.Resource", "Resource")
+                    b.HasOne("Volunteasy.Core.Model.Resource", null)
                         .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -357,8 +360,6 @@ namespace Volunteasy.Api.Migrations
                         .HasForeignKey("Volunteasy.Core.Model.BenefitItem", "StockMovementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Resource");
 
                     b.Navigation("StockMovement");
                 });

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Volunteasy.Api.Context;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Enums;
 using Volunteasy.Core.Services;
@@ -10,6 +11,7 @@ namespace Volunteasy.Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/organizations")]
+[Authorize]
 public class OrganizationController : BaseController
 {
     private readonly IOrganizationService _organizations;
@@ -26,7 +28,6 @@ public class OrganizationController : BaseController
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> CreateOrganization(OrganizationRegistration registration)
         => Created((await _organizations.CreateOrganization(registration)).Id.ToString(), null);
     
@@ -44,7 +45,7 @@ public class OrganizationController : BaseController
         => Ok(await _organizations.GetOrganizationById(organizationId));
 
     [HttpPut("{organizationId:long}")]
-    [Authorize]
+    [AuthorizeRoles(MembershipRole.Owner)]
     public async Task<IActionResult> UpdateOrganizationById(long organizationId, OrganizationRegistration registration)
     {
         await _organizations.UpdateOrganizationById(organizationId, registration);

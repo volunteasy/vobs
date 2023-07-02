@@ -15,16 +15,22 @@ public class BenefitItemService : ServiceBase, IBenefitItemService
     {
         try
         {
+            var resourceId = await 
+                Data.Resources
+                    .Where(r => r.OrganizationId == Session.OrganizationId)
+                    .Select(r => r.Id)
+                    .SingleOrDefaultAsync();
+            
             await Data.BenefitItems.AddAsync(new BenefitItem
             {
                 BenefitId = benefitId,
                 Quantity = item.Quantity,
-                ResourceId = item.ResourceId,
+                ResourceId = resourceId,
                 StockMovement = new StockMovement
                 {
                     Date = DateTime.UtcNow,
                     Quantity = item.Quantity,
-                    ResourceId = item.ResourceId,
+                    ResourceId = resourceId,
                     Type = StockMovementType.Reserved,
                     OrganizationId = Session.OrganizationId
                 }

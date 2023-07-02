@@ -20,6 +20,8 @@ public class User : IdBased
     public Address? Address { get; init; }
     
     public string? PhoneAddress { get; set; }
+    
+    public IEnumerable<Membership>? Memberships { get; set; }
 }
 
 public record UserRegistration

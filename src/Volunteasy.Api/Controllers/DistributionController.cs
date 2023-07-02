@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Volunteasy.Api.Context;
+using Volunteasy.Core.Enums;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
@@ -18,6 +20,7 @@ public class DistributionController : BaseController
     }
 
     [HttpPost]
+    [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
     public async Task<IActionResult> CreateDistribution(DistributionCreationProperties props)
         => Created((await _distributions.CreateDistribution(props)).Id.ToString(), null);
 
@@ -28,28 +31,31 @@ public class DistributionController : BaseController
         return PaginatedList(organizations, next);
     }
     
-    [HttpGet("{benefitId:long}")]
-    public async Task<IActionResult> GetDistributionById(long benefitId)
-        => Ok(await _distributions.GetDistributionById(benefitId));
+    [HttpGet("{distributionId:long}")]
+    public async Task<IActionResult> GetDistributionById(long distributionId)
+        => Ok(await _distributions.GetDistributionById(distributionId));
     
-    [HttpPut("{benefitId:long}")]
-    public async Task<IActionResult> UpdateDistribution(long benefitId, DistributionCreationProperties props)
+    [HttpPut("{distributionId:long}")]
+    [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
+    public async Task<IActionResult> UpdateDistribution(long distributionId, DistributionCreationProperties props)
     {
-        await _distributions.UpdateDistribution(benefitId, props);
+        await _distributions.UpdateDistribution(distributionId, props);
         return NoContent();
     }
     
-    [HttpPost("{benefitId:long}/cancel")]
-    public async Task<IActionResult> CancelDistribution(long benefitId)
+    [HttpPost("{distributionId:long}/cancel")]
+    [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
+    public async Task<IActionResult> CancelDistribution(long distributionId)
     {
-        await _distributions.CancelDistribution(benefitId);
+        await _distributions.CancelDistribution(distributionId);
         return NoContent();
     }
     
-    [HttpPost("{benefitId:long}/reopen")]
-    public async Task<IActionResult> ReopenDistribution(long benefitId)
+    [HttpPost("{distributionId:long}/reopen")]
+    [AuthorizeRoles(MembershipRole.Volunteer, MembershipRole.Owner)]
+    public async Task<IActionResult> ReopenDistribution(long distributionId)
     {
-        await _distributions.ReopenDistribution(benefitId);
+        await _distributions.ReopenDistribution(distributionId);
         return NoContent();
     }
 }

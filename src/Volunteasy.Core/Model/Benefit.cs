@@ -9,6 +9,8 @@ public record Benefit
     public long OrganizationId { get; init; }
     
     public long AssistedId { get; init; }
+    
+    public Distribution? Distribution { get; set; }
 
     public long? DistributionId { get; init; }
 
@@ -16,7 +18,7 @@ public record Benefit
     
     public RevokedBenefitReason? RevokedReason { get; set; }
     
-    public IEnumerable<BenefitItem>? Items { get; init; }
+    public IList<BenefitItem>? Items { get; init; }
     
     
 }
@@ -44,6 +46,8 @@ public record BenefitItem
     public decimal Quantity { get; set; }
     
     public StockMovement? StockMovement { get; init; }
+    
+    public Resource? Resource { get; init; }
 }
 
 public record BenefitDemand
@@ -58,8 +62,6 @@ public record BenefitDemand
 
 public record BenefitDemandItem
 {
-    [Required]
-    public long ResourceId { get; init; }
     
     [Required, Range(1, double.MaxValue)]
     public decimal Quantity { get; init; }
@@ -93,23 +95,19 @@ public record BenefitDetails
     
     public int ItemsCount { get; init; }
 
-    public IEnumerable<BenefitItem>? Items { get; init; }
+    public IList<BenefitItemDetails>? Items { get; init; }
 }
 
 public record BenefitItemDetails
 {
-    
     public long ResourceId { get; init; }
     
     public string? ResourceName { get; init; }
-    
     
     public long StockMovementId { get; init; }
     
     [Required, Range(1, double.MaxValue)]
     public decimal Quantity { get; init; }
-    
-    public StockMovement? StockMovement { get; init; }
 }
 
 public record BenefitFilter(long? AssistedId, long? DistributionId, DateTime? ClaimedUntil, DateTime? ClaimedSince);
