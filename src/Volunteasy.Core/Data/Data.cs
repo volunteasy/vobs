@@ -8,12 +8,10 @@ namespace Volunteasy.Core.Data;
 
 public class Data : DbContext
 {
-    private readonly ISession _session;
 
     private readonly ILogger<Data> _log;
-    public Data(DbContextOptions opt, ISession session, ILogger<Data> log) : base(opt)
+    public Data(DbContextOptions opt, ILogger<Data> log) : base(opt)
     {
-        _session = session;
         _log = log;
     }
     
@@ -142,38 +140,5 @@ public class Data : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseExceptionProcessor();
-    }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new ())
-    {
-        AssignOrganizationId();
-        return base.SaveChangesAsync(cancellationToken);
-    }
-    
-    private void AssignOrganizationId()
-    {
-
-        var changes = ChangeTracker
-            .Entries()
-            .Where(e =>
-                e.State == EntityState.Added &&
-                e.CurrentValues.Properties
-                    .Any(p => p.Name == "OrganizationId"));
-        
-        foreach (var entry in changes)
-        {
-            var orgId = entry.CurrentValues["OrganizationId"];
-            
-            if (orgId != null && (long)orgId != 0)
-                continue;
-            
-            if (_session.OrganizationId == 0)
-            {
-                _log.LogWarning("Entity of type {EntityType} no proper organizationId", entry.Metadata.Name);
-                continue;
-            }
-
-            entry.CurrentValues["OrganizationId"] = _session.OrganizationId;
-        }
     }
 }

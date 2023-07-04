@@ -40,6 +40,18 @@ public class IdentityService : IIdentityService
 
         return organizations;
     }
+
+    public async Task<List<Claim>> GetUserSessionClaims2(long userId)
+    {
+        return await _data.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new List<Claim>
+        {
+            new("volunteasy_id", userId.ToString()),
+            new(ClaimTypes.Name, u.Name ?? ""),
+            new(ClaimTypes.Email, u.Email ?? "")
+        }).SingleAsync();
+    }
 }
 
 internal class OrganizationMemberIdentity : IIdentity

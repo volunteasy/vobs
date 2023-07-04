@@ -1,0 +1,74 @@
+﻿@using Volunteasy.Core.Services
+@using Volunteasy.Core.DTOs
+@using Volunteasy.Core.Enums
+@using Volunteasy.Core.Model
+@using Volunteasy.Web.Auth
+
+
+
+@inject IMembershipService Memberships
+@inject SessionProvider Session
+@inject AuthenticatedUserData Auth
+
+<AuthorizeView>
+    <Authorized>
+        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
+        <form method="post" action="Identity/Account/Logout">
+            <button type="submit" class="nav-link btn btn-link">Log out</button>
+        </form>
+        @if (!Organizations.Any())
+        {
+            <span>Sem organizações</span>
+        }
+        else
+        {
+            <select>
+                @foreach (var org in Organizations)
+                {
+                    <option value="@org.OrganizationId">@org.OrganizationName</option>
+                }
+            </select>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <a href="Identity/Account/Register">Register</a>
+        <a href="Identity/Account/Login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    private IEnumerable<OrganizationMember> Organizations { get; set; } = new OrganizationMember[]{};
+
+    protected override async Task OnInitializedAsync()
+    {
+        var page = (long)0;
+
+        do
+        {
+            var (organizations, next) = await Memberships.ListMemberships(new MembershipFilter
+            {
+                MemberId = Session.UserId, Role = MembershipRole.Owner
+            }, page);
+
+            if (next == null)
+                break;
+
+            page = Convert.ToInt64(next);
+
+
+            foreach (var org in organizations)
+            {
+                Organizations = Organizations.Append(org);
+            }
+
+        } while (page == 0);
+    }
+
+    private async Task OnSelectOrganization()
+    {
+        Auth.AuthenticateUser()
+    }
+
+}
