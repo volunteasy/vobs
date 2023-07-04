@@ -4,6 +4,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
+using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Controllers;
 
@@ -16,11 +17,14 @@ public class UserController : BaseController
     private readonly IMembershipService _memberships;
 
     private readonly IBenefitService _benefits;
-    public UserController(IUserService users, IMembershipService memberships, IBenefitService benefits)
+
+    private readonly ISession _session;
+    public UserController(IUserService users, IMembershipService memberships, IBenefitService benefits, ISession session)
     {
         _users = users;
         _memberships = memberships;
         _benefits = benefits;
+        _session = session;
     }
     
     [HttpPost]
@@ -45,6 +49,15 @@ public class UserController : BaseController
         await _users.UpdateUser(userId, userIdentification);
         return NoContent();
     }
+    
+    [HttpGet("me")]
+    [SwaggerOperation(
+        Summary = "Get current user",
+        Description = "Gets an user by the session scope"
+    )]
+    [Authorize]
+    public async Task<IActionResult> Me() =>
+        Ok(await _users.GetUserById(_session.UserId));
 
     [HttpGet("{userId:long}")]
     [SwaggerOperation(
