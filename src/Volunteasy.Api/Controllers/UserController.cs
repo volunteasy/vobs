@@ -50,6 +50,8 @@ public class UserController : BaseController
         return NoContent();
     }
     
+
+    // Get the current logged user
     [HttpGet("me")]
     [SwaggerOperation(
         Summary = "Get current user",
