@@ -50,12 +50,12 @@ builder.Configuration.AddEnvironmentVariables();
     builder.Services.AddScoped<IAuthenticator>(b => new Auth(
         fb, b.GetService<ILogger<Auth>>()!, firebaseSignIn ?? ""));
 
-builder.Services.AddScoped<ISession, SessionProvider>();
-    builder.Services.AddScoped<AuthenticationStateProvider, AuthenticatedUserData>();
+    builder.Services.AddScoped<ISession, SessionProvider>();
+    builder.Services.AddScoped<AuthenticationStateProvider, SessionProvider>();
     builder.Services.AddScoped<IIdentityService, IdentityService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IOrganizationService, OrganizationService>();
-    // builder.Services.AddScoped<IMembershipService, MembershipService>();
+    builder.Services.AddScoped<IMembershipService, MembershipService>();
     // builder.Services.AddScoped<IDistributionService, DistributionService>();
     // builder.Services.AddScoped<IBenefitService, BenefitService>();
     // builder.Services.AddScoped<IBenefitProvisionService, BenefitProvisionService>();

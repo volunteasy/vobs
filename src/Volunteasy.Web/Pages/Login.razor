@@ -26,7 +26,7 @@
 
     private async Task HandleSubmit()
     {
-        await ((AuthenticatedUserData)Auth).AuthenticateUser(Email, Password);
+        await ((SessionProvider)Auth).AuthenticateUser(Email, Password);
 
         if ((await Auth.GetAuthenticationStateAsync()).User.Identity?.IsAuthenticated ?? false)
         {

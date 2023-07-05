@@ -30,10 +30,13 @@ public class IdentityService : IIdentityService
         var organizations = await _data.Memberships
             .Where(x => x.MemberId == userId)
             .Where(x => x.Status == MembershipStatus.Approved)
+            .Join(_data.Organizations, m => m.OrganizationId, o => o.Id, 
+                (membership, organization) => new { Membership = membership, Organization = organization })
             .Select(m => new ClaimsIdentity(new OrganizationMemberIdentity
             {
-                Name = m.OrganizationId.ToString(),
-                AuthenticationType = m.Role.ToString(),
+                Name = m.Membership.OrganizationId.ToString(),
+                AuthenticationType = m.Membership.Role.ToString(),
+                OrganizationName = m.Organization.Name,
                 IsAuthenticated = true
             }))
             .ToListAsync();
@@ -58,5 +61,7 @@ internal class OrganizationMemberIdentity : IIdentity
 {
     public string? AuthenticationType { get; set; }
     public bool IsAuthenticated { get; set; }
+    
+    public string? OrganizationName { get; set; }
     public string? Name { get; set; }
 }

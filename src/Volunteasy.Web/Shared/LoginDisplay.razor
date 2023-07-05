@@ -7,8 +7,8 @@
 
 
 @inject IMembershipService Memberships
-@inject SessionProvider Session
-@inject AuthenticatedUserData Auth
+@inject ISession Session
+@inject AuthenticationStateProvider Auth
 
 <AuthorizeView>
     <Authorized>
@@ -22,7 +22,7 @@
         }
         else
         {
-            <select>
+            <select @bind="@(((SessionProvider)Session).OrganizationId)">
                 @foreach (var org in Organizations)
                 {
                     <option value="@org.OrganizationId">@org.OrganizationName</option>
@@ -31,17 +31,33 @@
         }
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
-        <a href="Identity/Account/Login">Log in</a>
+        <a href="/Register">Register</a>
+        <a href="/Login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 
 
 @code {
 
-    private IEnumerable<OrganizationMember> Organizations { get; set; } = new OrganizationMember[]{};
+    private List<OrganizationMember> Organizations { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
+    {
+        Auth.AuthenticationStateChanged += async state =>
+        {
+            var (userid, orgid) = SessionProvider.GetFromState(await state);
+            
+            if (userid == 0)
+                return;
+
+            if (orgid != 0)
+                return;
+            
+            await ListOwnedOrganizations(userid);
+        };
+    }
+    
+    private async Task ListOwnedOrganizations(long userId)
     {
         var page = (long)0;
 
@@ -49,26 +65,18 @@
         {
             var (organizations, next) = await Memberships.ListMemberships(new MembershipFilter
             {
-                MemberId = Session.UserId, Role = MembershipRole.Owner
+                MemberId = userId, Role = MembershipRole.Owner
             }, page);
 
             if (next == null)
                 break;
 
             page = Convert.ToInt64(next);
-
-
-            foreach (var org in organizations)
-            {
-                Organizations = Organizations.Append(org);
-            }
+            Organizations.AddRange(organizations);
 
         } while (page == 0);
-    }
-
-    private async Task OnSelectOrganization()
-    {
-        Auth.AuthenticateUser()
+        
+        StateHasChanged();
     }
 
 }
