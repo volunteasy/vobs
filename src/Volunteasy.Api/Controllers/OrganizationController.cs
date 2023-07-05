@@ -36,7 +36,9 @@ public class OrganizationController : BaseController
     public async Task<IActionResult> ListOrganizations([FromQuery] OrganizationFilter filter,
         [FromQuery] long pageToken)
     {
-        var (organizations, next) = await _organizations.ListOrganizations(filter, pageToken);
+        var (organizations, next) = await _organizations
+            .ListOrganizations(filter, pageToken);
+        
         return PaginatedList(organizations, next);
     }
     

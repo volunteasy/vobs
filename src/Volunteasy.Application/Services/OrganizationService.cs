@@ -60,7 +60,7 @@ public class OrganizationService : IOrganizationService
         
     }
 
-    public async Task<(IEnumerable<Organization>, string?)> ListOrganizations(OrganizationFilter filter, long pageToken)
+    public async Task<PaginatedList<OrganizationResume>> ListOrganizations(OrganizationFilter filter, long pageToken)
     {
         var query = _data.Organizations.AsQueryable();
 
@@ -70,14 +70,36 @@ public class OrganizationService : IOrganizationService
 
         return await query
             .Where(x => x.Id >= pageToken)
+            .Select(o => new OrganizationResume
+            {
+                Id = o.Id,
+                Address = o.Address,
+                Document = o.Document,
+                Name = o.Name,
+                PhoneNumber = o.PhoneNumber,
+                NextDistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
+                DistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && !x.Canceled),
+                MembershipsNumber = _data.Memberships.Count(x => x.OrganizationId == o.Id && x.Role == MembershipRole.Assisted)
+            })
             .OrderBy(x => x.Id)
-            .Paginate(x => x.Id);
+            .PaginateList(x => x.Id);
     }
 
-    public async Task<Organization> GetOrganizationById(long id)
+    public async Task<OrganizationResume> GetOrganizationById(long id)
     {
         var org = await _data.Organizations
             .Include(x => x.Address)
+            .Select(o => new OrganizationResume
+            {
+                Id = o.Id,
+                Address = o.Address,
+                Document = o.Document,
+                Name = o.Name,
+                PhoneNumber = o.PhoneNumber,
+                NextDistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
+                DistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && !x.Canceled),
+                MembershipsNumber = _data.Memberships.Count(x => x.OrganizationId == o.Id && x.Role == MembershipRole.Assisted)
+            })
             .SingleOrDefaultAsync(x => x.Id == id);
         
         return org switch

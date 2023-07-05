@@ -18,6 +18,20 @@ public static class UtilityService
             (list, null) : 
             (list.Take(pageSize), idGetter(list.Last()).ToString());
     }
+    
+    public static async Task<PaginatedList<T>> PaginateList<T>(this IQueryable<T> query, Func<T, long> idGetter)
+    {
+        const int pageSize = 10;
+        
+        var list = await query
+            .Take(pageSize + 1)
+            .ToListAsync();
+
+        return list.Count <= pageSize ? 
+            new PaginatedList<T>(list) : 
+            new PaginatedList<T>(
+                list.Take(pageSize), idGetter(list.Last()).ToString());
+    }
 
     public static IQueryable<T> WithPageToken<T>(this IQueryable<T> query, long page) where T : IId
     {
