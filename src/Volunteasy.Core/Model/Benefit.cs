@@ -90,12 +90,6 @@ public record BenefitDetails
 }
 
 
-public record BenefitAnalysisResult
-{
-    
-}
-
-
 public record BenefitFilter{
     public long? AssistedId  { get; set; }
     public long? DistributionId  { get; set; }
