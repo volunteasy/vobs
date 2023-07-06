@@ -31,10 +31,10 @@ public record OrganizationMember
     public MembershipStatus Status { get; set; }
     public DateTime MemberSince { get; set; }
     
-    public int OrganizationNextDistributionsNumber { get; set; }
+    public int NextDistributionsNumber { get; set; }
     
-    public int OrganizationDistributionsNumber { get; set; }
+    public int DistributionsNumber { get; set; }
     
-    public int OrganizationMembershipsNumber { get; set; }
+    public int MembershipsNumber { get; set; }
     
 }

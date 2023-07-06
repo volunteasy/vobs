@@ -134,11 +134,11 @@ public class MembershipService : IMembershipService
                     OrganizationId = membership.OrganizationId,
                     MemberId = membership.MemberId,
                     OrganizationName = org.Name,
-                    OrganizationNextDistributionsNumber = 
+                    NextDistributionsNumber = 
                         _data.Distributions.Count(x => x.OrganizationId == org.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
-                    OrganizationDistributionsNumber = 
+                    DistributionsNumber = 
                         _data.Distributions.Count(x => x.OrganizationId == org.Id && !x.Canceled),
-                    OrganizationMembershipsNumber = 
+                    MembershipsNumber = 
                         _data.Memberships.Count(x => x.OrganizationId == org.Id && x.Role == MembershipRole.Assisted)
                 })
             .Where(x => x.OrganizationId >= pageToken)
