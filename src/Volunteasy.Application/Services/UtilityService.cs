@@ -43,7 +43,7 @@ public static class UtilityService
         return query.Where(x => x.OrganizationId >= orgId);
     }
     
-    public static IQueryable<T> WithFilters<T>(this IQueryable<T> query, params KeyValuePair<bool, Expression<Func<T, bool>>>[] filters)
+    public static IQueryable<T> WithFilters<T>(this IQueryable<T> query, params KeyValuePair<bool, Expression<Func<T, bool>>>[] filters) where T : class
     {
         return filters.Where(queryFilter => queryFilter.Key)
             .Aggregate(query, (current, filter) => current.Where(filter.Value));
