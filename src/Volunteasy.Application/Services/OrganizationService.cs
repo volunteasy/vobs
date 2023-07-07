@@ -25,6 +25,11 @@ public class OrganizationService : IOrganizationService
     {
         try
         {
+            var distDate = DateTime.Now.AddDays(1);
+            var distDesc = @$"Distribuições são eventos pré-definidos pela organização onde ocorre um mutirão de doações para um número definido de pessoas. 
+Neste caso, esta é uma distribuição para 100 pessoas que ocorre no dia {distDate:dd/MM/yyyy} às {distDate:HH}h e termina às {distDate.AddHours(5):HH}h. 
+Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é gerada para que você possa controlar as entregas de forma justa para todos, mas você ainda pode entregar um benefício normalmente para quem não se inscreveu através da página inicial da organização.";
+            
             var res = await _data.Organizations.AddAsync(new Organization
             {
                 Document = org.Document,
@@ -46,6 +51,17 @@ public class OrganizationService : IOrganizationService
                     new()
                     {
                         Name = "Cesta básica"
+                    }
+                },
+                Distributions = new List<Distribution>
+                {
+                    new()
+                    {
+                        Name = "Exemplo de distribuição de cestas-básicas",
+                        StartsAt = distDate.ToUniversalTime(),
+                        EndsAt = distDate.AddHours(5).ToUniversalTime(),
+                        MaxBenefits = 100,
+                        Description = distDesc
                     }
                 }
             });
@@ -123,10 +139,4 @@ public class OrganizationService : IOrganizationService
 
         await _data.SaveChangesAsync();
     }
-
-    private bool IsUserOrganizationOwner(long orgId, long userId) =>
-        _data.Memberships.Any(x =>
-            x.OrganizationId == orgId &&
-            x.Role == MembershipRole.Owner &&
-            x.MemberId == userId);
 }

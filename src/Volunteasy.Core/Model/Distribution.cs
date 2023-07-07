@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Volunteasy.Core.Model;
 
 [DisplayName("Distribuição")]
-public class Distribution
+public class Distribution : IId, IOrganization
 {
     public long Id { get; set; }
 

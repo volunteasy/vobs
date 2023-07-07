@@ -34,10 +34,8 @@ public enum RevokedBenefitReason
     Canceled = 5,
 }
 
-public record BenefitAnalysisRequest
+public record DistributionBenefitAnalysisRequest
 {
-    [Required]
-    public long DistributionId { get; init; }
     public IEnumerable<BenefitDemandItem>? Items { get; init; }
 }
 
