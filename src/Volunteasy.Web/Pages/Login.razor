@@ -1,36 +1,10 @@
 @page "/Login"
-@using Volunteasy.Web.Auth
-@inject AuthenticationStateProvider Auth
-@inject NavigationManager Nav
 
-@attribute [AllowAnonymous]
 
 <PageTitle>Login</PageTitle>
 
-<form onsubmit="@HandleSubmit">
-    <InputText @bind-Value="Email"></InputText>
-    <InputText @bind-Value="Password"></InputText>
+<form action="/admin/auth" method="post">
+    <input name="email" value="johndoe@volunteasy.com"/>
+    <input name="password" value="password1234"/>
     <button type="submit">Entrar</button>
-    </form>
-
-
-
-<SurveyPrompt Title="How is Blazor working for you?"/>
-
-
-@code {
-
-    public string Email { get; set; } = "johndoe@volunteasy.com";
-
-    public string Password { get; set; } = "password1234";
-
-    private async Task HandleSubmit()
-    {
-        await ((SessionProvider)Auth).AuthenticateUser(Email, Password);
-
-        if ((await Auth.GetAuthenticationStateAsync()).User.Identity?.IsAuthenticated ?? false)
-        {
-            Nav.NavigateTo("/");
-        }
-    }
-}
+</form>

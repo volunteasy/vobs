@@ -1,9 +1,5 @@
 ﻿@page "/"
-@using Volunteasy.Web.Auth
 @inject AuthenticationStateProvider Auth
-@inject NavigationManager Nav
-
-@attribute [AllowAnonymous]
 
 <PageTitle>Index</PageTitle>
 
@@ -15,9 +11,6 @@ Welcome to your new app,
     <Authorized>
         @UserName
     </Authorized>
-    <Authorizing>
-        Authorizing
-    </Authorizing>
 </AuthorizeView>
 
 
@@ -27,20 +20,8 @@ Welcome to your new app,
 
 @code {
 
-    public string Email { get; set; } = "johndoe@volunteasy.com";
+    public string UserName => 
+        Auth.GetAuthenticationStateAsync().GetAwaiter()
+            .GetResult().User.Identity?.Name ?? "NONAME";
 
-    public string Password { get; set; } = "password1234";
-
-    public string UserName => Auth.GetAuthenticationStateAsync().GetAwaiter().GetResult().User.Identity?.Name ?? "NONAME";
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await Auth.GetAuthenticationStateAsync();
-        if (!authState.User.Identity?.IsAuthenticated ?? true)
-        {
-            Nav.NavigateTo("Login");
-        }
-        
-        await base.OnInitializedAsync();
-    }
 }

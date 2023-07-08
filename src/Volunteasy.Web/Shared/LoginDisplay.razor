@@ -13,8 +13,8 @@
 <AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="Identity/Account/Logout">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
+        <form method="get" action="admin/auth">
+            <button type="submit" class="nav-link btn btn-link">Sair</button>
         </form>
         @if (!Organizations.Any())
         {
@@ -31,8 +31,8 @@
         }
     </Authorized>
     <NotAuthorized>
-        <a href="/Register">Register</a>
-        <a href="/Login">Log in</a>
+        <a href="/register">Register</a>
+        <a href="/login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -43,18 +43,7 @@
 
     protected override void OnInitialized()
     {
-        Auth.AuthenticationStateChanged += async state =>
-        {
-            var (userid, orgid) = SessionProvider.GetFromState(await state);
-            
-            if (userid == 0)
-                return;
-
-            if (orgid != 0)
-                return;
-            
-            await ListOwnedOrganizations(userid);
-        };
+        
     }
     
     private async Task ListOwnedOrganizations(long userId)
