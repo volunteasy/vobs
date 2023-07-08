@@ -43,7 +43,7 @@ public class OrganizationController : BaseController
     }
     
     [HttpGet("{organizationId:long}")]
-    public async Task<IActionResult> GetOrganizationById(long organizationId)
+    public async Task<ActionResult<OrganizationDetails>> GetOrganizationById(long organizationId)
         => Ok(await _organizations.GetOrganizationById(organizationId));
 
     [HttpPut("{organizationId:long}")]

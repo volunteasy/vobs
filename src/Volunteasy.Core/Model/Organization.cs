@@ -27,26 +27,3 @@ public class Organization : IdBased
     
     public IEnumerable<Resource>? Resources { get; set; }
 }
-
-public record OrganizationResume 
-{
-    public long Id { get; set; }
-    
-    [Required, MaxLength(14), MinLength(14)]
-    public string? Document { get; set; }
-    
-    [Required, MaxLength(255), MinLength(3)]
-    public string? Name { get; set; }
-    
-    [Required]
-    public Address? Address { get; set; }
-    
-    [Required, MaxLength(32)]
-    public string? PhoneNumber { get; set; }
-    
-    public int NextDistributionsNumber { get; set; }
-    
-    public int DistributionsNumber { get; set; }
-    
-    public int MembershipsNumber { get; set; }
-}

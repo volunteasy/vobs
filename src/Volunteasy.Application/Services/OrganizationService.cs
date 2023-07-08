@@ -76,46 +76,23 @@ Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é 
         
     }
 
-    public async Task<PaginatedList<OrganizationResume>> ListOrganizations(OrganizationFilter filter, long pageToken)
+    public async Task<PaginatedList<OrganizationDetails>> ListOrganizations(OrganizationFilter filter, long pageToken)
     {
-        var query = _data.Organizations.AsQueryable();
+        var query = _data.OrganizationDetails(_session.UserId).AsQueryable();
 
         if (filter.Name != null)
-            query = query.Where(x => 
-                x.Name != null && x.Name.Contains(filter.Name));
+            query = query.Where(x => x.Name.Contains(filter.Name));
 
         return await query
             .Where(x => x.Id >= pageToken)
-            .Select(o => new OrganizationResume
-            {
-                Id = o.Id,
-                Address = o.Address,
-                Document = o.Document,
-                Name = o.Name,
-                PhoneNumber = o.PhoneNumber,
-                NextDistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
-                DistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && !x.Canceled),
-                MembershipsNumber = _data.Memberships.Count(x => x.OrganizationId == o.Id && x.Role == MembershipRole.Assisted)
-            })
             .OrderBy(x => x.Id)
             .PaginateList(x => x.Id);
     }
 
-    public async Task<OrganizationResume> GetOrganizationById(long id)
+    public async Task<OrganizationDetails> GetOrganizationById(long id)
     {
-        var org = await _data.Organizations
-            .Include(x => x.Address)
-            .Select(o => new OrganizationResume
-            {
-                Id = o.Id,
-                Address = o.Address,
-                Document = o.Document,
-                Name = o.Name,
-                PhoneNumber = o.PhoneNumber,
-                NextDistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
-                DistributionsNumber = _data.Distributions.Count(x => x.OrganizationId == o.Id && !x.Canceled),
-                MembershipsNumber = _data.Memberships.Count(x => x.OrganizationId == o.Id && x.Role == MembershipRole.Assisted)
-            })
+        var org = await _data
+            .OrganizationDetails(_session.UserId)
             .SingleOrDefaultAsync(x => x.Id == id);
         
         return org switch
