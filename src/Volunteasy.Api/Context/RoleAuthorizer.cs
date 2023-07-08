@@ -12,7 +12,9 @@ public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
 
     public AuthorizeRolesAttribute(params MembershipRole[]? roles)
     {
-        _roles = roles ?? new [] { MembershipRole.Assisted, MembershipRole.Owner, MembershipRole.Volunteer};
+        _roles = roles != null && roles.Length != 0
+            ? roles
+            : new[] { MembershipRole.Assisted, MembershipRole.Owner, MembershipRole.Volunteer };
     }
 
     public void OnAuthorization(AuthorizationFilterContext context)

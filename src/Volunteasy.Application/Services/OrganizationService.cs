@@ -25,6 +25,11 @@ public class OrganizationService : IOrganizationService
     {
         try
         {
+            var distDate = DateTime.Now.AddDays(1);
+            var distDesc = @$"Distribuições são eventos pré-definidos pela organização onde ocorre um mutirão de doações para um número definido de pessoas. 
+Neste caso, esta é uma distribuição para 100 pessoas que ocorre no dia {distDate:dd/MM/yyyy} às {distDate:HH}h e termina às {distDate.AddHours(5):HH}h. 
+Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é gerada para que você possa controlar as entregas de forma justa para todos, mas você ainda pode entregar um benefício normalmente para quem não se inscreveu através da página inicial da organização.";
+            
             var res = await _data.Organizations.AddAsync(new Organization
             {
                 Document = org.Document,
@@ -47,6 +52,17 @@ public class OrganizationService : IOrganizationService
                     {
                         Name = "Cesta básica"
                     }
+                },
+                Distributions = new List<Distribution>
+                {
+                    new()
+                    {
+                        Name = "Exemplo de distribuição de cestas-básicas",
+                        StartsAt = distDate.ToUniversalTime(),
+                        EndsAt = distDate.AddHours(5).ToUniversalTime(),
+                        MaxBenefits = 100,
+                        Description = distDesc
+                    }
                 }
             });
             
@@ -60,24 +76,23 @@ public class OrganizationService : IOrganizationService
         
     }
 
-    public async Task<(IEnumerable<Organization>, string?)> ListOrganizations(OrganizationFilter filter, long pageToken)
+    public async Task<PaginatedList<OrganizationDetails>> ListOrganizations(OrganizationFilter filter, long pageToken)
     {
-        var query = _data.Organizations.AsQueryable();
+        var query = _data.OrganizationDetails(_session.UserId).AsQueryable();
 
         if (filter.Name != null)
-            query = query.Where(x => 
-                x.Name != null && x.Name.Contains(filter.Name));
+            query = query.Where(x => x.Name.Contains(filter.Name));
 
         return await query
             .Where(x => x.Id >= pageToken)
             .OrderBy(x => x.Id)
-            .Paginate(x => x.Id);
+            .PaginateList(x => x.Id);
     }
 
-    public async Task<Organization> GetOrganizationById(long id)
+    public async Task<OrganizationDetails> GetOrganizationById(long id)
     {
-        var org = await _data.Organizations
-            .Include(x => x.Address)
+        var org = await _data
+            .OrganizationDetails(_session.UserId)
             .SingleOrDefaultAsync(x => x.Id == id);
         
         return org switch
@@ -101,10 +116,4 @@ public class OrganizationService : IOrganizationService
 
         await _data.SaveChangesAsync();
     }
-
-    private bool IsUserOrganizationOwner(long orgId, long userId) =>
-        _data.Memberships.Any(x =>
-            x.OrganizationId == orgId &&
-            x.Role == MembershipRole.Owner &&
-            x.MemberId == userId);
 }

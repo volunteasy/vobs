@@ -19,3 +19,5 @@ public interface IId
 {
     public long Id { get; }
 }
+
+public record PaginatedList<T>(IEnumerable<T> List, string? Next = null);

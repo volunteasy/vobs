@@ -16,10 +16,13 @@ public class DistributionController : BaseController
 
     private readonly IBenefitService _benefits;
     
-    public DistributionController(IDistributionService distributions, IBenefitService benefits)
+    private readonly IBenefitProvisionService _provision;
+    
+    public DistributionController(IDistributionService distributions, IBenefitService benefits, IBenefitProvisionService provision)
     {
         _distributions = distributions;
         _benefits = benefits;
+        _provision = provision;
     }
 
     [HttpPost]
@@ -75,5 +78,13 @@ public class DistributionController : BaseController
     {
         await _distributions.OpenDistribution(distributionId);
         return NoContent();
+    }
+    
+    [HttpPost("{distributionId:long}/join")]
+    [AuthorizeRoles(MembershipRole.Assisted)]
+    public async Task<IActionResult> RequestBenefit(DistributionBenefitAnalysisRequest analysisRequest, long distributionId)
+    {
+        var res = await _provision.RequestBenefit(distributionId, analysisRequest);
+        return Created(res.Id.ToString(), new { res.Position });
     }
 }

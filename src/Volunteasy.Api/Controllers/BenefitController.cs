@@ -23,14 +23,6 @@ public class BenefitController : BaseController
         _benefitProvision = benefitProvision;
     }
 
-    [HttpPost("request")]
-    [AuthorizeRoles(MembershipRole.Assisted)]
-    public async Task<IActionResult> RequestBenefit(BenefitAnalysisRequest analysisRequest)
-    {
-        var res = await _benefitProvision.RequestBenefit(analysisRequest);
-        return Created(res.Id.ToString(), new { res.Position });
-    }
-
     [HttpPost("provide")]
     [AuthorizeRoles(MembershipRole.Owner, MembershipRole.Volunteer)]
     public async Task<IActionResult> ProvideBenefit(BenefitProvision provision)

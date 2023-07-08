@@ -21,6 +21,7 @@ public class DistributionService : ServiceBase, IDistributionService
     public async Task<Distribution> GetDistributionById(long distributionId)
     {
         var distribution = await Data.Distributions
+            .WithOrganization(Session.OrganizationId)
             .SingleOrDefaultAsync(d => d.Id == distributionId);
         
         if (distribution == null)
@@ -31,7 +32,9 @@ public class DistributionService : ServiceBase, IDistributionService
 
     public async Task<(IEnumerable<Distribution>, string?)> ListDistributions(DistributionFilter filter, long pageToken)
     {
-        return await Data.Distributions.WithFilters(
+        return await Data.Distributions
+            .WithOrganization(Session.OrganizationId)
+            .WithFilters(
                 new(filter.Name != null, d => d.Name != null && d.Name.Contains(filter.Name ?? "")),
                 new(filter.OccursAt != null, d => filter.OccursAt >= d.StartsAt && filter.OccursAt <= d.EndsAt))
             .Where(d => d.Id >= pageToken)

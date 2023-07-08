@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Volunteasy.Core.Data;
@@ -25,7 +26,7 @@ public class MembershipService : IMembershipService
     {
         try
         {
-            var status = MembershipStatus.Pending;
+            var status = MembershipStatus.Approved;
 
             if (role == MembershipRole.Assisted || _session.IsOwner())
                 status = MembershipStatus.Approved;
@@ -125,15 +126,25 @@ public class MembershipService : IMembershipService
 
         return await query
             .Join(_data.Organizations,
-                m => m.OrganizationId, o => o.Id, (m, organization) => new OrganizationMember
+                m => m.OrganizationId, o => o.Id, (membership, org) => new OrganizationMember
                 {
-                    Role = m.Role,
-                    Status = m.Status,
-                    MemberSince = m.MemberSince,
-                    OrganizationId = m.OrganizationId,
-                    MemberId = m.MemberId,
-                    OrganizationName = organization.Name
-                }).Where(x => x.OrganizationId >= pageToken)
+                    Role = membership.Role,
+                    Status = membership.Status,
+                    MemberSince = membership.MemberSince,
+                    OrganizationId = membership.OrganizationId,
+                    MemberId = membership.MemberId,
+                    OrganizationName = org.Name,
+                    NextDistributionsNumber = 
+                        _data.Distributions.Count(x => x.OrganizationId == org.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
+                    DistributionsNumber = 
+                        _data.Distributions.Count(x => x.OrganizationId == org.Id && !x.Canceled),
+                    MembershipsNumber = 
+                        _data.Memberships.Count(x => x.OrganizationId == org.Id && x.Role == MembershipRole.Assisted)
+                })
+            .Where(x => x.OrganizationId >= pageToken)
+            .WithFilters(
+                new KeyValuePair<bool, Expression<Func<OrganizationMember, bool>>>(
+                    filter.OrganizationName != null, o => o.OrganizationName!.Contains(filter.OrganizationName!)))
             .OrderBy(x => x.OrganizationId)
             .Paginate(x => x.OrganizationId);
     }

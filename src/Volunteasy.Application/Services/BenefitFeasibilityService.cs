@@ -11,22 +11,22 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
 {
     public BenefitProvisionService(Data data, ISession session) : base(data, session) { }
 
-    public async Task<Benefit> RequestBenefit(BenefitAnalysisRequest analysisRequest)
+    public async Task<Benefit> RequestBenefit(long distributionId, DistributionBenefitAnalysisRequest analysisRequest)
     {
         if (analysisRequest.Items == null || !analysisRequest.Items.Any(x => x.Quantity > 0))
             throw new BenefitItemsCountException();
 
-        ValidateDistributionParticipation(analysisRequest.DistributionId, Session.UserId);
+        ValidateDistributionParticipation(distributionId, Session.UserId);
         
         var benefit = CreateBenefit(new BenefitProvision
         {
-            DistributionId = analysisRequest.DistributionId,
+            DistributionId = distributionId,
             Items = analysisRequest.Items
         }, Session.UserId);
         
         await Data.SaveChangesAsync();
 
-        return benefit with { Position = Data.BenefitQueuePosition(analysisRequest.DistributionId, benefit.Id) };
+        return benefit with { Position = Data.BenefitQueuePosition(distributionId, benefit.Id) };
     }
     
     public async Task<Benefit> ProvideBenefit(BenefitProvision provision)

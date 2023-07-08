@@ -36,12 +36,14 @@ public class OrganizationController : BaseController
     public async Task<IActionResult> ListOrganizations([FromQuery] OrganizationFilter filter,
         [FromQuery] long pageToken)
     {
-        var (organizations, next) = await _organizations.ListOrganizations(filter, pageToken);
+        var (organizations, next) = await _organizations
+            .ListOrganizations(filter, pageToken);
+        
         return PaginatedList(organizations, next);
     }
     
     [HttpGet("{organizationId:long}")]
-    public async Task<IActionResult> GetOrganizationById(long organizationId)
+    public async Task<ActionResult<OrganizationDetails>> GetOrganizationById(long organizationId)
         => Ok(await _organizations.GetOrganizationById(organizationId));
 
     [HttpPut("{organizationId:long}")]

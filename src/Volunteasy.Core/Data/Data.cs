@@ -1,6 +1,8 @@
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Volunteasy.Core.DTOs;
+using Volunteasy.Core.Enums;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
@@ -8,28 +10,59 @@ namespace Volunteasy.Core.Data;
 
 public class Data : DbContext
 {
+    private readonly ISession _session;
 
     private readonly ILogger<Data> _log;
-    public Data(DbContextOptions opt, ILogger<Data> log) : base(opt)
+
+    public Data(DbContextOptions opt, ISession session, ILogger<Data> log) : base(opt)
     {
+        _session = session;
         _log = log;
     }
-    
+
 
     public DbSet<Address> Addresses { get; init; } = null!;
-    
+
     public DbSet<User> Users { get; init; } = null!;
-    
+
     public DbSet<Organization> Organizations { get; init; } = null!;
 
+    public IQueryable<OrganizationDetails> OrganizationDetails(long user) =>
+        Organizations
+            .AsQueryable()
+            .Select(o => new OrganizationDetails
+            {
+                Id = o.Id,
+                Address = o.Address ?? new(),
+                Name = o.Name ?? string.Empty,
+                PhoneNumber = o.PhoneNumber ?? string.Empty,
+                Stats = new OrganizationStats
+                {
+                    AssistedPeopleCount = Memberships
+                        .Count(x => x.OrganizationId == o.Id && x.Role == MembershipRole.Assisted),
+                    NextDistributionsCount = Distributions.Count(x =>
+                        x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
+                },
+                Membership = Memberships
+                    .Where(m => m.MemberId == user)
+                    .Select(m => new MembershipStats
+                    {
+                        Role = m.Role,
+                        MemberSince = m.MemberSince,
+                        Status = m.Status,
+                        BenefitsReceived = Benefits
+                            .Count(b =>
+                                b.OrganizationId == o.Id && b.AssistedId == m.MemberId && b.ClaimedAt != null)
+                    }).SingleOrDefault()
+            });
 
 
     public DbSet<Distribution> Distributions { get; init; } = null!;
-    
+
     public DbSet<Membership> Memberships { get; init; } = null!;
 
     public DbSet<Resource> Resources { get; init; } = null!;
-    
+
     public DbSet<StockMovement> StockMovements { get; init; } = null!;
 
     public DbSet<Benefit> Benefits { get; init; } = null!;
@@ -41,6 +74,7 @@ public class Data : DbContext
             .ToList()
             .Select((b, idx) => new { Pos = idx + 1, Id = b.Id })
             .SingleOrDefault(b => b.Id == benefitId)?.Pos;
+
     public DbSet<BenefitItem> BenefitItems { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,17 +84,14 @@ public class Data : DbContext
             x.Property(u => u.Id).HasValueGenerator<IdValueGenerator>();
             x.HasIndex(u => u.Document).IsUnique();
         });
-            
-        modelBuilder.Entity<Address>(x =>
-        {
-            x.Property(a => a.Id).HasValueGenerator<IdValueGenerator>();
-        });
+
+        modelBuilder.Entity<Address>(x => { x.Property(a => a.Id).HasValueGenerator<IdValueGenerator>(); });
 
         modelBuilder.Entity<Organization>(x =>
         {
             x.Property(o => o.Id).HasValueGenerator<IdValueGenerator>();
             x.HasIndex(c => c.Document).IsUnique();
-            
+
             x.HasOne<Address>(o => o.Address).WithOne()
                 .HasForeignKey<Organization>(o => o.AddressId);
         });
@@ -73,11 +104,11 @@ public class Data : DbContext
 
             x.HasOne<Organization>().WithMany(o => o.Memberships)
                 .HasForeignKey(m => m.OrganizationId).IsRequired();
-            
+
             x.HasOne<User>().WithMany(u => u.Memberships)
                 .HasForeignKey(m => m.MemberId).IsRequired();
         });
-        
+
         modelBuilder.Entity<Resource>(x =>
         {
             x.Property(r => r.Id).HasValueGenerator<IdValueGenerator>();
@@ -86,7 +117,7 @@ public class Data : DbContext
             x.HasOne<Organization>().WithMany(o => o.Resources)
                 .HasForeignKey(r => r.OrganizationId).IsRequired();
         });
-        
+
         modelBuilder.Entity<StockMovement>(x =>
         {
             x.Property(s => s.Id).HasValueGenerator<IdValueGenerator>();
@@ -95,11 +126,11 @@ public class Data : DbContext
 
             x.HasOne<Organization>().WithMany()
                 .HasForeignKey(s => s.OrganizationId).IsRequired();
-            
+
             x.HasOne<Resource>(s => s.Resource).WithMany()
                 .HasForeignKey(s => s.ResourceId).IsRequired();
         });
-        
+
         modelBuilder.Entity<Distribution>(x =>
         {
             x.Property(d => d.Id).HasValueGenerator<IdValueGenerator>();
@@ -108,25 +139,25 @@ public class Data : DbContext
             x.HasOne<Organization>().WithMany(o => o.Distributions)
                 .HasForeignKey(d => d.OrganizationId).IsRequired();
         });
-        
+
         modelBuilder.Entity<Benefit>(x =>
         {
             x.Property(b => b.Id).HasValueGenerator<IdValueGenerator>();
 
             x.HasOne<Organization>().WithMany(o => o.Benefits)
                 .HasForeignKey(b => b.OrganizationId).IsRequired();
-            
+
             x.HasOne<Distribution>(b => b.Distribution).WithMany(d => d.Benefits)
                 .HasForeignKey(b => b.DistributionId);
         });
-        
+
         modelBuilder.Entity<BenefitItem>(x =>
         {
             x.HasKey(b => new { b.BenefitId, b.ResourceId });
-            
+
             x.HasOne<Benefit>().WithMany(b => b.Items)
                 .HasForeignKey(b => b.BenefitId).IsRequired();
-            
+
             x.HasOne<Resource>(b => b.Resource).WithMany()
                 .HasForeignKey(b => b.ResourceId).IsRequired();
 
@@ -134,11 +165,42 @@ public class Data : DbContext
                 .HasForeignKey<BenefitItem>(b => b.StockMovementId)
                 .IsRequired();
         });
-
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseExceptionProcessor();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {
+        AssignOrganizationId();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void AssignOrganizationId()
+    {
+        var changes = ChangeTracker
+            .Entries()
+            .Where(e =>
+                e.State == EntityState.Added &&
+                e.CurrentValues.Properties
+                    .Any(p => p.Name == "OrganizationId"));
+
+        foreach (var entry in changes)
+        {
+            var orgId = entry.CurrentValues["OrganizationId"];
+
+            if (orgId != null && (long)orgId != 0)
+                continue;
+
+            if (_session.OrganizationId == 0)
+            {
+                _log.LogWarning("Entity of type {EntityType} no proper organizationId", entry.Metadata.Name);
+                continue;
+            }
+
+            entry.CurrentValues["OrganizationId"] = _session.OrganizationId;
+        }
     }
 }
