@@ -1,0 +1,45 @@
+﻿@page "/login/org"
+@model Volunteasy.Web.Pages.OrganizationLogin
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Entre em sua organização</title>
+    <link href="~/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true"/>
+</head>
+
+<body>
+<div class="main">
+    <div class="content px-4">
+
+        <h1 class="text-danger">Selecione uma organização</h1>
+
+        @if (ViewData.Model.Organizations == null)
+        {
+            <span>Buscando suas organizações</span>
+        }
+        else if (!ViewData.Model.Organizations.Any())
+        {
+            <span>Sem organizações</span>
+        }
+        else
+        {
+            <form action="" method="post">
+                <select name="organizationId">
+                    @foreach (var org in ViewData.Model.Organizations)
+                    {
+                        <option value="@org.OrganizationId">@org.OrganizationName</option>
+                    }
+                </select>
+                <button type="submit">Entrar</button>
+            </form>
+        }
+    </div>
+</div>
+</body>
+
+</html>

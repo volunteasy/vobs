@@ -33,7 +33,7 @@ else
         {
             <tr>
                 <td>@organization.Name</td>
-                <td>@organization.Document</td>
+                <td>@($"{organization.Address.AddressName}, {organization.Address.AddressNumber}")</td>
                 <td>@organization.PhoneNumber</td>
                 <td>@organization.Id</td>
             </tr>
@@ -47,7 +47,7 @@ else
 }
 
 @code {
-    private IEnumerable<Organization>? organizations;
+    private IEnumerable<OrganizationDetails>? organizations;
 
     public long Next;
 
