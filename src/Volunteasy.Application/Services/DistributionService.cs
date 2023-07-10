@@ -18,27 +18,50 @@ public class DistributionService : ServiceBase, IDistributionService
         return dist.Entity;
     }
 
-    public async Task<Distribution> GetDistributionById(long distributionId)
+    public async Task<DistributionDto> GetDistributionById(long distributionId)
     {
-        var distribution = await Data.Distributions
+        var distribution = await Data.DistributionDetails(Session.UserId)
             .WithOrganization(Session.OrganizationId)
             .SingleOrDefaultAsync(d => d.Id == distributionId);
         
         if (distribution == null)
             throw new ResourceNotFoundException(typeof(Distribution));
-        
+
+        if (distribution.Benefit != null)
+            distribution = distribution with
+            {
+                Benefit = distribution.Benefit with
+                {
+                    Position = Data.BenefitQueuePosition(distributionId, distribution.Benefit.BenefitId) ?? 0,
+                }
+            };
+
         return distribution;
     }
 
-    public async Task<(IEnumerable<Distribution>, string?)> ListDistributions(DistributionFilter filter, long pageToken)
+    public async Task<PaginatedList<DistributionDto>> ListDistributions(DistributionFilter filter, long pageToken)
     {
-        return await Data.Distributions
+        var res = await  Data.DistributionDetails(Session.UserId)
             .WithOrganization(Session.OrganizationId)
+            .OrderByDescending(d => d.EndsAt)
             .WithFilters(
                 new(filter.Name != null, d => d.Name != null && d.Name.Contains(filter.Name ?? "")),
                 new(filter.OccursAt != null, d => filter.OccursAt >= d.StartsAt && filter.OccursAt <= d.EndsAt))
             .Where(d => d.Id >= pageToken)
-            .Paginate(d => d.Id);
+            .PaginateList(d => d.Id); 
+
+        return res with
+        {
+            List = res.List.Select(d => d with
+            {
+                Benefit = d.Benefit == null
+                    ? null
+                    : d.Benefit with
+                    {
+                        Position = Data.BenefitQueuePosition(d.Id, d.Benefit.BenefitId) ?? 0,
+                    }
+            })
+        };
     }
 
     public async Task CancelDistribution(long distributionId)

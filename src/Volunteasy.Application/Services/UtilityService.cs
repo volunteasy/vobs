@@ -40,7 +40,7 @@ public static class UtilityService
     
     public static IQueryable<T> WithOrganization<T>(this IQueryable<T> query, long orgId) where T : IOrganization
     {
-        return query.Where(x => x.OrganizationId >= orgId);
+        return query.Where(x => x.OrganizationId == orgId);
     }
     
     public static IQueryable<T> WithFilters<T>(this IQueryable<T> query, params KeyValuePair<bool, Expression<Func<T, bool>>>[] filters) where T : class
