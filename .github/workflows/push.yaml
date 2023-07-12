@@ -12,6 +12,9 @@ jobs:
   deploy:
     name: Deploy to dev environment
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v3
       - name: Setup .NET Core SDK
@@ -28,28 +31,13 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.3.0
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
         with:
-          version: 'latest'
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: volunteasy
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
           
-      - name: Set up Service Account
-        run: echo '${{ secrets.GCP_SA_KEY }}' > ${HOME}/gcp-key.json
-
-      - name: Configure Docker
-        run: |
-          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud auth configure-docker
-
-      - name: Build and push Docker image
-        run: |
-          mv ./build/Dockerfile .
-          export IMAGE_NAME=gcr.io/${{ secrets.PROJECT_ID }}/vobs:${{ github.sha }}
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
-
-      - name: Deploy to App Engine
-        run: |
-          gcloud app deploy --image-url=gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} --quiet deploy/dev/app.yaml
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-appengine@v1'
+        with:
+          deliverables: 'deploy/dev/app.yaml'
