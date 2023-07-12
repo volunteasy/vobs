@@ -34,10 +34,12 @@ jobs:
           version: 'latest'
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: volunteasy
+          
+      - name: Set up Service Account
+        run: echo ${{ secrets.GCP_SA_KEY }} > ${HOME}/gcp-key.json
 
       - name: Configure Docker
         run: |
-          echo ${{ secrets.GCP_SA_KEY }} > ${HOME}/gcp-key.json
           gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
           gcloud auth configure-docker gcr.io
 
