@@ -46,8 +46,9 @@ jobs:
       - name: Build and push Docker image
         run: |
           mv ./build/Dockerfile .
-          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/vobs:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.PROJECT_ID }}/vobs:${{ github.sha }}
+          export IMAGE_NAME=gcr.io/${{ secrets.PROJECT_ID }}/vobs:${{ github.sha }}
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
 
       - name: Deploy to App Engine
         run: |
