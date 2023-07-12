@@ -20,4 +20,8 @@ RUN dotnet publish "Volunteasy.Api.csproj" -c Release -o /app/publish /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+ENV ASPNETCORE_URLS=http://*:$PORT
+
+
 ENTRYPOINT ["dotnet", "Volunteasy.Api.dll"]
