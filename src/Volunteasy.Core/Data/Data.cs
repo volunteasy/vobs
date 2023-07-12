@@ -73,6 +73,11 @@ public class Data : DbContext
                 Canceled = d.Canceled,
                 OrganizationId = d.OrganizationId,
                 RemainingBenefits = d.MaxBenefits - Benefits.Count(b => b.DistributionId == d.Id),
+                Stats = new DistributionStats
+                {
+                    BenefitsToClaim = Benefits.Count(b => b.DistributionId == d.Id && b.ClaimedAt == null && b.RevokedReason == null),
+                    ClaimedBenefits = Benefits.Count(b => b.DistributionId == d.Id && b.ClaimedAt == null && b.RevokedReason == null)
+                },
                 Benefit = Benefits
                     .Where(b => b.DistributionId == d.Id && b.AssistedId == user)
                     .Select(b => new BenefitStats
@@ -93,7 +98,7 @@ public class Data : DbContext
 
     public int? BenefitQueuePosition(long distributionId, long benefitId) =>
         Benefits
-            .Where(b => b.DistributionId == distributionId && b.ClaimedAt == null)
+            .Where(b => b.DistributionId == distributionId && b.ClaimedAt == null && b.RevokedReason == null)
             .OrderBy(b => b.Position ?? 0)
             .ToList()
             .Select((b, idx) => new { Pos = idx + 1, b.Id })

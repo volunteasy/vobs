@@ -82,6 +82,16 @@ public class BenefitNotFoundException : ApplicationException
     public override string? HelpLink { get; set; } = "404";
 }
 
+public class BenefitAlreadyClaimedException : ApplicationException
+{
+    public BenefitAlreadyClaimedException(DateTime claimedAt) : base($"O benefício já foi entregue em {claimedAt}")
+    {
+        
+    }
+    
+    public override string? HelpLink { get; set; } = "400";
+}
+
 
 public class ResourceNotFoundException : ApplicationException
 {

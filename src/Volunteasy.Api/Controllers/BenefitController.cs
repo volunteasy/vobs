@@ -32,6 +32,7 @@ public class BenefitController : BaseController
     }
 
     [HttpGet]
+    [AuthorizeRoles]
     public async Task<IActionResult> ListBenefits([FromQuery] BenefitFilter filter, [FromQuery] long pageToken)
     {
         var (organizations, next) = await _benefits.ListBenefits(filter, pageToken);
@@ -39,10 +40,12 @@ public class BenefitController : BaseController
     }
     
     [HttpGet("{benefitId:long}")]
+    [AuthorizeRoles]
     public async Task<IActionResult> GetBenefitById(long benefitId)
         => Ok(await _benefits.GetBenefitById(benefitId));
     
     [HttpPost("{benefitId:long}/claim")]
+    [AuthorizeRoles(MembershipRole.Owner, MembershipRole.Volunteer)]
     public async Task<IActionResult> ClaimBenefit(long benefitId)
     {
         await _benefits.ClaimBenefit(benefitId);

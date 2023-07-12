@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Volunteasy.Core.Model;
 
-public class StockMovement : OrganizationBasedResource
+public class StockMovement : OrganizationBasedResource, IOrganization, IId
 {
     public string? Description { get; set; }
     

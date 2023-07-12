@@ -91,9 +91,25 @@ public class BenefitService : ServiceBase, IBenefitService
 
     public async Task ClaimBenefit(long benefitId)
     {
-        var benefit = await Data.Benefits.SingleOrDefaultAsync(b => b.Id == benefitId);
+        var benefit = await Data.Benefits.
+            WithOrganization(Session.OrganizationId).
+            SingleOrDefaultAsync(b => b.Id == benefitId);
         if (benefit == null)
             throw new BenefitNotFoundException();
+
+        if (benefit.ClaimedAt != null)
+            throw new BenefitAlreadyClaimedException(benefit.ClaimedAt.Value);
+
+        var benefits = await Data.BenefitItems
+            .Include(b => b.StockMovement)
+            .WithOrganization(Session.OrganizationId)
+            .Where(b => b.BenefitId == benefitId)
+            .ToListAsync();
+
+        benefits.ForEach(b =>
+        {
+            b.StockMovement!.Type = StockMovementType.Output;
+        });
 
         benefit.ClaimedAt = DateTime.UtcNow;
         await Data.SaveChangesAsync();

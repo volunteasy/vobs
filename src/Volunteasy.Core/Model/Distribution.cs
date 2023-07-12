@@ -96,8 +96,17 @@ public record DistributionDto : IId, IOrganization
     public int RemainingBenefits { get; init; }
     
     public bool Canceled { get; set; }
+
+    public DistributionStats Stats { get; init; } = new();
     
     public BenefitStats? Benefit { get; init; }
+}
+
+public record DistributionStats
+{
+    public int ClaimedBenefits { get; init; }
+    
+    public int BenefitsToClaim { get; set; }
 }
 
 public record BenefitStats
