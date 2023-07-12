@@ -39,12 +39,12 @@ jobs:
         run: |
           echo ${{ secrets.GCP_SA_KEY }} > ${HOME}/gcp-key.json
           gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud auth configure-docker
+          gcloud auth configure-docker gcr.io
 
       - name: Build and push Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }}
+          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/volunteasy-dev:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.PROJECT_ID }}/volunteasy-dev:${{ github.sha }}
 
       - name: Deploy to App Engine
         run: |
