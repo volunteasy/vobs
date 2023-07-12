@@ -28,19 +28,24 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal
 
-      - name: Prepare environment
-        run: |
-          mv deploy/dev/docker-compose.yaml -t .
-          zip -r deploy.zip .
-
-      - name: Deploy artifact
-        uses: einaregilsson/beanstalk-deploy@v21
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: volunteasy
-          environment_name: volunteasy-dev
-          version_label: ${{github.SHA}}${{ github.run_attempt }}
-          region: sa-east-1
-          version_description: ${{github.SHA}}${{ github.run_attempt }}
-          deployment_package: deploy.zip
+          version: 'latest'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: volunteasy
+
+      - name: Configure Docker
+        run: |
+          echo ${{ secrets.GCP_SA_KEY }} | base64 --decode > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud auth configure-docker
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }}
+
+      - name: Deploy to App Engine
+        run: |
+          gcloud app deploy --image-url=gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} --quiet
