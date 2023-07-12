@@ -48,3 +48,4 @@ jobs:
       - name: Deploy to Google Cloud Run
         run: |
             gcloud run deploy volunteasy-dev --image=gcr.io/volunteasy-392610/dev/api:${{ github.sha }} --platform=managed --region=southamerica-east1
+            gcloud run services update-traffic volunteasy-dev --to-latest

@@ -40,15 +40,12 @@ var loggerCfg = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal);
 
+loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
 if (!builder.Environment.IsDevelopment())
 {
     loggerCfg = loggerCfg.WriteTo.NewRelicLogs(
         applicationName: builder.Configuration.GetValue<string>("NR_APP") ?? "",
         licenseKey: builder.Configuration.GetValue<string>("NR_LICENSE") ?? "");
-}
-else
-{
-    loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
 }
 
 
