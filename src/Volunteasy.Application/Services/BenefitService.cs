@@ -32,6 +32,7 @@ public class BenefitService : ServiceBase, IBenefitService
     {
 
         var query = Data.Benefits.WithFilters(
+            new (filter.DistributionId != null, b => b.DistributionId == filter.DistributionId),
             new(filter.ClaimedSince != null, b => b.ClaimedAt >= filter.ClaimedSince),
             new(filter.ClaimedUntil != null, b => b.ClaimedAt <= filter.ClaimedUntil),
             new (filter.NotClaimedOnly, b => b.ClaimedAt == null)
