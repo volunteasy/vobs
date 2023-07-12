@@ -36,8 +36,17 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and push Docker image
+        run: |
+          mv ./build/Dockerfile .
+          export IMAGE_NAME=gcr.io/volunteasy-392610/vobs:${{ github.sha }}
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
           
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-appengine@v1'
-        with:
-          deliverables: 'deploy/dev/app.yaml'
+      - name: Deploy to Google Cloud Run
+        run: |
+            gcloud run deploy volunteasy-dev --image=gcr.io/volunteasy-392610/vobs:${{ github.sha }} --platform=managed --region=southamerica-east1
