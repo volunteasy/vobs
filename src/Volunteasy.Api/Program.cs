@@ -63,7 +63,7 @@ builder.Configuration.AddEnvironmentVariables();
 
 #region Infrastructure setup
 
-builder.Services.AddIdGen(1688991143);
+builder.Services.AddIdGen(123);
 
 builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
         builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "",
