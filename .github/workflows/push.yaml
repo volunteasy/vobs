@@ -52,4 +52,4 @@ jobs:
 
       - name: Deploy to App Engine
         run: |
-          gcloud app deploy --image-url=gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} --quiet
+          gcloud app deploy --image-url=gcr.io/${{ secrets.PROJECT_ID }}/your-image-name:${{ github.sha }} --quiet deploy/dev/app.yaml
