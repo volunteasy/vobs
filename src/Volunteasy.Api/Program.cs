@@ -204,4 +204,9 @@ app
     .UseAuthorization();
 
 app.MapControllers();
-app.Run();
+
+
+var port = app.Configuration.GetValue<string>("PORT");
+
+
+app.Run(url: port == null ? null : $"http://*:{port}");
