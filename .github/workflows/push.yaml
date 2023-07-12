@@ -12,7 +12,6 @@ jobs:
   deploy:
     name: Deploy to dev environment
     runs-on: ubuntu-latest
-    permissions:
 #      contents: 'read'
 #      id-token: 'write'
     steps:
