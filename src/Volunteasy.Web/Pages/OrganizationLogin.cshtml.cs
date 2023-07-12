@@ -66,16 +66,20 @@ public class OrganizationLogin : PageModel
         var (res, _) = await _memberships.ListMemberships(new MembershipFilter
         {
             MemberId = userId,
-            OrganizationId = organizationId,
         }, 0);
 
-        if (!res.Any())
+        if (res == null || !res.Any())
             throw new Exception();
+
+        var orgName = res
+            .Where(x => x.OrganizationId == organizationId)
+            .Select(x => (x.OrganizationId, x.OrganizationName)).SingleOrDefault();
 
         var identity = new ClaimsPrincipal(
             new ClaimsIdentity(User.Claims
                     .Where(c => c.Type != "organization_id")
                     .Append(new Claim("organization_id", organizationId.ToString()))
+                    .Append(new Claim("organization_name", orgName ?? "No name"))
                 , JwtBearerDefaults.AuthenticationScheme));
 
         await HttpContext.SignInAsync(

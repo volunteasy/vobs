@@ -8,27 +8,14 @@
 
 @inject IMembershipService Memberships
 @inject ISession Session
-@inject AuthenticationStateProvider Auth
 
 <AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
+        <a href="Identity/Account/Manage">Olá, @context.User.Identity?.Name!</a>
         <form method="get" action="admin/auth">
             <button type="submit" class="nav-link btn btn-link">Sair</button>
         </form>
-        @if (!Organizations.Any())
-        {
-            <span>Sem organizações</span>
-        }
-        else
-        {
-            <select @bind="@(((SessionProvider)Session).OrganizationId)">
-                @foreach (var org in Organizations)
-                {
-                    <option value="@org.OrganizationId">@org.OrganizationName</option>
-                }
-            </select>
-        }
+        <span>@Organization</span>
     </Authorized>
     <NotAuthorized>
         <a href="/register">Register</a>
@@ -39,33 +26,15 @@
 
 @code {
 
-    private List<OrganizationMember> Organizations { get; set; } = new();
+    [CascadingParameter] 
+    public Task<AuthenticationState> Auth { get; set; }
 
-    protected override void OnInitialized()
+    public string Organization = "";
+
+    protected async override Task OnInitializedAsync()
     {
-        
-    }
-    
-    private async Task ListOwnedOrganizations(long userId)
-    {
-        var page = (long)0;
-
-        do
-        {
-            var (organizations, next) = await Memberships.ListMemberships(new MembershipFilter
-            {
-                MemberId = userId, Role = MembershipRole.Owner
-            }, page);
-
-            if (next == null)
-                break;
-
-            page = Convert.ToInt64(next);
-            Organizations.AddRange(organizations);
-
-        } while (page == 0);
-        
-        StateHasChanged();
+        var state = await Auth;
+        Organization = state.User.FindFirst("organization_name")?.Value ?? "No name";
     }
 
 }
