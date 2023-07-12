@@ -1,20 +1,16 @@
-name: Deploy
+name:  Build release
 
 on:
   push:
-    branches: [main]
-
-concurrency:
-  group: push-${{ github.head_ref }}
-  cancel-in-progress: true
+    tags:
+      - v*.*.*
 
 jobs:
-  deploy:
-    name: Deploy to dev environment
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        
+
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v3
         with:
@@ -41,10 +37,10 @@ jobs:
       - name: Build and push Docker image
         run: |
           mv ./build/Dockerfile .
-          export IMAGE_NAME=gcr.io/volunteasy-392610/dev/api:${{ github.sha }}
+          export IMAGE_NAME=gcr.io/volunteasy-392610/prod/api:${{ github.sha }}
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
-          
+
       - name: Deploy to Google Cloud Run
         run: |
-            gcloud run deploy volunteasy-dev --image=gcr.io/volunteasy-392610/dev/api:${{ github.sha }} --platform=managed --region=southamerica-east1
+          gcloud run deploy volunteasy-prod --image=gcr.io/volunteasy-392610/prod/api:${{ github.sha }} --platform=managed --region=southamerica-east1
