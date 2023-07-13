@@ -6,10 +6,9 @@ public interface IDistributionService
 {
     public Task<Distribution> CreateDistribution(DistributionCreationProperties props);
 
-    public Task<Distribution> GetDistributionById(long distributionId);
+    public Task<DistributionDto> GetDistributionById(long distributionId);
     
-    public Task<(IEnumerable<Distribution>, string?)> 
-        ListDistributions(DistributionFilter filter, long pageToken);
+    public Task<PaginatedList<DistributionDto>> ListDistributions(DistributionFilter filter, long pageToken);
 
     public Task CancelDistribution(long distributionId);
     

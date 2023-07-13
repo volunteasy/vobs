@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Volunteasy.Core.Model;
 
-public record BenefitItem
+public record BenefitItem : IOrganization
 {
     public long BenefitId { get; init; }
     

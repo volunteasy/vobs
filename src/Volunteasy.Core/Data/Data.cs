@@ -44,7 +44,7 @@ public class Data : DbContext
                         x.OrganizationId == o.Id && x.StartsAt >= DateTime.Now.ToUniversalTime()),
                 },
                 Membership = Memberships
-                    .Where(m => m.MemberId == user)
+                    .Where(m => m.MemberId == user && m.OrganizationId == o.Id)
                     .Select(m => new MembershipStats
                     {
                         Role = m.Role,
@@ -58,6 +58,35 @@ public class Data : DbContext
 
 
     public DbSet<Distribution> Distributions { get; init; } = null!;
+    
+    public IQueryable<DistributionDto> DistributionDetails(long user) =>
+        Distributions
+            .AsQueryable()
+            .Select(d => new DistributionDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Description = d.Description,
+                StartsAt = d.StartsAt,
+                EndsAt = d.EndsAt,
+                MaxBenefits = d.MaxBenefits,
+                Canceled = d.Canceled,
+                OrganizationId = d.OrganizationId,
+                RemainingBenefits = d.MaxBenefits - Benefits.Count(b => b.DistributionId == d.Id),
+                Stats = new DistributionStats
+                {
+                    BenefitsToClaim = Benefits.Count(b => b.DistributionId == d.Id && b.ClaimedAt == null && b.RevokedReason == null),
+                    ClaimedBenefits = Benefits.Count(b => b.DistributionId == d.Id && b.ClaimedAt == null && b.RevokedReason == null)
+                },
+                Benefit = Benefits
+                    .Where(b => b.DistributionId == d.Id && b.AssistedId == user)
+                    .Select(b => new BenefitStats
+                    {
+                        BenefitId = b.Id,
+                        ClaimedAt = b.ClaimedAt,
+                        RevokedReason = b.RevokedReason
+                    }).SingleOrDefault()
+            });
 
     public DbSet<Membership> Memberships { get; init; } = null!;
 
@@ -69,10 +98,10 @@ public class Data : DbContext
 
     public int? BenefitQueuePosition(long distributionId, long benefitId) =>
         Benefits
-            .Where(b => b.DistributionId == distributionId && b.ClaimedAt == null)
+            .Where(b => b.DistributionId == distributionId && b.ClaimedAt == null && b.RevokedReason == null)
             .OrderBy(b => b.Position ?? 0)
             .ToList()
-            .Select((b, idx) => new { Pos = idx + 1, Id = b.Id })
+            .Select((b, idx) => new { Pos = idx + 1, b.Id })
             .SingleOrDefault(b => b.Id == benefitId)?.Pos;
 
     public DbSet<BenefitItem> BenefitItems { get; init; } = null!;

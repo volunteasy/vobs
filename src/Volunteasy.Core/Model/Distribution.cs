@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Volunteasy.Core.Enums;
 
 namespace Volunteasy.Core.Model;
 
@@ -71,4 +73,49 @@ public record DistributionFilter
     
     [MinLength(1), MaxLength(100)]
     public string? Name { get; set; }
+}
+
+
+public record DistributionDto : IId, IOrganization
+{
+    public long Id { get; set; }
+
+    public long OrganizationId { get; set; }
+    
+    [MinLength(1), MaxLength(100)]
+    public string? Name { get; set; }
+    
+    public string? Description { get; set; }
+    
+    public DateTime StartsAt { get; set; }
+    
+    public DateTime EndsAt { get; set; }
+    
+    public int MaxBenefits { get; set; }
+    
+    public int RemainingBenefits { get; init; }
+    
+    public bool Canceled { get; set; }
+
+    public DistributionStats Stats { get; init; } = new();
+    
+    public BenefitStats? Benefit { get; init; }
+}
+
+public record DistributionStats
+{
+    public int ClaimedBenefits { get; init; }
+    
+    public int BenefitsToClaim { get; set; }
+}
+
+public record BenefitStats
+{
+    public long BenefitId { get; init; }
+    
+    public long Position { get; init; }
+
+    public DateTime? ClaimedAt { get; init; }
+    
+    public RevokedBenefitReason? RevokedReason { get; init; }
 }

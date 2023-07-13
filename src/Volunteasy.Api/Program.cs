@@ -24,12 +24,13 @@ using Volunteasy.Infrastructure.Firebase;
 var builder = WebApplication.CreateBuilder(args);
 
 #region Environment setup
-    // This is meant to load env vars in a local environment.
-    // Production and Staging environments should not depend on this
-    if (builder.Environment.IsDevelopment())
-        DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: false));
 
-    var loggerCfg = new LoggerConfiguration()
+// This is meant to load env vars in a local environment.
+// Production and Staging environments should not depend on this
+if (builder.Environment.IsDevelopment())
+    DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: false));
+
+var loggerCfg = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
     .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
@@ -39,147 +40,146 @@ var builder = WebApplication.CreateBuilder(args);
     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal);
 
-    if (!builder.Environment.IsDevelopment())
-    {
-        loggerCfg = loggerCfg.WriteTo.NewRelicLogs(
-            applicationName: builder.Configuration.GetValue<string>("NR_APP") ?? "",
-            licenseKey: builder.Configuration.GetValue<string>("NR_LICENSE") ?? "");
-    }
-    else
-    {
-        loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
-    }
-        
-        
-    var logger = loggerCfg.CreateLogger();
+loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
+if (!builder.Environment.IsDevelopment())
+{
+    loggerCfg = loggerCfg.WriteTo.NewRelicLogs(
+        applicationName: builder.Configuration.GetValue<string>("NR_APP") ?? "",
+        licenseKey: builder.Configuration.GetValue<string>("NR_LICENSE") ?? "");
+}
 
-    builder.Services.AddSerilog(logger);
-    builder.Host.UseSerilog(logger);
 
-    builder.Configuration.AddEnvironmentVariables();
+var logger = loggerCfg.CreateLogger();
+
+builder.Services.AddSerilog(logger);
+builder.Host.UseSerilog(logger);
+
+builder.Configuration.AddEnvironmentVariables();
+
 #endregion
 
 #region Infrastructure setup
 
-    builder.Services.AddIdGen(123);
+builder.Services.AddIdGen(123);
 
-    builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
-            builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "",
-            op => op.MigrationsAssembly("Volunteasy.Api")
-        )
-    );
+builder.Services.AddDbContext<Data>(o => o.UseNpgsql(
+        builder.Configuration.GetValue<string>("POSTGRES_CONNSTR") ?? "",
+        op => op.MigrationsAssembly("Volunteasy.Api")
+    )
+);
 
-    var firebaseCredentials = builder.Configuration.GetValue<string>("FIREBASE_CREDS");
-    var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL");
-    var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
-    {
-        Credential = GoogleCredential.FromJson(firebaseCredentials)
-    }));
+var firebaseCredentials = builder.Configuration.GetValue<string>("FIREBASE_CREDS");
+var firebaseSignIn = builder.Configuration.GetValue<string>("FIREBASE_SIGNIN_URL");
+var fb = FirebaseAuth.GetAuth(FirebaseApp.Create(new AppOptions
+{
+    Credential = GoogleCredential.FromJson(firebaseCredentials)
+}));
 
-    builder.Services.AddScoped<IAuthenticator>(b => new Auth(
-        fb, b.GetService<ILogger<Auth>>()!, firebaseSignIn ?? ""));
+builder.Services.AddScoped<IAuthenticator>(b => new Auth(
+    fb, b.GetService<ILogger<Auth>>()!, firebaseSignIn ?? ""));
 
 #endregion
 
 #region Application setup
-    builder.Services.AddHttpContextAccessor();
-    builder.Services.AddScoped<Volunteasy.Core.Services.ISession, Session>();
-    builder.Services.AddScoped<IIdentityService, IdentityService>();
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IOrganizationService, OrganizationService>();
-    builder.Services.AddScoped<IMembershipService, MembershipService>();
-    builder.Services.AddScoped<IDistributionService, DistributionService>();
-    builder.Services.AddScoped<IBenefitService, BenefitService>();
-    builder.Services.AddScoped<IBenefitProvisionService, BenefitProvisionService>();
-    builder.Services.AddScoped<IBenefitItemService, BenefitItemService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<Volunteasy.Core.Services.ISession, Session>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IMembershipService, MembershipService>();
+builder.Services.AddScoped<IDistributionService, DistributionService>();
+builder.Services.AddScoped<IBenefitService, BenefitService>();
+builder.Services.AddScoped<IBenefitProvisionService, BenefitProvisionService>();
+builder.Services.AddScoped<IBenefitItemService, BenefitItemService>();
 
 #endregion
 
 #region API Setup
 
-    builder.Services.AddCors(x => 
-        x.AddPolicy("MyPolicy", b =>
-            b.AllowAnyHeader()
-                .AllowCredentials()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-        ));
+builder.Services.AddCors(x =>
+    x.AddPolicy("MyPolicy", b =>
+        b.AllowAnyHeader()
+            .AllowCredentials()
+            .AllowAnyMethod()
+            .AllowAnyOrigin()
+    ));
 
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.Authority = "https://securetoken.google.com/volunteasy-bade3";
-            options.Events = new JwtBearerEvents
-            {
-                OnTokenValidated = async ctx =>
-                {
-                    var userId = Convert.ToInt64(
-                        ctx.Principal?.FindFirst("volunteasy_id")?.Value);
-
-                    var service = ctx.HttpContext.RequestServices
-                        .GetService<IIdentityService>();
-                    
-                    if (service is null) 
-                        return;
-                    
-                    ctx.Principal?.AddIdentities(
-                        await service.GetUserSessionClaims(userId));
-                }
-            };
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidIssuer = builder.Configuration.GetValue<string>("FIREBASE_ISSUER"),
-                ValidAudience = builder.Configuration.GetValue<string>("GCP_PROJECT"),
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(
-                        builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? ""))
-            };
-        });
-
-    builder.Services.AddControllers()
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            options.JsonSerializerOptions.Converters.Add(new IdConverter());
-        });
-
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(c =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "VolunteasyAPI", Version = "v1" });
-        c.AddServer(new OpenApiServer
+        options.Authority = "https://securetoken.google.com/volunteasy-bade3";
+        options.Events = new JwtBearerEvents
         {
-            Url = "http://localhost:5000"
-        });
-        c.AddServer(new OpenApiServer
-        {
-            Url = "http://volunteasy-dev.eba-sq86vjma.sa-east-1.elasticbeanstalk.com"
-        });
-
-        var sec = new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme.",
-            Reference = new OpenApiReference
+            OnTokenValidated = async ctx =>
             {
-                Type = ReferenceType.SecurityScheme,
-                Id = "jwt",
-            },
-        };
-        
-        c.AddSecurityDefinition("jwt", sec);
+                var userId = Convert.ToInt64(
+                    ctx.Principal?.FindFirst("volunteasy_id")?.Value);
 
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                var service = ctx.HttpContext.RequestServices
+                    .GetService<IIdentityService>();
+
+                if (service is null)
+                    return;
+
+                ctx.Principal?.AddIdentities(
+                    await service.GetUserSessionClaims(userId));
+            }
+        };
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            { sec, new[] { "jwt" } }
-        });
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration.GetValue<string>("FIREBASE_ISSUER"),
+            ValidAudience = builder.Configuration.GetValue<string>("GCP_PROJECT"),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? ""))
+        };
     });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new IdConverter());
+    });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "VolunteasyAPI", Version = "v1" });
+    c.AddServer(new OpenApiServer
+    {
+        Url = "http://localhost:5000"
+    });
+    c.AddServer(new OpenApiServer
+    {
+        Url = "http://volunteasy-dev.eba-sq86vjma.sa-east-1.elasticbeanstalk.com"
+    });
+
+    var sec = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "jwt",
+        },
+    };
+
+    c.AddSecurityDefinition("jwt", sec);
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { sec, new[] { "jwt" } }
+    });
+});
 
 #endregion
 
@@ -201,4 +201,9 @@ app
     .UseAuthorization();
 
 app.MapControllers();
-app.Run();
+
+
+var port = app.Configuration.GetValue<string>("PORT");
+
+
+app.Run(url: port == null ? null : $"http://*:{port}");
