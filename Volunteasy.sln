@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volunteasy.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volunteasy.Api", "src\Volunteasy.Api\Volunteasy.Api.csproj", "{DDF65072-2BE0-4B54-8924-00E052C047EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Volunteasy.Web", "src\Volunteasy.Web\Volunteasy.Web.csproj", "{8B42B221-D519-4680-B7A8-6A437B3555AE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +30,5 @@ Global
 		{DDF65072-2BE0-4B54-8924-00E052C047EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDF65072-2BE0-4B54-8924-00E052C047EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDF65072-2BE0-4B54-8924-00E052C047EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B42B221-D519-4680-B7A8-6A437B3555AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B42B221-D519-4680-B7A8-6A437B3555AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B42B221-D519-4680-B7A8-6A437B3555AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B42B221-D519-4680-B7A8-6A437B3555AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
