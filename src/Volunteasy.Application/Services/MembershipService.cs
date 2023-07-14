@@ -26,7 +26,7 @@ public class MembershipService : IMembershipService
     {
         try
         {
-            var status = MembershipStatus.Approved;
+            var status = MembershipStatus.Pending;
 
             if (role == MembershipRole.Assisted || _session.IsOwner())
                 status = MembershipStatus.Approved;
