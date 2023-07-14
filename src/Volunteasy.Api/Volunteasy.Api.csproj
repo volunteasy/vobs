@@ -19,6 +19,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.8" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
@@ -44,6 +45,80 @@
 
     <ItemGroup>
       <Compile Remove="Migrations\20230531224143_user.Designer.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\Counter.razor" />
+      <AdditionalFiles Include="Pages\Error.cshtml" />
+      <AdditionalFiles Include="Pages\FetchData.razor" />
+      <AdditionalFiles Include="Pages\Index.razor" />
+      <AdditionalFiles Include="Pages\_Host.cshtml" />
+      <AdditionalFiles Include="Shared\MainLayout.razor" />
+      <AdditionalFiles Include="Shared\NavMenu.razor" />
+      <AdditionalFiles Include="Shared\SurveyPrompt.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_posting_photo.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_profile.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_profile_1.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_profile_2.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_profile_3.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\undraw_rocket.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\.DS_Store" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\navs\_global.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\navs\_sidebar.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\navs\_topbar.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\sb-admin-2.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_animation.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_background.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_border.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_display.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_progress.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_rotate.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\utilities\_text.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_buttons.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_cards.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_charts.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_dropdowns.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_error.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_footer.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_global.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_login.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_mixins.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_navs.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_utilities.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\scss\_variables.scss" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\FONT-LICENSE" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\fonts\open-iconic.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\fonts\open-iconic.otf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\fonts\open-iconic.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\font\fonts\open-iconic.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\ICON-LICENSE" />
+      <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\README.md" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\core\bootstrap.bundle.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\core\bootstrap.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\core\popper.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\dark-mode-handler.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\plugins\bootstrap-notify.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\plugins\Chart.extension.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\plugins\chartjs.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\plugins\perfect-scrollbar.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\plugins\smooth-scrollbar.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\soft-ui-dashboard.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\soft-ui-dashboard.js.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\soft-ui-dashboard.min.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo-icons.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo-icons.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo-icons.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo-icons.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo-icons.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\fonts\nucleo.woff2" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Volunteasy.Core.DTOs;
 
 namespace Volunteasy.Core.Model;
 
@@ -62,4 +63,18 @@ public record UserDetails
     
     [Required, EmailAddress]
     public string? Email { get; init; }
+}
+
+
+public record UserResume
+{
+    public long Id { get; init; }
+
+    public string Email { get; init; } = "";
+
+    public string Name { get; init; } = "";
+
+    public IEnumerable<OrganizationMember> Memberships { get; init; } = null!;
+    
+    public string Token { get; init; }
 }

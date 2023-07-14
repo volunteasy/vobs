@@ -19,6 +19,9 @@ public class ExceptionMiddleware
         try
         {
             await _next(ctx);
+
+            if (ctx.Response.StatusCode == 401)
+                throw new UserNotAuthorizedException();
         }
         catch (ResourceNotFoundException e)
         {

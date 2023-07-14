@@ -6,12 +6,14 @@ using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using IdGen.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using Volunteasy.Api;
 using Volunteasy.Api.Context;
 using Volunteasy.Api.Middleware;
 using Volunteasy.Api.Response;
@@ -32,13 +34,7 @@ if (builder.Environment.IsDevelopment())
 
 var loggerCfg = new LoggerConfiguration()
     .Enrich.FromLogContext()
-    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Routing.EndpointMiddleware", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal);
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName);
 
 loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
 if (!builder.Environment.IsDevelopment())
@@ -96,6 +92,9 @@ builder.Services.AddScoped<IBenefitItemService, BenefitItemService>();
 #endregion
 
 #region API Setup
+
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 
 builder.Services.AddCors(x =>
     x.AddPolicy("MyPolicy", b =>
@@ -181,6 +180,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddHttpLogging(o =>
+{
+    o.LoggingFields = HttpLoggingFields.ResponseBody;
+});
 #endregion
 
 var app = builder.Build();
@@ -194,6 +197,16 @@ if (!app.Environment.IsProduction())
         .Database.Migrate();
 }
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseStaticFiles()
+    .UseRouting();
+
 app
     .UseSerilogRequestLogging()
     .UseMiddleware<ExceptionMiddleware>()
@@ -203,7 +216,18 @@ app
 app.MapControllers();
 
 
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+
+
 var port = app.Configuration.GetValue<string>("PORT");
 
+if (port != null)
+{
+    app.Run(url: $"http://*:{port}");
+    return;
+}
 
-app.Run(url: port == null ? null : $"http://*:{port}");
+
+
+app.Run();

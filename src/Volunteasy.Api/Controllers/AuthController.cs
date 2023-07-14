@@ -22,9 +22,9 @@ public class AuthController : BaseController
     )]
     public async Task<IActionResult> AuthenticateUser(UserCredentials identification)
     {
-        var token = await _identities.AuthenticateUser(identification);
+        var resume = await _identities.AuthenticateUser(identification);
 
-        HttpContext.Response.Headers.Authorization = token;
+        HttpContext.Response.Headers.Authorization = resume.Token;
             
         return NoContent();
     }

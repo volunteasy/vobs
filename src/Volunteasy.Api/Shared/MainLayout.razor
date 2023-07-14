@@ -1,0 +1,18 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>BlazorApp1</PageTitle>
+
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    <div class="container position-sticky z-index-sticky top-0">
+        <div class="row">
+            <div class="col-12">
+                <Navigator></Navigator>
+            </div>
+        </div>
+    </div>
+
+    <article class="content px-4">
+        @Body
+    </article>
+</main>

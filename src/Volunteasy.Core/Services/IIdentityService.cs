@@ -5,9 +5,7 @@ namespace Volunteasy.Core.Services;
 
 public interface IIdentityService
 {
-    Task<string> AuthenticateUser(UserCredentials identification);
+    Task<UserResume> AuthenticateUser(UserCredentials identification);
 
     Task<List<ClaimsIdentity>> GetUserSessionClaims(long userId);
-    
-    Task<List<Claim>> GetUserSessionClaims2(long userId);
 }
