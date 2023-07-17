@@ -1,5 +1,5 @@
-@page "/auth/register"
-@model Volunteasy.Api.Pages.Auth.Register
+@page "/auth/register/org"
+@model Volunteasy.Api.Pages.Auth.Organization
 
 @{
     Layout = "_Layout";
@@ -23,32 +23,28 @@
                 <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
                     <div class="card z-index-0">
                         <div class="card-body">
-                            <form role="form text-left" method="post">
-                                @Html.AntiForgeryToken()
-                                
-                                <label>Sobre você</label>
+                            <form role="form text-left">
                                 <div class="mb-3">
                                     <input name="name" type="text" class="form-control" placeholder="Seu nome" aria-label="Name" aria-describedby="email-addon">
                                 </div>
-                                <div class="mb-3">
-                                    <input name="document" type="text" class="form-control" placeholder="CPF" aria-label="Document" aria-describedby="document-addon">
-                                </div>
+
                                 <div class="mb-3">
                                     <input name="phone" type="tel" class="form-control" placeholder="Seu telefone" aria-label="Phone" aria-describedby="phone-addon">
                                 </div>
-
-
-                                <label>Localização</label>
                                 <div class="mb-3">
-                                    <input name="zipCode" type="text" class="form-control" placeholder="CEP" aria-label="Zip code" aria-describedby="postal-code-addon">
+                                    <input name="cep" type="text" class="form-control" placeholder="CEP" aria-label="Zip code" aria-describedby="postal-code-addon">
                                 </div>
                                 <div class="mb-3">
                                     <input name="addressName" type="text" class="form-control" placeholder="Endereço" aria-label="Address" aria-describedby="address-addon">
                                 </div>
-                                <div class="mb-3">
-                                    <input name="addressNumber" type="text" class="form-control" placeholder="Número" aria-label="AddressNumber" aria-describedby="addressNumber-addon">
-                                </div>
                                 
+                                <label>Suas credenciais</label>
+                                <div class="mb-3">
+                                    <input name="email" type="email" class="form-control" placeholder="Seu e-mail" aria-label="Email" aria-describedby="email-addon">
+                                </div>
+                                <div class="mb-3">
+                                    <input name="password" type="password" class="form-control" placeholder="Crie uma senha" aria-label="Password" aria-describedby="password-addon">
+                                </div>
                                 <div class="form-check form-check-info text-left">
                                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
                                     <label class="form-check-label" for="flexCheckDefault">
@@ -56,7 +52,7 @@
                                     </label>
                                 </div>
                                 <div class="text-center">
-                                    <button class="btn bg-gradient-dark w-100 my-4 mb-2">Criar</button>
+                                    <button type="button" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign up</button>
                                 </div>
                                 <p class="text-sm mt-3 mb-0">Já tem uma conta? <a href="javascript:;" class="text-dark font-weight-bolder">Entre</a></p>
                             </form>

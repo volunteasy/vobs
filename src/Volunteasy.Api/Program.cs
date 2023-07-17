@@ -5,6 +5,7 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using IdGen.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
@@ -104,7 +105,7 @@ builder.Services.AddCors(x =>
             .AllowAnyOrigin()
     ));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = "https://securetoken.google.com/volunteasy-bade3";
@@ -135,7 +136,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(
                     builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? ""))
         };
+    }).AddCookie(options =>
+    {
+        options.LoginPath = "/auth";
     });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

@@ -16,28 +16,25 @@ public class Login : PageModel
         _identity = identity;
     }
 
-    public void OnGet()
-    {
-    }
-
     public async Task<ActionResult> OnPost([FromForm] UserCredentials credentials)
     {
         var user = await _identity.AuthenticateUser(credentials);
 
-        var identities = user.Memberships.Select(m => new ClaimsIdentity(
-                new List<Claim>
-                {
-                    new(m.OrganizationName!, "organization_name"),
-                    new(m.OrganizationId.ToString(), "organization_id"),
-                }))
-            .Append(new ClaimsIdentity(new List<Claim>
+        var identity = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email)
+        }, CookieAuthenticationDefaults.AuthenticationScheme));
+        
+        identity.AddIdentities(user.Memberships.Select(m => new ClaimsIdentity(
+            new List<Claim>
             {
-                new(user.Id.ToString(), ClaimTypes.NameIdentifier),
-                new(user.Name, ClaimTypes.Name),
-                new(user.Email, ClaimTypes.Email)
-            }, CookieAuthenticationDefaults.AuthenticationScheme)).ToList();
+                new("organization_name", m.OrganizationName!),
+                new("organization_id", m.OrganizationId.ToString()),
+            })).ToList());
 
-        await HttpContext.SignInAsync(new ClaimsPrincipal(identities), new AuthenticationProperties
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, identity, new AuthenticationProperties
         {
             IsPersistent = true
         });
