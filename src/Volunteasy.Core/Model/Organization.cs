@@ -24,6 +24,8 @@ public class Organization : IdBased
     public IEnumerable<Distribution>? Distributions { get; set; }
     
     public IEnumerable<Benefit>? Benefits { get; set; }
-    
+
+    public IEnumerable<Beneficiary> Beneficiaries { get; set; } = new List<Beneficiary>();
+
     public IEnumerable<Resource>? Resources { get; set; }
 }
