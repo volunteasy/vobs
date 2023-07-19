@@ -27,6 +27,7 @@ public class Data : DbContext
                 Address = o.Address ?? new(),
                 Name = o.Name ?? string.Empty,
                 PhoneNumber = o.PhoneNumber ?? string.Empty,
+                Slug = o.Slug ?? "",
                 Stats = new OrganizationStats
                 {
                     AssistedPeopleCount = Memberships

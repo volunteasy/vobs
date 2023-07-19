@@ -33,6 +33,8 @@ public record OrganizationDetails
     [Required, MaxLength(32), Phone]
     public string PhoneNumber { get; init; } = null!;
 
+    [Required, MaxLength(15)] public string Slug { get; init; } = "";
+
     [Required] public Address Address { get; init; } = new();
 
     [Required] public OrganizationStats Stats { get; init; } = new();

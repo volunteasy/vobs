@@ -102,6 +102,18 @@ Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é 
         };
     }
 
+    public async Task<OrganizationDetails> GetOrganizationBySlug(string slug)
+    {
+        var org = await _data
+            .OrganizationDetails(_session.UserId)
+            .SingleOrDefaultAsync(x => x.Slug == slug);
+        
+        return org switch
+        {
+            null => throw new OrganizationNotFoundException(), _ => org
+        };
+    }
+
     public async Task UpdateOrganizationById(long id, OrganizationRegistration organization)
     {
         var org = await _data.Organizations
