@@ -12,8 +12,8 @@ using Volunteasy.Core.Data;
 namespace Volunteasy.Api.Migrations
 {
     [DbContext(typeof(Data))]
-    [Migration("20230719162024_OrgSlugAndBeneficiaryActive")]
-    partial class OrgSlugAndBeneficiaryActive
+    [Migration("20230719170800_Beneficiary")]
+    partial class Beneficiary
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

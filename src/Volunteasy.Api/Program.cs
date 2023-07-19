@@ -7,6 +7,7 @@ using Google.Apis.Auth.OAuth2;
 using IdGen.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -30,6 +31,9 @@ var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsDevelopment())
     DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: false));
 
+if (builder.Environment.IsDevelopment())
+    IdentityModelEventSource.ShowPII = true;
+
 var loggerCfg = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
@@ -40,7 +44,7 @@ var loggerCfg = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Fatal);
 
-loggerCfg = loggerCfg.WriteTo.Console(new CompactJsonFormatter());
+loggerCfg = loggerCfg.WriteTo.Console();
 if (!builder.Environment.IsDevelopment())
 {
     loggerCfg = loggerCfg.WriteTo.NewRelicLogs(
