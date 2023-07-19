@@ -5,7 +5,6 @@ using Volunteasy.Api.Context;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Enums;
 using Volunteasy.Core.Services;
-using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Controllers;
 
@@ -18,9 +17,9 @@ public class OrganizationController : BaseController
 
     private readonly IMembershipService _memberships;
 
-    private readonly ISession _session;
+    private readonly IVolunteasyContext _session;
     
-    public OrganizationController(IOrganizationService organizations, IMembershipService memberships, ISession session)
+    public OrganizationController(IOrganizationService organizations, IMembershipService memberships, IVolunteasyContext session)
     {
         _organizations = organizations;
         _memberships = memberships;

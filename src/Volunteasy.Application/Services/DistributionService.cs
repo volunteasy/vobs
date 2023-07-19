@@ -8,7 +8,7 @@ namespace Volunteasy.Application.Services;
 
 public class DistributionService : ServiceBase, IDistributionService
 {
-    public DistributionService(Data data, ISession session) : base(data, session) { }
+    public DistributionService(Data data, IVolunteasyContext session) : base(data, session) { }
 
     public async Task<Distribution> CreateDistribution(DistributionCreationProperties props)
     {

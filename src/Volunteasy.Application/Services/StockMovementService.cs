@@ -10,9 +10,9 @@ public record StockMovementService : IStockMovementService
 {
     private readonly Data _data;
 
-    private readonly ISession _session;
+    private readonly IVolunteasyContext _session;
 
-    public StockMovementService(Data data, ISession session)
+    public StockMovementService(Data data, IVolunteasyContext session)
     {
         _data = data;
         _session = session;

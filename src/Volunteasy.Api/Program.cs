@@ -83,7 +83,7 @@ builder.Services.AddScoped<IAuthenticator>(b => new Auth(
 #region Application setup
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<Volunteasy.Core.Services.ISession, Session>();
+builder.Services.AddScoped<Volunteasy.Core.Services.IVolunteasyContext, VolunteasyContext>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();

@@ -8,7 +8,7 @@ namespace Volunteasy.Application.Services;
 
 public class BenefitService : ServiceBase, IBenefitService
 {
-    public BenefitService(Data data, ISession session) : base(data, session) { }
+    public BenefitService(Data data, IVolunteasyContext session) : base(data, session) { }
 
     public async Task<BenefitDetails> GetBenefitById(long benefitId)
     {

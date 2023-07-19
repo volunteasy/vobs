@@ -7,9 +7,9 @@ public class ServiceBase
 {
     protected readonly Data Data;
 
-    protected readonly ISession Session;
+    protected readonly IVolunteasyContext Session;
 
-    protected ServiceBase(Data data, ISession session)
+    protected ServiceBase(Data data, IVolunteasyContext session)
     {
         Data = data;
         Session = session;

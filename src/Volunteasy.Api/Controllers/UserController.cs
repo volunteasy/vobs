@@ -4,7 +4,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using Volunteasy.Core.DTOs;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
-using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Controllers;
 
@@ -18,8 +17,8 @@ public class UserController : BaseController
 
     private readonly IBenefitService _benefits;
 
-    private readonly ISession _session;
-    public UserController(IUserService users, IMembershipService memberships, IBenefitService benefits, ISession session)
+    private readonly IVolunteasyContext _session;
+    public UserController(IUserService users, IMembershipService memberships, IBenefitService benefits, IVolunteasyContext session)
     {
         _users = users;
         _memberships = memberships;

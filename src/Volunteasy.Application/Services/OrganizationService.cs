@@ -13,9 +13,9 @@ public class OrganizationService : IOrganizationService
 {
     private readonly Data _data;
 
-    private readonly ISession _session;
+    private readonly IVolunteasyContext _session;
 
-    public OrganizationService(Data data, ISession session)
+    public OrganizationService(Data data, IVolunteasyContext session)
     {
         _data = data;
         _session = session;

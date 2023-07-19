@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Volunteasy.Core.Enums;
 using Volunteasy.Core.Errors;
-using ISession = Volunteasy.Core.Services.ISession;
+using Volunteasy.Core.Services;
 
 namespace Volunteasy.Api.Context;
 
@@ -19,7 +19,7 @@ public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var session = (ISession) new Session(context.HttpContext);
+        var session = (IVolunteasyContext) new VolunteasyContext(context.HttpContext);
 
         if (!session.CanAccessAs(_roles))
             throw new UserNotAuthorizedException();

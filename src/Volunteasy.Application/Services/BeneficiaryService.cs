@@ -9,7 +9,7 @@ namespace Volunteasy.Application.Services;
 
 public class BeneficiaryService : ServiceBase, IBeneficiaryService
 {
-    protected BeneficiaryService(Data data, ISession session) : base(data, session) { }
+    protected BeneficiaryService(Data data, IVolunteasyContext session) : base(data, session) { }
     
     public async Task<Beneficiary> CreateBeneficiary(BeneficiaryCreation creation)
     {

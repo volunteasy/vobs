@@ -9,7 +9,7 @@ namespace Volunteasy.Application.Services;
 
 public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
 {
-    public BenefitProvisionService(Data data, ISession session) : base(data, session) { }
+    public BenefitProvisionService(Data data, IVolunteasyContext session) : base(data, session) { }
 
     public async Task<Benefit> RequestBenefit(long distributionId, DistributionBenefitAnalysisRequest analysisRequest)
     {

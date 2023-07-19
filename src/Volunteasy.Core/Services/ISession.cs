@@ -2,7 +2,7 @@ using Volunteasy.Core.Enums;
 
 namespace Volunteasy.Core.Services;
 
-public interface ISession
+public interface IVolunteasyContext
 {
     long UserId { get; }
     

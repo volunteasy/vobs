@@ -1,19 +1,19 @@
 using Volunteasy.Core.Enums;
+using Volunteasy.Core.Services;
 using static System.Enum;
-using ISession = Volunteasy.Core.Services.ISession;
 
 namespace Volunteasy.Api.Context;
 
-public class Session : ISession
+public class VolunteasyContext : IVolunteasyContext
 {
     private readonly HttpContext? _context;
 
-    public Session(IHttpContextAccessor context)
+    public VolunteasyContext(IHttpContextAccessor context)
     {
         _context = context.HttpContext;
     }
     
-    public Session(HttpContext ctx)
+    public VolunteasyContext(HttpContext ctx)
     {
         _context = ctx;
     }

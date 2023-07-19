@@ -12,13 +12,13 @@ public class UserService : IUserService
 {
     private readonly Data _data;
 
-    private readonly ISession _session;
+    private readonly IVolunteasyContext _session;
 
     private readonly ILogger<UserService> _log;
 
     private readonly IAuthenticator _authenticator;
 
-    public UserService(Data data, IAuthenticator authenticator, ISession session, ILogger<UserService> log)
+    public UserService(Data data, IAuthenticator authenticator, IVolunteasyContext session, ILogger<UserService> log)
     {
         _data = data;
         _session = session;

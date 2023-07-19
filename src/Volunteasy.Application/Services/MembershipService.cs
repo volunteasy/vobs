@@ -14,9 +14,9 @@ public class MembershipService : IMembershipService
 {
     private readonly Data _data;
 
-    private readonly ISession _session;
+    private readonly IVolunteasyContext _session;
 
-    public MembershipService(Data data, ISession session)
+    public MembershipService(Data data, IVolunteasyContext session)
     {
         _data = data;
         _session = session;
