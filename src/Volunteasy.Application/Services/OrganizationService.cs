@@ -36,6 +36,7 @@ Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é 
                 Name = org.Name,
                 PhoneNumber = org.PhoneNumber,
                 Address = org.Address,
+                Slug = org.Slug,
                 Memberships = new List<Membership>
                 {
                     new()

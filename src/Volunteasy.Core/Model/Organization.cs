@@ -9,6 +9,9 @@ public class Organization : IdBased
     
     [Required, MaxLength(255), MinLength(3)]
     public string? Name { get; set; }
+    
+    [Required, MaxLength(15)]
+    public string? Slug { get; set; }
 
     public long AddressId { get; set; }
     

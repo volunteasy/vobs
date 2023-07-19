@@ -17,7 +17,9 @@ public record OrganizationRegistration(
     [Required]
     Address? Address,
     [Required, MaxLength(32)]
-    string? PhoneNumber
+    string? PhoneNumber,
+    [Required, MaxLength(15)]
+    string? Slug
  );
 
 

@@ -92,6 +92,7 @@ builder.Services.AddScoped<IDistributionService, DistributionService>();
 builder.Services.AddScoped<IBenefitService, BenefitService>();
 builder.Services.AddScoped<IBenefitProvisionService, BenefitProvisionService>();
 builder.Services.AddScoped<IBenefitItemService, BenefitItemService>();
+builder.Services.AddScoped<IBeneficiaryService, BeneficiaryService>();
 
 #endregion
 

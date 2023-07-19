@@ -60,7 +60,7 @@ public class DuplicateMembershipException : ApplicationException
 public class DuplicateOrganizationException : ApplicationException
 {
     public DuplicateOrganizationException(
-        string? message = "Ops! Uma organização com este documento já existe") : base(message) {}
+        string? message = "Ops! Uma organização com este documento ou slug já existe") : base(message) {}
     
     public override string? HelpLink { get; set; } = "400";
 }
@@ -107,6 +107,25 @@ public class ResourceNotFoundException : ApplicationException
         Message = attribute != null
             ? $"Ops, não foi possível encontrar um(a) {attribute.DisplayName.ToLower()} com os parâmetros informados"
             : "Ops! O recurso solicitado não foi encontrado";
+    }
+
+    public override string Message { get; }
+}
+
+public class DuplicateResourceException : ApplicationException
+{
+    public DuplicateResourceException(string message = "Ops! Dados duplicados")
+    {
+        Message = message;
+    }
+
+    public DuplicateResourceException(Type resource)
+    {
+        var attribute = (DisplayNameAttribute?) Attribute.GetCustomAttribute(resource, typeof(DisplayNameAttribute));
+
+        Message = attribute != null
+            ? $"Ops, um(a) {attribute.DisplayName.ToLower()} com os valores informados já existe"
+            : "Ops! Dados duplicados";
     }
 
     public override string Message { get; }

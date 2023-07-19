@@ -60,6 +60,9 @@ namespace Volunteasy.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<long>("AddressId")
                         .HasColumnType("bigint");
 
@@ -74,6 +77,9 @@ namespace Volunteasy.Api.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("MemberSince")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -259,12 +265,20 @@ namespace Volunteasy.Api.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId")
                         .IsUnique();
 
                     b.HasIndex("Document")
+                        .IsUnique();
+
+                    b.HasIndex("Slug")
                         .IsUnique();
 
                     b.ToTable("Organizations");

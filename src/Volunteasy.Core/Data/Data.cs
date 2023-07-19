@@ -113,6 +113,7 @@ public class Data : DbContext
         {
             x.Property(o => o.Id).HasValueGenerator<IdValueGenerator>();
             x.HasIndex(c => c.Document).IsUnique();
+            x.HasIndex(c => c.Slug).IsUnique();
 
             x.HasOne<Address>(o => o.Address).WithOne()
                 .HasForeignKey<Organization>(o => o.AddressId);
