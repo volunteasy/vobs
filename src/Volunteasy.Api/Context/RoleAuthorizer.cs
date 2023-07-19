@@ -19,7 +19,12 @@ public class AuthorizeRolesAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var session = (IVolunteasyContext) new VolunteasyContext(context.HttpContext);
+        var session = context.HttpContext.RequestServices.GetService<IVolunteasyContext>();
+        if (session == null)
+        {
+            Console.WriteLine("AuthorizeRoles: ServiceProvider returned a null instance of IVolunteasyContext");
+            throw new UserNotAuthorizedException(); 
+        }
 
         if (!session.CanAccessAs(_roles))
             throw new UserNotAuthorizedException();

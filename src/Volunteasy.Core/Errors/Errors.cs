@@ -114,10 +114,6 @@ public class ResourceNotFoundException : ApplicationException
 
 public class DuplicateResourceException : ApplicationException
 {
-    public DuplicateResourceException(string message = "Ops! Dados duplicados")
-    {
-        Message = message;
-    }
 
     public DuplicateResourceException(Type resource)
     {
@@ -126,6 +122,17 @@ public class DuplicateResourceException : ApplicationException
         Message = attribute != null
             ? $"Ops, um(a) {attribute.DisplayName.ToLower()} com os valores informados já existe"
             : "Ops! Dados duplicados";
+    }
+
+    public override string Message { get; }
+}
+
+public class InvalidValuesException : ApplicationException
+{
+
+    public InvalidValuesException(string valName, object? val = null)
+    {
+        Message = $"Ops, um dos valores informados não é valido nesse contexto: ${valName} é ${val}";
     }
 
     public override string Message { get; }
