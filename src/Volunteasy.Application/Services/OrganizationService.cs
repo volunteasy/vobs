@@ -102,10 +102,10 @@ Conforme os asisstidos se inscrevem para receber na distribuição, uma fila é 
         };
     }
 
-    public async Task<OrganizationDetails> GetOrganizationBySlug(string slug)
+    public async Task<Organization> GetOrganizationBySlug(string slug)
     {
-        var org = await _data
-            .OrganizationDetails(_session.UserId)
+        var org = await _data.Organizations
+            .Include(o => o.Address)
             .SingleOrDefaultAsync(x => x.Slug == slug);
         
         return org switch

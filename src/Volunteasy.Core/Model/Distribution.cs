@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Volunteasy.Core.Enums;
+using Volunteasy.Core.Errors;
 
 namespace Volunteasy.Core.Model;
 
@@ -29,14 +30,30 @@ public class Distribution : IId, IOrganization
 
     public bool CanAcceptNewBenefits(DateTime currentDate, int currentBenefitsNumber)
         => 
-            // Checks if the distribution has not been canceled
-            !Canceled && 
-               
-            // Checks if current date is before the end of the distribution
-            DateTime.Compare(EndsAt, currentDate) >= 0 &&
+            Closed(currentDate) &&
                
             // Validates if the maximum number of benefits has not been yet reached
             currentBenefitsNumber < MaxBenefits;
+
+    public bool Closed(DateTime currentDate)
+        =>
+            // Checks if the distribution has not been canceled
+            !Canceled &&
+
+            // Checks if current date is before the end of the distribution
+            DateTime.Compare(EndsAt, currentDate) >= 0;
+    
+    
+    public void ValidateNewBeneficiary(long beneficiaryId)
+    {
+        // Checks if beneficiary is already enrolled in this distribution
+        if (Benefits?.Any(b => b.AssistedId == beneficiaryId) ?? false)
+            throw new BenefitUnauthorizedForUserException();
+
+        // Checks if distribution is able to accept new beneficiaries enrollments
+        if (!CanAcceptNewBenefits(DateTime.UtcNow, Benefits?.Count() ?? 0))
+            throw new DistributionClosedOrFullException();
+    }
 }
 
 public struct DistributionCreationProperties

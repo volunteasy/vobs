@@ -21,8 +21,18 @@ public record Benefit : IId, IOrganization
     public RevokedBenefitReason? RevokedReason { get; set; }
     
     public IList<BenefitItem>? Items { get; init; }
-    
-    
+
+    public bool IsClaimed => ClaimedAt != null;
+
+    public bool RecentlyClaimed(DateTime now, int benefitEligibleTimeSpan)
+        => // If the benefit was claimed up to `benefitEligibleTimeSpan` days ago,
+            // beneficiary is not eligible to a new benefit
+            IsClaimed && (now - ClaimedAt!).Value.Days < benefitEligibleTimeSpan;
+
+    public bool IsInAnOpenDistribution(DateTime now)
+        => !IsClaimed && (!Distribution?.Closed(now) ?? false);
+
+
 }
 
 public enum RevokedBenefitReason
@@ -44,21 +54,9 @@ public record BenefitProvision
     public long? DistributionId { get; init; }
     
     [Required]
-    public AssistedUser? AssistedUser { get; init; }
+    public BeneficiaryCreation? AssistedUser { get; init; }
     
     public IEnumerable<BenefitDemandItem>? Items { get; init; }
-}
-
-public record AssistedUser
-{
-    [Required, MaxLength(11), MinLength(3)]
-    public string? Document { get; init; }
-    
-    [MaxLength(50), MinLength(1)]
-    public string? Name { get; init; }
-    public Address? Address { get; init; }
-    
-    public string? Phone { get; set; }
 }
 
 public record BenefitDetails

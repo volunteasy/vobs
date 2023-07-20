@@ -1,3 +1,5 @@
+using Volunteasy.Core.Model;
+
 namespace Volunteasy.Core.Errors;
 
 public class BenefitItemsCountException : ApplicationException
@@ -25,6 +27,40 @@ public class BenefitUnauthorizedForUserException : ApplicationException
         : base(message) {}
     
     public override string? HelpLink { get; set; } = "400";
+}
+
+public class BeneficiaryHasRecentClaimException : ApplicationException
+{
+    public BeneficiaryHasRecentClaimException(Benefit b, int validTimeSpan)
+    {
+        var notRecentDate = b.ClaimedAt?.AddDays(validTimeSpan);
+        if (notRecentDate == null)
+            throw new ArgumentException("ClaimedAt in BeneficiaryHasRecentClaimException was null");
+        
+        Message = 
+            $"Você recebeu um benefício em {b.ClaimedAt:dd/MM/yyyy} e deve esperar {(DateTime.UtcNow - notRecentDate).Value.Days} dias para receber outro.";
+    }
+
+    public override string Message { get; }
+
+    public override string? HelpLink { get; set; } = "412";
+}
+
+public class BeneficiaryHasOpenDistributionException : ApplicationException
+{
+    public BeneficiaryHasOpenDistributionException(Benefit b)
+    {
+        var distribution = b.Distribution;
+        if (distribution == null)
+            throw new ArgumentException("Distribution in BeneficiaryHasOpenClaimException was null");
+        
+        Message = 
+            $"Você já está cadastrado em uma distribuição que ocorre no dia {distribution.StartsAt:dd/MM/yyyy}.";
+    }
+
+    public override string Message { get; }
+
+    public override string? HelpLink { get; set; } = "412";
 }
 
 public class BenefitItemAlreadySetException : ApplicationException

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Volunteasy.Core.Data;
-using Volunteasy.Core.Enums;
 using Volunteasy.Core.Errors;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
@@ -50,8 +49,12 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
             : Data.BenefitQueuePosition(provision.DistributionId.Value, benefit.Id) };
     }
 
-    private void ValidateDistributionParticipation(long distributionId, long assistedId)
+    private void ValidateDistributionParticipation(long distributionId, long beneficiaryId)
     {
+        // If beneficiary is not active, block benefit
+        if (Data.Beneficiaries.SingleOrDefault(b => b.Id == beneficiaryId)?.Active ?? true)
+            throw new BenefitUnauthorizedForUserException();
+        
         var distribution = Data.Distributions
             .Include(d => d.Benefits)
             .SingleOrDefault(d => d.Id == distributionId);
@@ -59,44 +62,47 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
         if (distribution == null)
             throw new ResourceNotFoundException(typeof(Distribution));
         
-        if (distribution.Benefits?.Any(b => b.AssistedId == assistedId) ?? false)
-            throw new BenefitUnauthorizedForUserException();
+        distribution.ValidateNewBeneficiary(beneficiaryId);
 
-        if (!distribution.CanAcceptNewBenefits(DateTime.UtcNow, distribution.Benefits?.Count() ?? 0))
-            throw new DistributionClosedOrFullException();
+        // Gets user benefits (including not claimed ones)
+        var userBenefits = Data.Benefits
+            .Include(b => b.Distribution)
+            .Where(b => b.AssistedId == beneficiaryId)
+            .OrderByDescending(b => b.ClaimedAt);
+
+        // Checks if user has any benefits claimed in the last 45 days
+        var benefit = userBenefits
+            .FirstOrDefault(b => b.RecentlyClaimed(DateTime.UtcNow, 45));
+        
+        if (benefit != null)
+            throw new BeneficiaryHasRecentClaimException(benefit, 45);
+
+        benefit = userBenefits
+            .FirstOrDefault(b => b.IsInAnOpenDistribution(DateTime.UtcNow));
+        
+        if (benefit != null)
+            throw new BeneficiaryHasOpenDistributionException(benefit);
     }
     
-    private long GetExistingUserIdOrCreateNewOne(AssistedUser user)
+    private long GetExistingUserIdOrCreateNewOne(BeneficiaryCreation user)
     {
-        var existing = Data.Users
-            .Join(Data.Memberships, u => u.Id, m => m.MemberId, (u, m) 
-                => new {User = u, OrgId = m.OrganizationId})
-            .Where(x => x.OrgId == Session.OrganizationId)
-            .Select(x => x.User)
+        var existing = Data.Beneficiaries
+            .WithOrganization(Session.OrganizationId)
             .SingleOrDefault(u => u.Document == user.Document);
 
         if (existing != null)
-            return existing.Id;
-        
-        var res = Data.Add(new User
         {
-            Document = user.Document,
-            Name = user.Name ?? "",
-            Email = "",
-            Address = user.Address,
-            PhoneAddress = user.Phone ?? "",
-            Memberships = new List<Membership>
-            {
-                new()
-                {
-                    Role = MembershipRole.Assisted,
-                    Status = MembershipStatus.Approved,
-                    MemberSince = DateTime.Now.ToUniversalTime(),
-                    OrganizationId = Session.OrganizationId,
-                }
-            }
-        });
-         
+            if (!existing.Active)
+                throw new BenefitUnauthorizedForUserException();
+            
+            return existing.Id;
+        }
+
+        var beneficiary = user.ToBeneficiary();
+        beneficiary.OrganizationId = Session.OrganizationId;
+        beneficiary.Active = true;
+
+        var res = Data.Beneficiaries.Add(beneficiary);
         return res.Entity.Id;
     }
 
