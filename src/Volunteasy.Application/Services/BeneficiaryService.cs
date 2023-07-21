@@ -126,10 +126,12 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
     {
         var beneficiary = await Data.Beneficiaries
             .WithOrganization(Session.OrganizationId)
-            .SingleOrDefaultAsync(b => b.Document == key.Document && b.BirthDate == key.BirthDate);
+            .SingleOrDefaultAsync(b => b.Document == key.Document);
 
-        if (beneficiary == null)
+        if (beneficiary == null || beneficiary.BirthDate.Date != key.BirthDate.Date)
             throw new ResourceNotFoundException(typeof(Beneficiary));
+        
+        
 
         return beneficiary;
     }

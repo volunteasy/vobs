@@ -60,7 +60,7 @@ public record BeneficiaryCreation
             Document = Document,
             Phone = Phone,
             Email = Email,
-            BirthDate = BirthDate.Date,
+            BirthDate = BirthDate.Date.ToUniversalTime(),
             Address = Address
         };
     }
