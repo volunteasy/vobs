@@ -3,18 +3,21 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using IdGen.DependencyInjection;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.VisualBasic;
 using Serilog;
 using Serilog.Events;
-using Volunteasy.App;
-using Volunteasy.App.Middleware;
+using Volunteasy.WebApp;
+using Volunteasy.WebApp.Middleware;
 using Volunteasy.Application;
 using Volunteasy.Application.Services;
 using Volunteasy.Core.Data;
+using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 using Volunteasy.Infrastructure.Firebase;
 
@@ -114,8 +117,34 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
 
+                var id = context.Request.RouteValues["orgSlug"]?.ToString();
+                if (id == null)
+                    return Task.CompletedTask;
+                
+                var uri = new Uri(context.RedirectUri);
+
+                switch (context.Request.Path.Value?.Split("/").First(x => !string.IsNullOrEmpty(x)))
+                {
+                    case "quero":
+                        context.RedirectUri = $"/quero/{id}/login{uri.Query}";
+                        break;
+                }
+
+
+                context.HttpContext
+                    .Response.Redirect(context.RedirectUri);
+                
+                return Task.CompletedTask;
+            }
+        };
     });
+
+builder.Services.AddScoped<IAuthenticationSignInHandler, AuthHandler>();
 
 builder.Services.AddAuthorization();
 

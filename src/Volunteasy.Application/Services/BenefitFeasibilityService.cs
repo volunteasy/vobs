@@ -52,7 +52,7 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
     private void ValidateDistributionParticipation(long distributionId, long beneficiaryId)
     {
         // If beneficiary is not active, block benefit
-        if (Data.Beneficiaries.SingleOrDefault(b => b.Id == beneficiaryId)?.Active ?? true)
+        if (!Data.Beneficiaries.SingleOrDefault(b => b.Id == beneficiaryId)?.Active ?? true)
             throw new BenefitUnauthorizedForUserException();
         
         var distribution = Data.Distributions
@@ -68,7 +68,7 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
         var userBenefits = Data.Benefits
             .Include(b => b.Distribution)
             .Where(b => b.AssistedId == beneficiaryId)
-            .OrderByDescending(b => b.ClaimedAt);
+            .OrderByDescending(b => b.ClaimedAt).ToList();
 
         // Checks if user has any benefits claimed in the last 45 days
         var benefit = userBenefits
@@ -118,12 +118,15 @@ public class BenefitProvisionService : ServiceBase, IBenefitProvisionService
             AssistedId = assistedId,
             DistributionId = analysis.DistributionId,
             ClaimedAt = isImmediate ? DateTime.UtcNow : null,
+            OrganizationId = Session.OrganizationId,
             Items = analysis.Items?.Select(x => new BenefitItem
             {
+                OrganizationId = Session.OrganizationId,
                 Quantity = x.Quantity,
                 ResourceId = resourceId,
                 StockMovement = new StockMovement
                 {
+                    OrganizationId = Session.OrganizationId,
                     Date = DateTime.UtcNow,
                     Quantity = x.Quantity,
                     ResourceId = resourceId,

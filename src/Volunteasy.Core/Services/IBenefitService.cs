@@ -6,6 +6,8 @@ public interface IBenefitService
 {
 
     public Task<BenefitDetails> GetBenefitById(long benefitId);
+
+    public Task<BenefitDetails> GetNextBenefit(long beneficiaryId);
     
     public Task<(IEnumerable<BenefitDetails>, string?)> 
         ListBenefits(BenefitFilter filter, long pageToken);

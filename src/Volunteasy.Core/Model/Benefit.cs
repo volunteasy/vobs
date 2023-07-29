@@ -77,6 +77,8 @@ public record BenefitDetails
     
     public DateTime? DistributionDate { get; init; }
     
+    public Address? DistributionAddress { get; init; }
+    
     
     public int ItemsCount { get; init; }
     

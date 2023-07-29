@@ -30,18 +30,18 @@ public class Distribution : IId, IOrganization
 
     public bool CanAcceptNewBenefits(DateTime currentDate, int currentBenefitsNumber)
         => 
-            Closed(currentDate) &&
+            !Closed(currentDate) &&
                
             // Validates if the maximum number of benefits has not been yet reached
             currentBenefitsNumber < MaxBenefits;
 
     public bool Closed(DateTime currentDate)
         =>
-            // Checks if the distribution has not been canceled
-            !Canceled &&
+            // Checks if the distribution is canceled
+            Canceled ||
 
             // Checks if current date is before the end of the distribution
-            DateTime.Compare(EndsAt, currentDate) >= 0;
+            currentDate > EndsAt;
     
     
     public void ValidateNewBeneficiary(long beneficiaryId)

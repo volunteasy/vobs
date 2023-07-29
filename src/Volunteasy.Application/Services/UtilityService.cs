@@ -8,6 +8,7 @@ public static class UtilityService
 {
     public static async Task<(IEnumerable<T>, string?)> Paginate<T>(this IQueryable<T> query, Func<T, long> idGetter)
     {
+        return (await query.ToListAsync(), null);
         const int pageSize = 10;
         
         var list = await query
@@ -21,6 +22,7 @@ public static class UtilityService
     
     public static async Task<PaginatedList<T>> PaginateList<T>(this IQueryable<T> query, Func<T, long> idGetter)
     {
+        return new PaginatedList<T>(await query.ToListAsync());
         const int pageSize = 10;
         
         var list = await query
@@ -35,7 +37,7 @@ public static class UtilityService
 
     public static IQueryable<T> WithPageToken<T>(this IQueryable<T> query, long page) where T : IId
     {
-        return query.Where(x => x.Id >= page);
+        return query.Where(x => x.Id >= 0);
     }
     
     public static IQueryable<T> WithOrganization<T>(this IQueryable<T> query, long orgId) where T : IOrganization

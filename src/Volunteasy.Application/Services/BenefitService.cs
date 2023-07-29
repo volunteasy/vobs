@@ -27,6 +27,28 @@ public class BenefitService : ServiceBase, IBenefitService
                 .BenefitQueuePosition(benefit.DistributionId.Value, benefit.Id)
         };
     }
+    
+    public async Task<BenefitDetails> GetNextBenefit(long beneficiaryId)
+    {
+        var benefit = await GetBenefitDetails(
+                Data.Benefits
+                    .WithOrganization(Session.OrganizationId)
+                    .Include(b => b.Distribution)
+                    .Where(b => b.AssistedId == beneficiaryId)
+                    .Where(b => b.DistributionId != null)
+                    .Where(b => b.ClaimedAt == null)
+                , true)
+            .SingleOrDefaultAsync();
+
+        if (benefit == null)
+            throw new BenefitNotFoundException();
+
+        return benefit with
+        {
+            Position = benefit.DistributionId == null ? null : Data
+                .BenefitQueuePosition(benefit.DistributionId.Value, benefit.Id)
+        };
+    }
 
     public async Task<(IEnumerable<BenefitDetails>, string?)> ListBenefits(BenefitFilter filter, long pageToken)
     {
@@ -132,7 +154,7 @@ public class BenefitService : ServiceBase, IBenefitService
             q = q.Include(b => b.Items);
         return q
             .Include(b => b.Distribution)
-            .Join(Data.Users, b => b.AssistedId, r => r.Id,
+            .Join(Data.Beneficiaries, b => b.AssistedId, r => r.Id,
                 (benefit, user) => new { Benefit = benefit, UserName = user.Name })
             .Select(vl => new BenefitDetails
             {

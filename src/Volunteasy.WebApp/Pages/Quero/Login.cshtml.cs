@@ -7,7 +7,7 @@ using Volunteasy.App.Pages.Shared;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
-namespace Volunteasy.App.Pages.Quero;
+namespace Volunteasy.WebApp.Pages.Quero;
 public class Login : OrganizationPageModel
 {
     private readonly IBeneficiaryService _identity;
@@ -17,7 +17,7 @@ public class Login : OrganizationPageModel
         _identity = identity;
     }
 
-    public async Task OnPost([FromForm] BeneficiaryKey credentials)
+    public async Task OnPost([FromForm] BeneficiaryKey credentials, [FromQuery] string? returnUrl)
     {
         var user = await _identity.GetBeneficiaryByDocumentAndBirthDate(credentials);
 
@@ -31,6 +31,7 @@ public class Login : OrganizationPageModel
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, identity, new AuthenticationProperties
         {
             IsPersistent = true,
+            RedirectUri = returnUrl,
             Parameters = {  }
         });
     }

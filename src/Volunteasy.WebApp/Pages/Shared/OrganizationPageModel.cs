@@ -16,7 +16,7 @@ public class OrganizationPageModel : PageModel
         OrganizationsService = organizations;
     }
 
-    protected string OrganizationRouteSlug
+    public string OrganizationRouteSlug
     {
         get {
             try

@@ -12,7 +12,9 @@ public class DistributionService : ServiceBase, IDistributionService
 
     public async Task<Distribution> CreateDistribution(DistributionCreationProperties props)
     {
-        var dist = await Data.Distributions.AddAsync(props.ToDistribution());
+        var distribution = props.ToDistribution();
+        distribution.OrganizationId = Session.OrganizationId;
+        var dist = await Data.Distributions.AddAsync(distribution);
         await Data.SaveChangesAsync();
 
         return dist.Entity;
@@ -39,6 +41,10 @@ public class DistributionService : ServiceBase, IDistributionService
         return distribution;
     }
 
+    private record Xre
+    {
+        
+    }
     public async Task<PaginatedList<DistributionDto>> ListDistributions(DistributionFilter filter, long pageToken)
     {
         var res = await  Data.DistributionDetails(Session.UserId)
@@ -47,7 +53,7 @@ public class DistributionService : ServiceBase, IDistributionService
             .WithFilters(
                 new(filter.Name != null, d => d.Name != null && d.Name.Contains(filter.Name ?? "")),
                 new(filter.OccursAt != null, d => filter.OccursAt >= d.StartsAt && filter.OccursAt <= d.EndsAt))
-            .Where(d => d.Id >= pageToken)
+            .WithPageToken(pageToken)
             .PaginateList(d => d.Id); 
 
         return res with

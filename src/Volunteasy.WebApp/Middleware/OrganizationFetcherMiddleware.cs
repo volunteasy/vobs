@@ -1,8 +1,7 @@
 using System.Security.Claims;
-using Volunteasy.Core.Errors;
 using Volunteasy.Core.Services;
 
-namespace Volunteasy.App.Middleware;
+namespace Volunteasy.WebApp.Middleware;
 
 public class OrganizationSlugMiddleware
 {
@@ -18,6 +17,12 @@ public class OrganizationSlugMiddleware
     
     public async Task InvokeAsync(HttpContext ctx, IOrganizationService organizationService)
     {
+        if (!ctx.Request.Path.StartsWithSegments("/quero"))
+        {
+            await _next(ctx);
+            return;
+        }
+
         var slug = ctx.GetRouteValue("orgSlug")?.ToString() ?? "";
         try
         {
@@ -28,7 +33,6 @@ public class OrganizationSlugMiddleware
         catch (Exception e)
         {
             _logger.LogWarning(e, "Could not fetch organization with slug {Slug}", slug);
-            throw;
         }
         
         await _next(ctx);
