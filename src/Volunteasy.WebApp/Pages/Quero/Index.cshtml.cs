@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.AspNetCore.Mvc;
 using Volunteasy.App.Pages.Shared;
 using Volunteasy.Core.Errors;
 using Volunteasy.Core.Model;
@@ -11,13 +8,10 @@ namespace Volunteasy.WebApp.Pages.Quero;
 
 public class IndexModel : OrganizationPageModel
 {
-    private readonly ILogger<IndexModel> _logger;
 
     private readonly IDistributionService _distributions;
 
     private readonly IBenefitService _benefitService;
-
-    private readonly IBenefitProvisionService _provision;
 
     private readonly IVolunteasyContext _ctx;
 
@@ -30,13 +24,11 @@ public class IndexModel : OrganizationPageModel
         new(new List<BenefitDetails>());
 
     public IndexModel(IOrganizationService organizations, ILogger<IndexModel> logger,
-        IDistributionService distributions, IBenefitService benefitService, IVolunteasyContext ctx, IBenefitProvisionService provision) : base(organizations)
+        IDistributionService distributions, IBenefitService benefitService, IVolunteasyContext ctx) : base(organizations)
     {
-        _logger = logger;
         _distributions = distributions;
         _benefitService = benefitService;
         _ctx = ctx;
-        _provision = provision;
     }
     
     [FromQuery]

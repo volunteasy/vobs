@@ -49,6 +49,10 @@
        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
      }
      
+     $.fn.maskVal = function () {
+         return $(this).mask();
+     };
+     
      $(document).ready(function () { 
             $("*[mask-cpf]").mask('000.000.000-00', {reverse: true});
             $("*[mask-cardcpf]").mask('000   000   000  00', {reverse: true});

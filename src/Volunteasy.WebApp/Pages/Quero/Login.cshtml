@@ -13,24 +13,24 @@
                     <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
                         <div class="card card-plain mt-8">
                             <div class="card-header pb-0 text-left bg-transparent">
-                                <h3 class="font-weight-bolder text-info text-gradient">Bem vindo</h3>
-                                <p class="mb-0">Entre para ver as distribuições disponíveis</p>
+                                <h3 class="font-weight-bolder text-brand">Bem vindo</h3>
+                                <p class="mb-0 text-white">Entre para ver as distribuições disponíveis</p>
 
                                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
-                                    <p class="mb-4 text-sm mx-auto">
+                                    <p class="mb-4 text-sm mx-auto text-white">
                                         Não tem conta?
-                                        <a asp-page="Register" class="text-info text-gradient font-weight-bold">Crie uma agora</a>
+                                        <a href="/quero/@Model.OrganizationRouteSlug/register" class="text-brand font-weight-bold">Crie uma agora</a>
                                     </p>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <form role="form" method="post" action="">
                                     @Html.AntiForgeryToken()
-                                    <label>CPF</label>
+                                    <label class="text-white">CPF</label>
                                     <div class="mb-3">
                                         <input name="document" type="text" class="form-control" placeholder="CPF" aria-label="CPF" aria-describedby="document-addon">
                                     </div>
-                                    <label>Password</label>
+                                    <label class="text-white">Password</label>
                                     <div class="mb-3">
                                         <input name="birthDate" type="date" class="form-control" placeholder="Data de nascimento" aria-label="Data de nascimento" aria-describedby="birthDate-addon">
                                     </div>
@@ -39,7 +39,7 @@
                                     @*     <label class="form-check-label" for="rememberMe">Remember me</label> *@
                                     @* </div> *@
                                     <div class="text-center">
-                                        <button class="btn bg-gradient-info w-100 mt-4 mb-0">Entrar</button>
+                                        <button class="btn  w-100 mt-4 mb-0" style="background-color: #F73558; color: white">Entrar</button>
                                     </div>
                                 </form>
                             </div>

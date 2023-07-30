@@ -31,7 +31,7 @@ public class Login : OrganizationPageModel
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, identity, new AuthenticationProperties
         {
             IsPersistent = true,
-            RedirectUri = returnUrl,
+            RedirectUri = returnUrl ?? $"/quero/{OrganizationRouteSlug}",
             Parameters = {  }
         });
     }

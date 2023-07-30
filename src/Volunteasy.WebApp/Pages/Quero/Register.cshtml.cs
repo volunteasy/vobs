@@ -17,7 +17,7 @@ public class Register : OrganizationPageModel
         _beneficiaries = beneficiaryService;
     }
 
-    public async Task<ActionResult> OnPost([FromForm] BeneficiaryCreation credentials, [FromForm] Address address, [FromQuery] string returnUrl)
+    public async Task<ActionResult> OnPost([FromForm] BeneficiaryCreation credentials, [FromForm] Address address, [FromQuery] string? returnUrl)
     {
         var user = await _beneficiaries.CreateBeneficiary(credentials with { Address = address });
 
@@ -31,7 +31,7 @@ public class Register : OrganizationPageModel
         return SignIn(new ClaimsPrincipal(identity), new AuthenticationProperties
         {
             IsPersistent = true,
-            RedirectUri = returnUrl
+            RedirectUri = returnUrl ?? $"/quero/{OrganizationRouteSlug}"
         }, CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }
