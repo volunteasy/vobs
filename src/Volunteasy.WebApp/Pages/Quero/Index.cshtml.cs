@@ -26,6 +26,9 @@ public class IndexModel : OrganizationPageModel
 
     public BenefitDetails? NextBenefitToClaim { get; private set; }
 
+    public PaginatedList<BenefitDetails> PreviousBenefits { get; private set; } = 
+        new(new List<BenefitDetails>());
+
     public IndexModel(IOrganizationService organizations, ILogger<IndexModel> logger,
         IDistributionService distributions, IBenefitService benefitService, IVolunteasyContext ctx, IBenefitProvisionService provision) : base(organizations)
     {
@@ -51,6 +54,19 @@ public class IndexModel : OrganizationPageModel
             NextBenefitToClaim = await _benefitService.GetNextBenefit(_ctx.UserId);
         }
         catch (BenefitNotFoundException) {}
+        
+        try
+        {
+            var (previousBenefits, next) = await _benefitService.ListBenefits(new BenefitFilter
+            {
+                ClaimedUntil = DateTime.UtcNow
+            }, 0);
+
+            PreviousBenefits = new PaginatedList<BenefitDetails>(previousBenefits);
+        }
+        catch (BenefitNotFoundException) {}
+        
+        
 
         return await base.OnGet();
     }

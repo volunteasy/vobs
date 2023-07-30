@@ -117,7 +117,9 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.Events = new CookieAuthenticationEvents
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+            options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = context =>
             {

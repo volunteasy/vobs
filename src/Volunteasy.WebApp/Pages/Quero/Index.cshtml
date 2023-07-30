@@ -8,64 +8,62 @@
 }
 
 
-<main class="container mb-5 pt-5">
+<main class="container mb-5 pt-5 bg-black">
 
     <div class="text-center mb-3">
-        <h4 class="display-4">Olá, @(Model.User.Identity?.Name?.Split(" ").First() ?? "Sem nome")</h4>
-
+        <h4 class="display-4 text-white">Olá, <b>@(Model.User.Identity?.Name?.Split(" ").First() ?? "Sem nome")</b></h4>
     </div>
 
     @if (Model.NextBenefitToClaim != null)
     {
-        <p class="text-center">Apresente o cartão abaixo no dia informado para pegar sua doação</p>
+        <p class="text-center text-brand mb-5">Apresente o cartão abaixo no dia informado para pegar sua doação</p>
 
         <div class="col-xl-6 mb-xl-0 mb-4">
             <div class="card bg-transparent shadow-xl">
-                <div class="overflow-hidden position-relative border-radius-xl" style="background-image: url('./img/curved-images/curved14.jpg');">
-                    <span class="mask bg-gradient-dark"></span>
+                <div class="overflow-hidden position-relative border-radius-xl" style="background-color: #F73558">
+                    <span class="mask"></span>
                     <div class="card-body position-relative z-index-1 p-3">
                         <i class="fa-solid fa-hand-holding-hand text-white p-2"></i>
                         <div class="d-flex align-items-center justify-content-center flex-wrap">
                             <div class="d-flex justify-content-around flex-wrap">
-                                <div class="ms-auto w-40 d-flex align-items-center justify-content-around flex-wrap">
+                                <div class="ms-auto w-100 w-md-40 w-lg-40 d-flex align-items-center justify-content-around flex-wrap">
                                     <div class="mb-4">
-                                        <p class="text-white text-sm opacity-8 mb-0">Data</p>
-                                        <h4 class="text-white mb-2">@Model.NextBenefitToClaim.DistributionDate?.ToString("dd/MM/yyyy")</h4>
+                                        <p class="text-brandDark text-bold text-sm opacity-8 mb-0">Data</p>
+                                        <p class="text-white mb-2 text-xl">@Model.NextBenefitToClaim.DistributionDate?.ToString("dd/MM/yyyy")</p>
                                     </div>
                                     <div class="mb-4">
-                                        <p class="text-white text-sm opacity-8 mb-0">Horário</p>
-                                        <h4 class="text-white mb-2">@Model.NextBenefitToClaim.DistributionDate?.ToString("HH:mm")h</h4>
+                                        <p class="text-brandDark text-bold text-sm opacity-8 mb-0">Horário</p>
+                                        <p class="text-white mb-2 text-xl">@Model.NextBenefitToClaim.DistributionDate?.ToString("HH:mm")h</p>
                                     </div>
                                     <div class="mb-4 w-75">
-                                        <p class="text-white text-sm opacity-8 mb-0">Retire em</p>
-                                        <h4 class="text-white mb-2">
-                                            <a class="text-blue" style="color: #89e6f6; text-decoration: underline" href="https://maps.google.com/?q=@(Model.Organization?.Address?.ToString())">@(Model.Organization?.Address?.ToStringWithoutCpf())</a>
-                                        </h4>
+                                        <p class="text-brandDark text-bold text-sm opacity-8 mb-0">Retire em</p>
+                                        <p class="text-white mb-2 text-xl">
+                                            <a class="text-white" style="text-decoration: underline" href="https://maps.google.com/?q=@(Model.Organization?.Address?.ToString())">@(Model.Organization?.Address?.ToStringWithoutCpf())</a>
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="ms-auto w-60 d-flex align-items-center justify-content-center">
-                                                                <qr-code id="qr1" module-color="#ffffff" position-ring-color="#3e86e0"
-                                                                         position-center-color="#ffffff" contents="@Model.NextBenefitToClaim.Id">
-                                                                </qr-code>
-                                                            </div>
+                                <div class="ms-auto w-100 w-md-60 w-lg-60 d-flex align-items-center justify-content-center">
+                                    <qr-code id="qr1" module-color="#ffffff" position-ring-color="#ffffff"
+                                             position-center-color="#ffffff" contents="@Model.NextBenefitToClaim.Id">
+                                        <img src="img/Volunteasy.svg" slot="icon"  alt=""/>
+                                        
+                                    </qr-code>
+                                </div>
                             </div>
-                            
+
                         </div>
 
                         <div class="ms-auto w-100 d-flex align-items-center justify-content-around mb-4">
 
                             <div>
-                                <p class="text-white text-sm opacity-8 mb-0">Nome</p>
-                                <h6 class="text-white mb-0">@Model.NextBenefitToClaim.UserName</h6>
+                                <p class="text-brandDark text-bold text-sm opacity-8 mb-0">Nome</p>
+                                <p class="text-white text-xl mb-0">@Model.NextBenefitToClaim.UserName</p>
                             </div>
                             <div>
-                                <p class="text-white text-sm opacity-8 mb-0">Documento</p>
-                                <h6 class="text-white mb-0" mask-cardcpf="true">49360206806</h6>
+                                <p class="text-brandDark text-bold text-sm opacity-8 mb-0">Documento</p>
+                                <p class="text-white text-xl mb-0" mask-cardcpf="true">49360206806</p>
                             </div>
                         </div>
-
-                        @* <h5 class="text-white mt-4 mb-5 pb-2">4562&nbsp;&nbsp;&nbsp;1122&nbsp;&nbsp;&nbsp;4594&nbsp;&nbsp;&nbsp;7852</h5> *@
-
                     </div>
                 </div>
             </div>
@@ -82,7 +80,7 @@
     {
         @if (Model.Distributions.List.Any())
         {
-            <p class="text-center text-2xl">
+            <p class="text-center text-2xl text-brand">
                 Selecione um dos dias abaixo para retirar uma doação
             </p>
         }
@@ -91,23 +89,23 @@
             <p class="text-center">Não temos nenhum benefício disponível no momento. Tente novamente outro dia</p>
         }
 
-        <div class="col-xl-6 mb-xl-0 mb-5">
-            <div class="card h-100 mb-10">
-                <div class="card-header pb-0 px-3">
+        <div class="col-xl-6 mb-xl-0 mb-5 bg-black">
+            <div class="card h-100 mb-10 bg-black">
+                <div class="card-header pb-0 px-3 bg-black">
                     <div class="row">
                         <div class="col-md-6 ps-5">
-                            <h5 class="mb-0">Próximas distribuições</h5>
+                            <h5 class="mb-0 text-white">Próximas distribuições</h5>
                         </div>
                     </div>
                 </div>
-                <div class="card-body p-5 pt-2">
+                <div class="card-body p-5 pt-2 bg-black">
                     <ul class="list-group">
                         @foreach (var dist in Model.Distributions.List.Where(x => x.StartsAt >= DateTime.Now.ToUniversalTime()))
                         {
-                            <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg bg-black">
                                 <div class="d-flex align-items-center">
                                     <div class="d-flex flex-column">
-                                        <h6 class="mb-1 text-dark text-sm">@dist.Name</h6>
+                                        <h6 class="mb-1 text-white text-sm">@dist.Name</h6>
                                         <span class="text-xs">@dist.StartsAt.ToString("dd/MM/yyyy HH:mm")</span>
                                     </div>
                                 </div>
