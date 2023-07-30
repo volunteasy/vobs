@@ -31,14 +31,16 @@ public class BenefitUnauthorizedForUserException : ApplicationException
 
 public class BeneficiaryHasRecentClaimException : ApplicationException
 {
+    
     public BeneficiaryHasRecentClaimException(Benefit b, int validTimeSpan)
     {
-        var notRecentDate = b.ClaimedAt?.AddDays(validTimeSpan);
-        if (notRecentDate == null)
+        if (b.ClaimedAt == null)
             throw new ArgumentException("ClaimedAt in BeneficiaryHasRecentClaimException was null");
+
+        var wait = DateTime.UtcNow.AddDays(validTimeSpan) - b.ClaimedAt;
         
         Message = 
-            $"Você recebeu um benefício em {b.ClaimedAt:dd/MM/yyyy} e deve esperar {(DateTime.UtcNow - notRecentDate).Value.Days} dias para receber outro.";
+            $"Você recebeu um benefício em {b.ClaimedAt:dd/MM/yyyy} e deve esperar {wait.Value.Days} dias para receber outro.";
     }
 
     public override string Message { get; }

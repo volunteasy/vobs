@@ -21,6 +21,8 @@ public class EnrollDistribution : OrganizationPageModel
     public DistributionDto Distribution { get; private set; } = new();
 
     public Benefit Benefit { get; private set; } = new();
+    
+    public string? BenefitRefusalReason { get; private set; }
 
     public EnrollDistribution(IOrganizationService organizations, ILogger<EnrollDistribution> logger,
         IDistributionService distributions, IVolunteasyContext ctx, IBenefitProvisionService provision) : base(organizations)
@@ -36,16 +38,26 @@ public class EnrollDistribution : OrganizationPageModel
         await base.OnGet();
 
         Distribution = await _distributions.GetDistributionById(distributionId);
-        Benefit = await _provision.RequestBenefit(distributionId, new DistributionBenefitAnalysisRequest
+        try
         {
-            Items = new List<BenefitDemandItem>
+            Benefit = await _provision.RequestBenefit(distributionId, new DistributionBenefitAnalysisRequest
             {
-                new ()
+                Items = new List<BenefitDemandItem>
                 {
-                    Quantity = 1,
+                    new ()
+                    {
+                        Quantity = 1,
+                    }
                 }
+            });
+        }
+        catch (Exception e)
+        {
+            if (e is ApplicationException)
+            {
+                BenefitRefusalReason = e.Message;
             }
-        });
+        }
         
         return Page();
     }
