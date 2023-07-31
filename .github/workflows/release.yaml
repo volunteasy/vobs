@@ -44,4 +44,16 @@ jobs:
       - name: Deploy to Google Cloud Run
         run: |
           gcloud run deploy volunteasy-prod --image=gcr.io/volunteasy-392610/prod/api:${{ github.sha }} --platform=managed --region=southamerica-east1
-          gcloud run services update-traffic volunteasy-dev --to-latest --region=southamerica-east1
+          gcloud run services update-traffic volunteasy-prod --to-latest --region=southamerica-east1
+          
+      - name: Build and push Web Docker image
+        run: |
+          mv ./build/Dockerfile .
+          export IMAGE_NAME=gcr.io/volunteasy-392610/prod/web:${{ github.sha }}
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: Deploy Web to Google Cloud Run
+        run: |
+          gcloud run deploy volunteasy-web-prod --image=gcr.io/volunteasy-392610/prod/web:${{ github.sha }} --platform=managed --region=southamerica-east1
+          gcloud run services update-traffic volunteasy-web-prod --to-latest --region=southamerica-east1
