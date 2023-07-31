@@ -53,7 +53,7 @@ namespace Volunteasy.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.Sql("update Organizations set Slug = LEFT(LOWER(REGEXP_REPLACE(Name, '[^a-zA-Z0-9]+', '-', 'g')), 15)");
+            migrationBuilder.Sql("update \"Organizations\" set Slug = LEFT(LOWER(REGEXP_REPLACE(Name, '[^a-zA-Z0-9]+', '-', 'g')), 15)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Organizations_Slug",
