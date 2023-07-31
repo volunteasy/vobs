@@ -1,0 +1,135 @@
+﻿@page
+
+@model IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+<main class="container mb-5 pt-5 bg-black">
+
+    <div class="text-center mb-3">
+        <h4 class="display-4 text-white">Olá, <b>@(Model.User.Identity?.Name?.Split(" ").First() ?? "Sem nome")</b></h4>
+    </div>
+
+    @if (Model.NextBenefitToClaim != null)
+    {
+        <p class="text-center text-brand mb-5">Apresente o cartão abaixo no dia informado para pegar sua doação</p>
+
+        <div class="col-xl-6 mb-xl-0 mb-4">
+            <div class="card bg-transparent shadow-xl">
+                <div class="overflow-hidden position-relative border-radius-xl" style="background-color: #F73558">
+                    <span class="mask"></span>
+                    <div class="card-body position-relative z-index-1 p-3">
+                        <i class="fa-solid fa-hand-holding-hand text-white p-2"></i>
+                        <div class="d-flex align-items-center justify-content-center flex-wrap">
+                            <div class="d-flex justify-content-around flex-wrap">
+                                <div class="ms-auto w-100 w-md-40 w-lg-40 d-flex align-items-center justify-content-around flex-wrap">
+                                    <div class="mb-4">
+                                        <p class="text-brandDark text-bold text-md opacity-8 mb-0">Data</p>
+                                        <p class="text-white mb-2 text-xl">@Model.NextBenefitToClaim.DistributionDate?.ToString("dd/MM/yyyy")</p>
+                                    </div>
+                                    <div class="mb-4">
+                                        <p class="text-brandDark text-bold text-md opacity-8 mb-0">Horário</p>
+                                        <p class="text-white mb-2 text-xl">@Model.NextBenefitToClaim.DistributionDate?.ToString("HH:mm")h</p>
+                                    </div>
+                                    <div class="mb-4 w-75">
+                                        <p class="text-brandDark text-bold text-md opacity-8 mb-0">Retire em</p>
+                                        <p class="text-white mb-2 text-xl">
+                                            <a class="text-white" style="text-decoration: underline" href="https://maps.google.com/?q=@(Model.Organization?.Address?.ToString())">@(Model.Organization?.Address?.ToStringWithoutCpf())</a>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="ms-auto w-100 w-md-60 w-lg-60 d-flex align-items-center justify-content-center">
+                                    <qr-code id="qr1" module-color="#ffffff" position-ring-color="#ffffff"
+                                             position-center-color="#ffffff" contents="@Model.NextBenefitToClaim.Id">
+                                        <img src="img/Volunteasy.svg" slot="icon" alt=""/>
+
+                                    </qr-code>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="ms-auto w-100 d-flex align-items-center justify-content-around mb-4">
+
+                            <div>
+                                <p class="text-brandDark text-bold text-md opacity-8 mb-0">Nome</p>
+                                <p class="text-white text-xl mb-0">@Model.NextBenefitToClaim.UserName</p>
+                            </div>
+                            <div>
+                                <p class="text-brandDark text-bold text-md opacity-8 mb-0">Documento</p>
+                                <p class="text-white text-xl mb-0" mask-cardcpf="true">@Model.NextBenefitToClaim.UserId</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+          document.getElementById('qr1').addEventListener('codeRendered', () => {
+            document.getElementById('qr1').animateQRCode('RadialRipple');
+          });
+  
+        </script>
+    }
+    else
+    {
+        @if (Model.Distributions.List.Any())
+        {
+            <p class="text-center text-2xl text-brand mb-5">
+                Selecione um dos dias abaixo para retirar uma doação
+            </p>
+        }
+        else
+        {
+            <p class="text-center">Não temos nenhum benefício disponível no momento. Tente novamente outro dia</p>
+        }
+
+        <section class="col-xl-6 col-lg-6 col-md-6">
+            <div class="card p-0 h-100 mb-10 bg-black">
+                        <div class="card-body p-0 pt-2 bg-black">
+                            <ul class="list-group">
+                                @foreach (var dist in Model.Distributions.List.Where(x => x.StartsAt >= DateTime.Now.ToUniversalTime()))
+                                {
+                                    <li class="list-group-item my-2 px-4 py-4 border-radius-lg shadow-xl" style="background-color: #1e1e1e">
+                                        <div>
+                                            <div class="d-flex justify-content-between mb-3">
+                                                <h6 class="text-xl text-white">@dist.StartsAt.ToString("dd/MM/yyyy HH:mm").Replace(" ", " às ")</h6>
+                                                <span class="text-sm text-brand">@dist.RemainingBenefits disponíveis</span>
+                                            </div>
+                                            <h6 class="mb-1 text-white text-lg text-bolder">@dist.Name</h6>
+                                            <p class="text-sm text-white">@dist.Description</p>
+                                        </div>
+                                        @if (dist.Benefit == null)
+                                        {
+                                            <form method="post" action="/quero/@Model.OrganizationRouteSlug/enrolldistribution" class="mt-3">
+                                                @Html.AntiForgeryToken()
+                                                <input name="distributionId" type="hidden" value="@dist.Id"/>
+                                                <button class="m-0 w-100 btn text-success text-gradient text-sm font-weight-bold btn-outline-success">
+                                                    <i class="fas fa-plus text-success text-gradient me-2" aria-hidden="true"></i>
+                                                    Participar
+                                                </button>
+                                            </form>
+                                        } else
+                                        {
+                                            <p class="text text-md font-weight-bold mt-3 text-brand">
+                                                Recebida em @dist.Benefit.ClaimedAt?.ToString("dd/MM/yyyy HH:mm")
+                                            </p>
+                                        }
+            
+            
+                                    </li>
+                                }
+            
+                            </ul>
+                        </div>
+                    </div>
+        </section>
+    }
+
+
+</main>

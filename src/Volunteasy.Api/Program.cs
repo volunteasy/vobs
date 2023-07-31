@@ -5,15 +5,17 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using IdGen.DependencyInjection;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using Volunteasy.Api.Context;
 using Volunteasy.Api.Middleware;
 using Volunteasy.Api.Response;
 using Volunteasy.Application;
@@ -21,6 +23,9 @@ using Volunteasy.Application.Services;
 using Volunteasy.Core.Data;
 using Volunteasy.Core.Services;
 using Volunteasy.Infrastructure.Firebase;
+using Volunteasy.WebApp;
+using Volunteasy.WebApp.Middleware;
+using VolunteasyContext = Volunteasy.Api.Context.VolunteasyContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,7 +92,25 @@ builder.Services.AddScoped<IAuthenticator>(b => new Auth(
 #region Application setup
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<Volunteasy.Core.Services.IVolunteasyContext, VolunteasyContext>();
+builder.Services.AddScoped<IVolunteasyContext, VolunteasyContext>();
+builder.Services.AddScoped<IVolunteasyContext, Volunteasy.WebApp.VolunteasyContext>();
+builder.Services.AddScoped<IVolunteasyContext>(x =>
+{
+    var ctx = x.GetService<IHttpContextAccessor>();
+    if (ctx == null || ctx.HttpContext == null)
+        throw new NullReferenceException("HTTP context was null when building VolunteasyContext");
+
+    var path = ctx.HttpContext.Request.Path.ToString();
+    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+    if (path == null)
+        throw new NullReferenceException("path was null when building VolunteasyContext");
+
+    if (path.Contains("/api/"))
+        return new Volunteasy.Api.Context.VolunteasyContext(ctx, x.GetRequiredService<ILogger<Volunteasy.Api.Context.VolunteasyContext>>());
+
+    return new Volunteasy.WebApp.VolunteasyContext(ctx,
+        x.GetRequiredService<ILogger<Volunteasy.WebApp.VolunteasyContext>>());
+});
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
@@ -110,7 +133,58 @@ builder.Services.AddCors(x =>
             .AllowAnyOrigin()
     ));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+    options.AppendTrailingSlash = true;
+});
+
+// Add services to the container.
+builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
+{
+    options.Conventions.AddFolderRouteModelConvention("/Quero", model =>
+    {
+        foreach (var selector in model.Selectors)
+        {
+            var split = selector.AttributeRouteModel!.Template!.Split("/").ToList();
+            split.Insert(1, "{orgSlug}");
+            selector.AttributeRouteModel.Template = string.Join("/", split);
+        }
+    });
+});
+
+builder.Services.AddAuthentication("JWT_OR_COOKIE")
+    .AddCookie(options =>
+    {
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+
+                var id = context.Request.RouteValues["orgSlug"]?.ToString();
+                if (id == null)
+                    return Task.CompletedTask;
+
+                var uri = new Uri(context.RedirectUri);
+
+                switch (context.Request.Path.Value?.Split("/").First(x => !string.IsNullOrEmpty(x)))
+                {
+                    case "quero":
+                        context.RedirectUri = $"/quero/{id}/login{uri.Query}";
+                        break;
+                }
+
+
+                context.HttpContext
+                    .Response.Redirect(context.RedirectUri);
+
+                return Task.CompletedTask;
+            }
+        };
+    })
     .AddJwtBearer(options =>
     {
         options.Authority = "https://securetoken.google.com/volunteasy-bade3";
@@ -141,7 +215,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(
                     builder.Configuration.GetValue<string>("FIREBASE_KEY") ?? ""))
         };
+    }).AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
+    {
+        // runs on each request
+        options.ForwardDefaultSelector = context =>
+        {
+            // filter by auth type
+            string authorization = context.Request.Headers[HeaderNames.Authorization];
+            if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+                return "Bearer";
+
+            // otherwise always check for cookie auth
+            return "Cookies";
+        };
     });
+
+builder.Services.AddScoped<IAuthenticationSignInHandler, AuthHandler>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -191,6 +280,10 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 if (!app.Environment.IsProduction())
 {
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+    
     app.UseSwagger().UseSwaggerUI();
 
     using var scope = app.Services.CreateScope();
@@ -199,14 +292,25 @@ if (!app.Environment.IsProduction())
         .Database.Migrate();
 }
 
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseMiddleware<OrganizationSlugMiddleware>();
+
+app.MapControllers();
+
 app
     .UseSerilogRequestLogging()
     .UseMiddleware<ExceptionMiddleware>()
     .UseAuthentication()
     .UseAuthorization();
 
-app.MapControllers();
 
+
+app.MapRazorPages();
 
 var port = app.Configuration.GetValue<string>("PORT");
 
