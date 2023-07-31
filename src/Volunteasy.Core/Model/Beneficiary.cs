@@ -16,9 +16,9 @@ public class Beneficiary : IId, IOrganization
     [Required, MaxLength(11), MinLength(3)]
     public string Document { get; set; } = "";
 
-    [Phone] public string Phone { get; set; } = "";
+    [Phone] public string? Phone { get; set; } = "";
 
-    [EmailAddress] public string Email { get; set; } = "";
+    [EmailAddress] public string? Email { get; set; } = "";
 
     [Required] public DateTime BirthDate { get; set; }
 
@@ -27,7 +27,7 @@ public class Beneficiary : IId, IOrganization
 
     public bool Active { get; set; }
     
-    public long AddressId { get; set; }
+    public long? AddressId { get; set; }
     
     public Address? Address { get; set; }
     

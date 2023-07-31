@@ -18,6 +18,7 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
             var beneficiary = creation.ToBeneficiary();
             beneficiary.OrganizationId = Session.OrganizationId;
             beneficiary.Active = true;
+            beneficiary.MemberSince = DateTime.UtcNow;
             
             Data.Beneficiaries.Add(beneficiary);
             await Data.SaveChangesAsync();

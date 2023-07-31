@@ -207,7 +207,7 @@ public class Data : DbContext
                 .IsUnique();
 
             x.HasOne<Address>(b => b.Address).WithOne()
-                .HasForeignKey<Beneficiary>(b => b.AddressId);
+                .HasForeignKey<Beneficiary>(b => b.AddressId).IsRequired(false);
 
             x.HasMany<Benefit>(b => b.Benefits)
                 .WithOne().HasForeignKey(b => b.AssistedId);

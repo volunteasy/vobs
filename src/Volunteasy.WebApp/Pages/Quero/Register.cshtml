@@ -48,7 +48,7 @@
                                     <input name="zipCode" type="text" class="form-control" placeholder="CEP" aria-label="Zip code" aria-describedby="postal-code-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input name="addressName" type="text" class="form-control" placeholder="Endereço" aria-label="Address" aria-describedby="address-addon">
+                                    <input name="addressName" type="text" class="form-control" placeholder="Rua" aria-label="Address" aria-describedby="address-addon">
                                 </div>
                                 <div class="mb-3">
                                     <input name="addressNumber" type="text" class="form-control" placeholder="Número" aria-label="AddressNumber" aria-describedby="addressNumber-addon">
@@ -60,10 +60,18 @@
                                         Concordo com os <a href="javascript:;" class="text-dark font-weight-bolder">termos e condições</a>
                                     </label>
                                 </div>
+                                @if (!string.IsNullOrEmpty(Model.ErrorDesc))
+                                {
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-circle"></i> @Model.ErrorDesc
+                                        </span>
+                                    </div>
+                                }
                                 <div class="text-center">
                                     <button class="btn w-100 my-4 mb-2" style="background-color: #F73558; color: white">Criar conta</button>
                                 </div>
-                                <p class="text-sm mt-3 mb-0">Já tem uma conta? <a asp-page="../" class="text-brand font-weight-bolder">Entre</a></p>
+                                <p class="text-sm mt-3 mb-0">Já tem uma conta? <a href="/quero/@(Model.OrganizationRouteSlug)/login" class="text-brand font-weight-bolder">Entre</a></p>
                             </form>
                         </div>
                     </div>

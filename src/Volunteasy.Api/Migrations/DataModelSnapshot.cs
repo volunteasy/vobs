@@ -63,7 +63,7 @@ namespace Volunteasy.Api.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("AddressId")
+                    b.Property<long?>("AddressId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("BirthDate")
@@ -75,7 +75,6 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("character varying(11)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("MemberSince")
@@ -90,7 +89,6 @@ namespace Volunteasy.Api.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -396,9 +394,7 @@ namespace Volunteasy.Api.Migrations
                 {
                     b.HasOne("Volunteasy.Core.Model.Address", "Address")
                         .WithOne()
-                        .HasForeignKey("Volunteasy.Core.Model.Beneficiary", "AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Volunteasy.Core.Model.Beneficiary", "AddressId");
 
                     b.HasOne("Volunteasy.Core.Model.Organization", null)
                         .WithMany("Beneficiaries")
