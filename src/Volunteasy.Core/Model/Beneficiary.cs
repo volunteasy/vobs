@@ -41,11 +41,9 @@ public record BeneficiaryCreation
 
     [Required, MaxLength(11), MinLength(3)]
     public string Document { get; set; } = "";
-
-    [Phone] 
+    
     public string Phone { get; set; } = "";
-
-    [EmailAddress] 
+    
     public string Email { get; init; } = "";
     
     [Required] public DateTime BirthDate { get; set; }
