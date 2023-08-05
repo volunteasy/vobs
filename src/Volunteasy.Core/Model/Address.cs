@@ -6,10 +6,7 @@ public class Address : IdBased
 {
     public string? AddressName { get; set; }
     
-    [Required]
     public string? AddressNumber { get; set; }
-    
-    [Required]
     public string? ZipCode { get; set; }
     
     public float CoordinateX { get; set; }

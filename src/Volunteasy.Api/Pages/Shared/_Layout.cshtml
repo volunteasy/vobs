@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="apple-touch-icon" sizes="76x76" href="~/img/apple-icon.png">
-    <link href="~/Volunteasy.WebApp.styles.css" rel="stylesheet"/>
+    <link href="~/Volunteasy.Api.styles.css" rel="stylesheet"/>
     <link rel="icon" type="image/png" href="~/favicon.ico"/>
     
     <base href="/"/>
@@ -55,8 +55,22 @@
      
      $(document).ready(function () { 
             $("*[mask-cpf]").mask('000.000.000-00', {reverse: true});
+            $("*[mask-date]").mask('00/00/0000', {reverse: true});
             $("*[mask-cardcpf]").mask('000   000   000  00', {reverse: true});
      });
+     
+     function removeMasks(){
+     ['[mask-cpf]'].forEach(m => {
+     $(m).each(function() {
+               var $input = $(this);
+               var maskValue = $input.data('mask');
+               $input.unmask(); // Assuming you have a way to unmask input fields with the jQuery Mask Plugin
+               // If the above line doesn't work, try setting the value to the unmasked version manually
+               // For example: $input.val($input.val().replace(/\D/g,''));
+             });
+     })
+      
+     }
    </script>
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script src="~/js/soft-ui-dashboard.min.js?v=1.0.7"></script>

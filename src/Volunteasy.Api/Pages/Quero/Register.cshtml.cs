@@ -2,34 +2,47 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Volunteasy.App.Pages.Shared;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
-namespace Volunteasy.WebApp.Pages.Quero;
+namespace Volunteasy.Api.Pages.Quero;
+
+[BindProperties]
 public class Register : OrganizationPageModel
 {
     private readonly IBeneficiaryService _beneficiaries;
+
+    public BeneficiaryCreation Creation { get; set; } = new()
+    {
+        Address = new()
+    };
     
-    public string ErrorDesc { get; private set; } = "";
+    public string? ErrorDesc { get; private set; } = "";
 
     public Register(IBeneficiaryService beneficiaryService, IOrganizationService organizationService) : base(organizationService)
     {
         _beneficiaries = beneficiaryService;
     }
 
-    public async Task OnPost([FromForm] BeneficiaryCreation credentials, [FromForm] Address? address, [FromQuery] string? returnUrl)
+    public async Task OnPost([FromQuery] string? returnUrl)
     {
         try
         {
-            if (address != null &&
-                !string.IsNullOrEmpty(address.AddressName) &&
-                !string.IsNullOrEmpty(address.AddressNumber))
+
+            if (!ModelState.IsValid)
             {
-                credentials = credentials with { Address = address };
+                ErrorDesc = "Preencha as informações corretamente";
+                return;
+            }
+
+            if (Creation.Address != null && Creation.Address.AddressName.IsNullOrEmpty())
+            {
+                Creation.Address = null;
             }
             
-            var user = await _beneficiaries.CreateBeneficiary(credentials);
+            var user = await _beneficiaries.CreateBeneficiary(Creation);
 
             var identity = new ClaimsIdentity(new List<Claim>
             {

@@ -16,6 +16,12 @@ public class ExceptionMiddleware
     
     public async Task InvokeAsync(HttpContext ctx)
     {
+        if (ctx.Request.Path.StartsWithSegments("/quero"))
+        {
+            await _next(ctx);
+            return;
+        }
+        
         try
         {
             await _next(ctx);

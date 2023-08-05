@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Volunteasy.WebApp.Pages;
+namespace Volunteasy.Api.Pages;
 
 public class PrivacyModel : PageModel
 {

@@ -5,7 +5,7 @@ using Volunteasy.Core.Errors;
 using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 
-namespace Volunteasy.WebApp.Pages.Quero;
+namespace Volunteasy.Api.Pages.Quero;
 
 public class IndexModel : OrganizationPageModel
 {

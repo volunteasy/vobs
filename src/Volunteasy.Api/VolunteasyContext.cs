@@ -137,12 +137,12 @@ public class AuthHandler : CookieAuthenticationHandler
 
         if (Context.Request.Form.TryGetValue("document", out var doc))
         {
-            key = key with { Document = doc };
+            key.Document = doc.ToString();
         }
         
         if (Context.Request.Form.TryGetValue("birthDate", out var birthDate))
         {
-            key = key with { BirthDate = DateTime.Parse(birthDate) };
+            key.BirthDate = DateTime.Parse(birthDate.ToString());
         }
 
         if (string.IsNullOrEmpty(key.Document) || string.IsNullOrEmpty(birthDate))

@@ -22,36 +22,36 @@
                 <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
                     <div class="card z-index-0 bg-black">
                         <div class="card-body">
-                            <form role="form text-left" method="post">
+                            <form role="form text-left" method="post" onsubmit="removeMasks()">
                                 @Html.AntiForgeryToken()
 
                                 <label class="text-white">Sobre você</label>
                                 <div class="mb-3">
-                                    <input required name="name" type="text" class="form-control" placeholder="Seu nome (obrigatório)" aria-label="Name" aria-describedby="name-addon">
+                                    <input required asp-for="Creation.Name" maxlength="50" minlength="1" type="text" class="form-control" placeholder="Seu nome (obrigatório)" aria-label="Name" aria-describedby="name-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input required name="document" type="text" class="form-control" placeholder="CPF (obrigatório)" aria-label="Document" aria-describedby="document-addon">
+                                    <input required mask-cpf="true" maxlength="14" minlength="3" asp-for="Creation.Document" type="text" class="form-control" placeholder="CPF (obrigatório)" aria-label="Document" aria-describedby="document-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input required name="birthDate" type="date" class="form-control" placeholder="Data de nascimento (obrigatório)" aria-label="BirthDate" aria-describedby="date-addon">
+                                    <input required mask-date="true" asp-for="Creation.BirthDate" type="text" class="form-control" placeholder="Data de nascimento (obrigatório)" aria-label="BirthDate" aria-describedby="date-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input name="email" type="email" class="form-control" placeholder="Seu e-mail" aria-label="Email" aria-describedby="email-addon">
+                                    <input asp-for="Creation.Email" type="email" class="form-control" placeholder="Seu e-mail" aria-label="Email" aria-describedby="email-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input name="phone" type="tel" class="form-control" placeholder="Seu telefone" aria-label="Phone" aria-describedby="phone-addon">
+                                    <input asp-for="Creation.Phone" type="tel" class="form-control" placeholder="Seu telefone" aria-label="Phone" aria-describedby="phone-addon">
                                 </div>
 
 
                                 <label class="text-white">Localização</label>
                                 <div class="mb-3">
-                                    <input name="zipCode" type="text" class="form-control" placeholder="CEP" aria-label="Zip code" aria-describedby="postal-code-addon">
+                                    <input asp-for="Creation.Address!.ZipCode" type="text" class="form-control" placeholder="CEP" aria-label="Zip code" aria-describedby="postal-code-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input name="addressName" type="text" class="form-control" placeholder="Rua" aria-label="Address" aria-describedby="address-addon">
+                                    <input asp-for="Creation.Address!.AddressName" type="text" class="form-control" placeholder="Rua" aria-label="Address" aria-describedby="address-addon">
                                 </div>
                                 <div class="mb-3">
-                                    <input name="addressNumber" type="text" class="form-control" placeholder="Número" aria-label="AddressNumber" aria-describedby="addressNumber-addon">
+                                    <input asp-for="Creation.Address!.AddressNumber" type="text" class="form-control" placeholder="Número" aria-label="AddressNumber" aria-describedby="addressNumber-addon">
                                 </div>
 
                                 <div class="form-check form-check-info text-left">

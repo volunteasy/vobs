@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Versioning;
 
 namespace Volunteasy.Core.Model;
 
@@ -37,18 +38,20 @@ public class Beneficiary : IId, IOrganization
 public record BeneficiaryCreation
 {
     [Required, MaxLength(50), MinLength(1)]
-    public string Name { get; set; } = "";
+    public string Name { get; init; } = "";
 
     [Required, MaxLength(11), MinLength(3)]
-    public string Document { get; set; } = "";
+    public string Document { get; init; } = "";
     
-    public string Phone { get; set; } = "";
+    [DisplayFormat(ConvertEmptyStringToNull = false)]
+    public string Phone { get; init; } = "";
     
+    [DisplayFormat(ConvertEmptyStringToNull = false)]
     public string Email { get; init; } = "";
     
-    [Required] public DateTime BirthDate { get; set; }
+    [Required] public DateTime BirthDate { get; init; }
     
-    public Address? Address { get; init; }
+    public Address? Address { get; set; }
 
     public Beneficiary ToBeneficiary()
     {
@@ -58,7 +61,7 @@ public record BeneficiaryCreation
             Document = Document,
             Phone = Phone,
             Email = Email,
-            BirthDate = BirthDate.Date.ToUniversalTime(),
+            BirthDate = BirthDate.Date.ToUniversalTime().Date,
             Address = Address
         };
     }
@@ -104,9 +107,9 @@ public record BeneficiaryFilter
     public string? Phone { get; init; }
 }
 
-public record BeneficiaryKey
+public class BeneficiaryKey
 {
-    public string Document { get; init; } = "";
+    public string Document { get; set; } = "";
     
-    public DateTime BirthDate { get; init; }
+    public DateTime BirthDate { get; set; }
 }

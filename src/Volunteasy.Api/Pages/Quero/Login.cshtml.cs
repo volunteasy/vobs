@@ -8,23 +8,33 @@ using Volunteasy.Core.Model;
 using Volunteasy.Core.Services;
 using Volunteasy.Infrastructure.Firebase;
 
-namespace Volunteasy.WebApp.Pages.Quero;
+namespace Volunteasy.Api.Pages.Quero;
+
+[BindProperties]
 public class Login : OrganizationPageModel
 {
     private readonly IBeneficiaryService _identity;
 
-    public string ErrorDesc { get; private set; } = "";
+    public BeneficiaryKey Credentials { get; set; } = new();
+
+    public string? ErrorDesc { get; private set; } = "";
 
     public Login(IBeneficiaryService identity, IOrganizationService organizationService) : base(organizationService)
     {
         _identity = identity;
     }
 
-    public async Task OnPost([FromForm] BeneficiaryKey credentials, [FromQuery] string? returnUrl)
+    public async Task OnPost([FromQuery] string? returnUrl)
     {
         try
         {
-            var user = await _identity.GetBeneficiaryByDocumentAndBirthDate(credentials);
+            if (!ModelState.IsValid)
+            {
+                ErrorDesc = "Preencha as informações corretamente";
+                return;
+            }
+            
+            var user = await _identity.GetBeneficiaryByDocumentAndBirthDate(Credentials);
             var identity = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
