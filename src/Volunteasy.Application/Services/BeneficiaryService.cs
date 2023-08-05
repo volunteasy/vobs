@@ -46,7 +46,7 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
             beneficiary.Document = edition.Document;
             beneficiary.Phone = edition.Phone;
             beneficiary.Email = edition.Email;
-            beneficiary.BirthDate = edition.BirthDate.Date;
+            beneficiary.BirthDate = edition.BirthDate?.Date.ToUniversalTime().Date ?? new DateTime();
             beneficiary.Address = edition.Address;
 
             await Data.SaveChangesAsync();
@@ -79,7 +79,7 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
             .WithFilters(
                 new (filter.Document != null, b => b.Document.Contains(filter.Document ?? "")),
                 new (filter.Name != null, b => b.Name.Contains(filter.Name ?? "")),
-                new (filter.Phone != null, b => b.Phone.Contains(filter.Phone ?? ""))
+                new (filter.Phone != null, b => b.Phone!.Contains(filter.Phone ?? ""))
             ).Include(b => b.Address)
             .Select(b => new BeneficiaryResume
             {
@@ -87,8 +87,8 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
                 OrganizationId = b.OrganizationId,
                 Name = b.Name,
                 Document = b.Document,
-                Phone = b.Phone,
-                Email = b.Email,
+                Phone = b.Phone ?? string.Empty,
+                Email = b.Email ?? string.Empty,
                 BirthDate = b.BirthDate,
                 MemberSince = b.MemberSince,
                 Address = b.Address,
@@ -108,8 +108,8 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
                 OrganizationId = b.OrganizationId,
                 Name = b.Name,
                 Document = b.Document,
-                Phone = b.Phone,
-                Email = b.Email,
+                Phone = b.Phone ?? "",
+                Email = b.Email ?? "",
                 BirthDate = b.BirthDate,
                 MemberSince = b.MemberSince,
                 Address = b.Address,

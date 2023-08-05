@@ -49,7 +49,7 @@ public record BeneficiaryCreation
     [DisplayFormat(ConvertEmptyStringToNull = false)]
     public string Email { get; init; } = "";
     
-    [Required] public DateTime BirthDate { get; init; }
+    [Required] public DateTime? BirthDate { get; init; }
     
     public Address? Address { get; set; }
 
@@ -61,7 +61,7 @@ public record BeneficiaryCreation
             Document = Document,
             Phone = Phone,
             Email = Email,
-            BirthDate = BirthDate.Date.ToUniversalTime().Date,
+            BirthDate = BirthDate?.Date.ToUniversalTime().Date ?? new DateTime(),
             Address = Address
         };
     }
