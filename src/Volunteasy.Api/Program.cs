@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using dotenv.net;
@@ -8,6 +9,7 @@ using IdGen.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -295,6 +297,23 @@ if (!app.Environment.IsProduction())
     scope.ServiceProvider.GetRequiredService<Data>()
         .Database.Migrate();
 }
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("pt-BR"),
+    
+    // Formatting numbers, dates, etc.
+    SupportedCultures = new List<CultureInfo>
+    {
+        new ("pt-BR")
+    },
+    
+    // UI strings that we have localized.
+    SupportedUICultures = new List<CultureInfo>
+    {
+        new ("pt-BR")
+    },
+});
 
 app.UseHttpsRedirection();
 
