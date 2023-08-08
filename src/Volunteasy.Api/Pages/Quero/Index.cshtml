@@ -78,7 +78,7 @@
     }
     else
     {
-        @if (Model.Distributions.List.Any())
+        @if (Model.Distributions.List.Any(x => x.StartsAt >= DateTime.Now.ToUniversalTime()))
         {
             <p class="text-center text-2xl text-brand mb-5">
                 Selecione um dos dias abaixo para retirar uma doação
