@@ -37,10 +37,10 @@ public class BeneficiaryHasRecentClaimException : ApplicationException
         if (b.ClaimedAt == null)
             throw new ArgumentException("ClaimedAt in BeneficiaryHasRecentClaimException was null");
 
-        var wait = DateTime.UtcNow.AddDays(validTimeSpan) - b.ClaimedAt;
+        var wait = b.ClaimedAt!.Value.AddDays(validTimeSpan) - DateTime.UtcNow;
         
         Message = 
-            $"Você recebeu um benefício em {b.ClaimedAt:dd/MM/yyyy} e deve esperar {wait.Value.Days} dias para receber outro.";
+            $"Você recebeu um benefício em {b.ClaimedAt:dd/MM/yyyy} e deve esperar {wait.Days} dias para receber outro.";
     }
 
     public override string Message { get; }
