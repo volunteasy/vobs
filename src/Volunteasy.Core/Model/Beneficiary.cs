@@ -111,5 +111,5 @@ public class BeneficiaryKey
 {
     public string Document { get; set; } = "";
     
-    public DateTime BirthDate { get; set; }
+    public DateTime? BirthDate { get; set; }
 }

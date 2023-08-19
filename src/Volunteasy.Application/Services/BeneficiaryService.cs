@@ -125,11 +125,14 @@ public class BeneficiaryService : ServiceBase, IBeneficiaryService
 
     public async Task<Beneficiary> GetBeneficiaryByDocumentAndBirthDate(BeneficiaryKey key)
     {
+        if (key.BirthDate == null)
+            throw new ResourceNotFoundException(typeof(Beneficiary));
+        
         var beneficiary = await Data.Beneficiaries
             .WithOrganization(Session.OrganizationId)
             .SingleOrDefaultAsync(b => b.Document == key.Document);
 
-        if (beneficiary == null || beneficiary.BirthDate.Date != key.BirthDate.Date)
+        if (beneficiary == null || beneficiary.BirthDate.Date != key.BirthDate.Value.Date)
             throw new ResourceNotFoundException(typeof(Beneficiary));
         
         

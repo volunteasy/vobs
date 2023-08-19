@@ -175,7 +175,7 @@ builder.Services.AddAuthentication("JWT_OR_COOKIE")
                 switch (context.Request.Path.Value?.Split("/").First(x => !string.IsNullOrEmpty(x)))
                 {
                     case "quero":
-                        context.RedirectUri = $"/quero/{id}/login{uri.Query}";
+                        context.RedirectUri = $"/quero/{id}/register{uri.Query}";
                         break;
                 }
 
